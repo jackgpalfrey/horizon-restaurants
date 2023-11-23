@@ -1,1 +1,2 @@
 pytest==7.4.3
+pytest-watch==4.2.0
