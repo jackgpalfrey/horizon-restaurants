@@ -1,5 +1,5 @@
 def add(a: int, b: int) -> int:
-    pass
+    return a + b
 
 def subtract(a: int, b: int) -> int:
     pass
