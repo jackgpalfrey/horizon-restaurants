@@ -21,13 +21,13 @@ def test_subtract_two_negatives():
 def test_subtract_two_zeros():
     assert subtract(0,0) == 0
 
-def test_divide_two_1():
+def test_divide_two_numbers():
     assert divide(6,2) == 3
 
 def test_divide_two_negatives():
     assert divide(-2,-2) == 1
 
-def test_divide_two_zeros():
+def test_divide_positive_and_negative():
     assert divide(6,-2) == -3
 
 def test_divide_by_zero():
@@ -40,5 +40,5 @@ def test_multiply_two_1():
 def test_multiply_two_negatives():
     assert multiply(-2,-2) == 4
 
-def test_multiply_two_zeros():
+def test_multiply_positive_and_negative():
     assert multiply(6,-2) == -12
