@@ -1,4 +1,5 @@
-from src.arithmetic import add, subtract
+from src.arithmetic import add, subtract, divide
+import pytest
 
 
 
@@ -19,3 +20,16 @@ def test_subtract_two_negatives():
 
 def test_subtract_two_zeros():
     assert subtract(0,0) == 0
+
+def test_divide_two_1():
+    assert divide(6,2) == 3
+
+def test_divide_two_negatives():
+    assert divide(-2,-2) == 1
+
+def test_divide_two_zeros():
+    assert divide(6,-2) == -3
+
+def test_divide_by_zero():
+    with pytest.raises(ZeroDivisionError):
+        divide(5,0)
