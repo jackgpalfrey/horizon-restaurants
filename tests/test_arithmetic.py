@@ -1,4 +1,4 @@
-from src.arithmetic import add, subtract, divide
+from src.arithmetic import add, subtract, divide, multiply
 import pytest
 
 
