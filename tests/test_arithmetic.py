@@ -33,3 +33,12 @@ def test_divide_two_zeros():
 def test_divide_by_zero():
     with pytest.raises(ZeroDivisionError):
         divide(5,0)
+
+def test_multiply_two_1():
+    assert multiply(1,1) == 1
+
+def test_multiply_two_negatives():
+    assert multiply(-2,-2) == -4
+
+def test_multiply_two_zeros():
+    assert multiply(6,-2) == -12
