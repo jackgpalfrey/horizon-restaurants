@@ -157,7 +157,7 @@ class Database:
             cls._create_database(dbname)
 
         cls.close()
-        cls._create_db_connection(cls.dbname)
+        cls._create_db_connection(dbname)
 
     @classmethod
     def _check_database_exists(cls, dbname: str) -> bool:
@@ -166,18 +166,15 @@ class Database:
         WARNING: This method will change cls.connection to the postgres db
         """
         cls._create_db_connection("postgres")
-        cur = cls.cursor()
-
-        cur.execute("SELECT datname FROM pg_database;")
+        cur = cls.execute("SELECT datname FROM pg_database;")
         all_databases = cur.fetchall()
+
         return (dbname,) in all_databases
 
     @classmethod
     def _create_database(cls, dbname: str) -> None:
-        cur = cls.cursor()
         cls.connection.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
-        cur.execute("create database "+dbname+";")
-        cls.commit()
+        cls.execute_and_commit("create database"+dbname+";")
         print("Database created successfully")
 
     @classmethod
@@ -207,9 +204,7 @@ class Database:
         file = open(path, "r")
         sql = file.read()
 
-        cur = cls.cursor()
-        cur.execute(sql)
-        cls.commit()
+        cls.execute_and_commit(sql)
 
         file.close()
         print(f"Successfully ran sql file {path}")
