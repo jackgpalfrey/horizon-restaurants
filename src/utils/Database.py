@@ -45,7 +45,7 @@ class Database:
         Initialize database ( runs init_sql)
         Should be run once and only once
         """
-        cls._run_init_sql()
+        cls._run_sql_in_dir("src/init_sql")
 
     @classmethod
     def cursor(cls) -> psycopg2.extensions.cursor:
@@ -126,14 +126,6 @@ class Database:
         cls.close()
 
         cls._create_db_connection(cls.dbname)
-
-    @classmethod
-    def _run_init_sql(cls) -> bool:
-        """
-        Runs all sql files in src/init_sql
-        """
-
-        cls._run_sql_in_dir("src/init_sql")
 
     @classmethod
     def _run_sql_in_dir(cls, path: str) -> bool:
