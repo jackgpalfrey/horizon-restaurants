@@ -10,6 +10,14 @@ CONNECTION_RETRY_DELAY = 2
 
 
 class Database:
+    """
+    Handles database connection and initialization
+    All methods are static do not try to instantiate
+    Must run both connect() and init() before usage
+
+    Also runs all sql files in src/init_sql on init
+    """
+
     connection: psycopg2.extensions.connection
 
     @classmethod
