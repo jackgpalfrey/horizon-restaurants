@@ -4,3 +4,18 @@ services:
         build:
             context: .
             target: prod
+
+    db:
+        container_name: 'horizondb'
+        image: postgres:16-alpine
+        restart: always
+        environment:
+            - POSTGRES_USER=postgres
+            - POSTGRES_PASSWORD=postgres
+        ports:
+            - 5432:5432
+        volumes:
+            - horizon-db:/var/lib/postgresql/data
+volumes:
+    horizon-db:
+        driver: local
