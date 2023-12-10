@@ -62,7 +62,7 @@ def test_execute_and_commit():
 
 def test_execute_and_fetchone():
     row = Database.execute_and_fetchone(
-        "SELECT * FROM test_table WHERE name = %s;", ('execommit',))
+        "SELECT * FROM test_table WHERE name = %s;", 'execommit')
     assert row == ('execommit', 1)
 
 

@@ -48,7 +48,7 @@ class Database:
         cls._run_sql_in_dir("src/init_sql")
 
     @classmethod
-    def execute_and_commit(cls, query: str, vars: tuple = None) -> None:
+    def execute_and_commit(cls, query: str, *vars: tuple) -> None:
         """
         Execute given query
         """
@@ -58,7 +58,7 @@ class Database:
         cls.commit()
 
     @classmethod
-    def execute_and_fetchone(cls, query: str, vars: tuple = None) -> tuple | None:
+    def execute_and_fetchone(cls, query: str, *vars: tuple) -> tuple | None:
         """
         Execute given query and return one row
         """
@@ -68,7 +68,7 @@ class Database:
         return cur.fetchone()
 
     @classmethod
-    def execute_and_fetchall(cls, query: str, vars: tuple = None) -> list[tuple]:
+    def execute_and_fetchall(cls, query: str, *vars: tuple) -> list[tuple]:
         """
         Execute given query and return all rows
         """
@@ -78,7 +78,7 @@ class Database:
         return cur.fetchall()
 
     @classmethod
-    def execute(cls, query: str, vars: tuple = None) -> psycopg2.extensions.cursor:
+    def execute(cls, query: str, *vars: tuple) -> psycopg2.extensions.cursor:
         """
         Execute given query and return cursor
         """
