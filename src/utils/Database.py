@@ -174,7 +174,7 @@ class Database:
     @classmethod
     def _create_database(cls, dbname: str) -> None:
         cls.connection.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
-        cls.execute_and_commit("create database"+dbname+";")
+        cls.execute_and_commit("CREATE DATABASE "+dbname+";")
         print("Database created successfully")
 
     @classmethod
