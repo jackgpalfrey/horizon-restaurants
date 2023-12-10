@@ -1,7 +1,11 @@
+import time
 import psycopg2
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 
 from .env import get_env
+
+CONNECTION_RETRY_LIMIT = 5
+CONNECTION_RETRY_DELAY = 2
 
 
 class Database:
@@ -19,6 +23,7 @@ class Database:
         cls.dbname = get_env("DB_NAME")
         cls.user = get_env("DB_USER")
         cls.password = get_env("DB_PASSWORD")
+        cls.connection_tries = 0
 
         print(f"Connecting to database on {cls.host}:{cls.port}")
         cls._verify_db_exists()
@@ -61,13 +66,23 @@ class Database:
         Sets that database to cls.connection
         """
 
-        cls.connection = psycopg2.connect(
-            dbname=dbname,
-            user=cls.user,
-            password=cls.password,
-            host=cls.host,
-            port=cls.port
-        )
+        cls.connection_tries += 1
+        try:
+            cls.connection = psycopg2.connect(
+                dbname=dbname,
+                user=cls.user,
+                password=cls.password,
+                host=cls.host,
+                port=cls.port
+            )
+        except psycopg2.OperationalError as e:
+            if cls.connection_tries > CONNECTION_RETRY_LIMIT:
+                raise e
+
+            print(
+                f"Failed to connect to database {dbname} on {cls.host}:{cls.port}. Retrying...")
+            time.sleep(CONNECTION_RETRY_DELAY)
+            cls._create_db_connection(dbname)
 
     @classmethod
     def _verify_db_exists(cls) -> bool:

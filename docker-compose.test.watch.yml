@@ -8,6 +8,8 @@ services:
 
   pgadmin:
     image: dpage/pgadmin4
+    depends_on:
+      - db
     restart: always
     environment:
       - PGADMIN_DEFAULT_EMAIL=admin@admin.com
