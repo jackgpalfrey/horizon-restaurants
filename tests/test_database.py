@@ -8,8 +8,23 @@ def test_database_connection():
     assert Database.connection is not None
 
 
-def test_can_delete_all_tables():
-    Database.DEBUG_delete_all_tables("DANGEROUSLY DELETE ALL TABLES")
+def test_can_delete_tables():
+    cur = Database.cursor()
+    sql = """
+        DROP TABLE IF EXISTS test_table;
+        DROP TABLE IF EXISTS init_check_table;
+    """
+    cur.execute(sql)
+    Database.commit()
+
+
+def test_can_run_init_sql():
+    Database.init()
+    cur = Database.cursor()
+    cur.execute("INSERT INTO init_check_table VALUES ('init_check', 1);")
+    Database.commit()
+    cur.execute("SELECT * FROM init_check_table;")
+    assert cur.fetchall() == [('init_check', 1)]
 
 
 def test_can_create_table():

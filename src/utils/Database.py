@@ -1,4 +1,5 @@
 import time
+import os
 import psycopg2
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 
@@ -16,6 +17,8 @@ class Database:
         """ 
         Connect to database as defined in env
         Should be run once and only once
+
+        NOTE: Database.init MUST be run after this to fully setup database
         """
 
         cls.host = "db"
@@ -27,6 +30,14 @@ class Database:
 
         print(f"Connecting to database on {cls.host}:{cls.port}")
         cls._verify_db_exists()
+
+    @classmethod
+    def init(cls) -> None:
+        """
+        Initialize database ( runs init_sql)
+        Should be run once and only once
+        """
+        cls._run_init_sql()
 
     @classmethod
     def cursor(cls) -> psycopg2.extensions.cursor:
@@ -107,3 +118,44 @@ class Database:
         cls.close()
 
         cls._create_db_connection(cls.dbname)
+
+    @classmethod
+    def _run_init_sql(cls) -> bool:
+        """
+        Runs all sql files in src/init_sql
+        """
+
+        cls._run_sql_in_dir("src/init_sql")
+
+    @classmethod
+    def _run_sql_in_dir(cls, path: str) -> bool:
+        """
+        Runs all sql files in given directory
+        """
+
+        dir = os.scandir(path)
+
+        for file in dir:
+            if file.is_dir():
+                cls._run_sql_in_dir(file.path)
+            else:
+                cls._run_sql_file(file.path)
+
+        dir.close()
+
+    @classmethod
+    def _run_sql_file(cls, path: str) -> bool:
+        """
+        Runs given sql file
+        """
+
+        print(f"Running sql file {path}")
+        file = open(path, "r")
+        sql = file.read()
+
+        cur = cls.cursor()
+        cur.execute(sql)
+        cls.commit()
+
+        file.close()
+        print(f"Successfully ran sql file {path}")
