@@ -52,6 +52,30 @@ def test_can_insert_into_table():
     assert cur.fetchall() == [('test', 1)]
 
 
+def test_execute_and_commit():
+    Database.execute_and_commit(
+        "INSERT INTO test_table VALUES ('execommit', 1);")
+    cur = Database.cursor()
+    cur.execute("SELECT * FROM test_table WHERE name = %s;", ('execommit',))
+    assert cur.fetchall() == [('execommit', 1)]
+
+
+def test_execute_and_fetchone():
+    row = Database.execute_and_fetchone(
+        "SELECT * FROM test_table WHERE name = %s;", ('execommit',))
+    assert row == ('execommit', 1)
+
+
+def test_execute_and_fetchall():
+    rows = Database.execute_and_fetchall("SELECT * FROM test_table;")
+    assert rows == [('test', 1), ('execommit', 1)]
+
+
+def test_execute():
+    cur = Database.execute("SELECT * FROM test_table;")
+    assert cur.fetchall() == [('test', 1), ('execommit', 1)]
+
+
 def test_can_close_connection():
     Database.close()
     assert Database.connection.closed == 1
