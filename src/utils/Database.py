@@ -142,8 +142,9 @@ class Database:
         """
 
         dir = os.scandir(path)
+        sorted_dir = sorted(dir, key=lambda file: file.name)
 
-        for file in dir:
+        for file in sorted_dir:
             if file.is_dir():
                 cls._run_sql_in_dir(file.path)
             else:
