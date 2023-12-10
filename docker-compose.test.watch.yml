@@ -7,6 +7,7 @@ services:
       - ./src:/app/src:ro
 
   pgadmin:
+    container_name: horizon-pgadmin
     image: dpage/pgadmin4
     depends_on:
       - db
