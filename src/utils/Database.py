@@ -48,6 +48,36 @@ class Database:
         cls._run_sql_in_dir("src/init_sql")
 
     @classmethod
+    def execute_and_commit(cls, query: str, vars: tuple) -> None:
+        """
+        Execute given query
+        """
+
+        cur = cls.cursor()
+        cur.execute(query, vars)
+        cls.commit()
+
+    @classmethod
+    def execute_and_fetchone(cls, query: str, vars: tuple) -> tuple | None:
+        """
+        Execute given query and return one row
+        """
+
+        cur = cls.cursor()
+        cur.execute(query, vars)
+        return cur.fetchone()
+
+    @classmethod
+    def execute_and_fetchall(cls, query: str, vars: tuple) -> list[tuple]:
+        """
+        Execute given query and return all rows
+        """
+
+        cur = cls.cursor()
+        cur.execute(query, vars)
+        return cur.fetchall()
+
+    @classmethod
     def cursor(cls) -> psycopg2.extensions.cursor:
         return cls.connection.cursor()
 
@@ -104,7 +134,7 @@ class Database:
             cls._create_db_connection(dbname)
 
     @classmethod
-    def _verify_db_exists(cls) -> bool:
+    def _verify_db_exists(cls) -> None:
         """
         Check if database defined by cls.dbname exists and create it if it doesn't
         """
