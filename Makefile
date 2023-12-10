@@ -1,8 +1,8 @@
 prod:
-	docker compose -f docker-compose.yml up
+	docker compose -f docker-compose.yml up --build
 
 test:
-	docker compose -f docker-compose.yml -f docker-compose.test.yml up --exit-code-from app
+	docker compose -f docker-compose.yml -f docker-compose.test.yml up --build --exit-code-from app
 
 test-watch:
-	docker compose -f docker-compose.yml -f docker-compose.test.yml -f docker-compose.test.watch.yml up --exit-code-from app
+	docker compose -f docker-compose.yml -f docker-compose.test.yml -f docker-compose.test.watch.yml up --build --exit-code-from app
