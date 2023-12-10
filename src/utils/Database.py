@@ -52,15 +52,15 @@ class Database:
         return cls.connection.cursor()
 
     @classmethod
-    def commit(cls):
+    def commit(cls) -> None:
         cls.connection.commit()
 
     @classmethod
-    def close(cls):
+    def close(cls) -> None:
         cls.connection.close()
 
     @classmethod
-    def DEBUG_delete_all_tables(cls, verify: str):
+    def DEBUG_delete_all_tables(cls, verify: str) -> None:
         """
         Delete all tables in database
         verify must be "DANGEROUSLY DELETE ALL TABLES"
@@ -110,22 +110,35 @@ class Database:
         """
 
         dbname = cls.dbname
+        database_exists = cls._check_database_exists(dbname)
+
+        if not database_exists:
+            print(f"Database {dbname} does not exist. Creating it now...")
+            cls._create_database(dbname)
+
+        cls.close()
+        cls._create_db_connection(cls.dbname)
+
+    @classmethod
+    def _check_database_exists(cls, dbname: str) -> bool:
+        """
+        Checks if given database exists
+        WARNING: This method will change cls.connection to the postgres db
+        """
         cls._create_db_connection("postgres")
         cur = cls.cursor()
 
         cur.execute("SELECT datname FROM pg_database;")
         all_databases = cur.fetchall()
+        return (dbname,) in all_databases
 
-        if (dbname,) not in all_databases:
-            print(f"Database {dbname} does not exist. Creating it now...")
-            cls.connection.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
-            cur.execute("create database "+dbname+";")
-            cls.commit()
-            print("Database created successfully")
-
-        cls.close()
-
-        cls._create_db_connection(cls.dbname)
+    @classmethod
+    def _create_database(cls, dbname: str) -> None:
+        cur = cls.cursor()
+        cls.connection.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
+        cur.execute("create database "+dbname+";")
+        cls.commit()
+        print("Database created successfully")
 
     @classmethod
     def _run_sql_in_dir(cls, path: str) -> bool:
