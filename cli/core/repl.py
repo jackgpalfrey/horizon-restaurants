@@ -6,6 +6,8 @@ from errors import CLIError
 
 evaluator = Evaluator()
 evaluator.include("stdlib")
+evaluator.include("init")
+evaluator.init()
 
 
 try:

@@ -1,5 +1,6 @@
 import importlib
 import inspect
+from pprint import pprint
 from types import ModuleType
 from typing import Callable
 from Parser import *
@@ -15,6 +16,12 @@ class Evaluator:
         self._libraries: dict[str, ModuleType] = {}
         self._commands: dict[str, Callable] = {}
         self.ctx: dict[str, any] = {}
+
+    def init(self):
+        """
+        Should be run after all libraries have been included
+        """
+        self.evaluate("init")
 
     def evaluate(self, source: str) -> any:
         parser = Parser()
@@ -139,9 +146,11 @@ class Evaluator:
                 raise ArgError(
                     f"Expected {len(fnc_args)} arguments, got {len(args)}")
 
+            expected_type = fnc_types.get(fnc_vararg, None)
+            print(expected_type)
+
             for arg in args[arg_ptr:]:
                 arg = self._evaluate_expression(arg)
-                expected_type = fnc_types.get(fnc_vararg, None)
                 self._check_type_and_raise(arg_ptr, arg, expected_type)
                 input_args.append(arg)
 
@@ -192,9 +201,11 @@ class Evaluator:
                 return expr.value
 
     def _check_type_and_raise(self, arg_idx: int, value: any, expected_type: any) -> bool:
-        ex_arg_exists = expected_type is not None
+        if expected_type is None:
+            return True
+
         arg_type_matches = isinstance(value, expected_type)
-        if ex_arg_exists and not arg_type_matches:
+        if not arg_type_matches:
             raise ArgError(
                 f"Expected argument {arg_idx} to be of type {expected_type}, got {type(value)}")
 
