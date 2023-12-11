@@ -100,6 +100,14 @@ class Database:
         cls.connection.close()
 
     @classmethod
+    def is_connected(cls) -> bool:
+        connection_exists = cls.connection is not None
+        if connection_exists:
+            return cls.connection.closed == 0
+
+        return False
+
+    @classmethod
     def DEBUG_delete_all_tables(cls, verify: str) -> None:
         """
         Delete all tables in database
