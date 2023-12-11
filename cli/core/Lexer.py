@@ -20,6 +20,10 @@ class TokenKind(Enum):
     Float = iota()
     Symbol = iota()
 
+    MINUS = iota()
+    DMINUS = iota()
+    EQUALS = iota()
+
     EOF = iota()
 
 
@@ -54,6 +58,14 @@ class Lexer:
         match char:
             case " " | "\n":
                 return
+            case '=':
+                return self.token(TokenKind.EQUALS)
+            case '-':
+                if self.peek() == '-':
+                    self.advance()
+                    return self.token(TokenKind.DMINUS, start=self.ptr - 1)
+                else:
+                    return self.token(TokenKind.MINUS)
 
         if is_digit(char):
             return self.lex_number()

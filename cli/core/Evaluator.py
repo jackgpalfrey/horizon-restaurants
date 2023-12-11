@@ -14,8 +14,15 @@ def echonum(num: int | str) -> int:
     return result
 
 
-def echo(start: str = "START: ", *_) -> str:
-    result = start  # + " ".join(text)
+def echo(*text: str, p: bool = False, s: bool = False, repetitions: int = False) -> str:
+    result = " ".join(text)
+
+    if repetitions is not None:
+        result = result * repetitions
+
+    if p:
+        result = "PREFIX: " + result
+
     print(result)
     return result
 
@@ -27,6 +34,7 @@ class Evaluator:
     def evaluate(self, source: str) -> any:
         parser = Parser()
         ast = parser.parse_from_source(source)
+        print(ast)
 
         self._add_command('echo', echonum)
 
@@ -47,19 +55,24 @@ class Evaluator:
             case 'echo':
                 return self._execute_command(echo, args)
 
-    def _execute_command(self, func: Callable, args: list[Expression]) -> any:
+    def _execute_command(self, func: Callable, args_and_kwargs: list[Expression]) -> any:
+        args, kwargs = self.split_args_and_kwargs(args_and_kwargs)
+
+        print(args)
+
         spec = inspect.getfullargspec(func)
 
         fnc_args = spec.args
         fnc_vararg = spec.varargs
         fnc_types = spec.annotations
-        fnc_defaults = spec.defaults
+        fnc_kwargs = spec.kwonlyargs
         fnc_ret_type = fnc_types.get('return', None)
 
         # print(fnc_args)
         # print(fnc_vararg)
         # print(fnc_types)
         # print(fnc_defaults)
+        print(fnc_kwargs)
 
         input_args = []
 
@@ -85,11 +98,40 @@ class Evaluator:
                 self._check_type_and_raise(arg_ptr, arg, expected_type)
                 input_args.append(arg)
 
-        if arg_ptr < len(fnc_args) - 1:
-            # TODO: Maybe handle default args
-            pass
+        inp_kwargs = {}
+        for ex_kwarg in fnc_kwargs:
+            kwarg_val = None
+            print(kwargs)
 
-        return func(*input_args)
+            if ex_kwarg in kwargs:
+                kwarg_val = self._evaluate_expression(kwargs[ex_kwarg])
+
+                expected_kwarg_type = fnc_types.get(ex_kwarg, None)
+                self._check_type_and_raise(
+                    ex_kwarg, kwarg_val, expected_kwarg_type)
+
+                inp_kwargs[ex_kwarg] = kwarg_val
+            else:
+                inp_kwargs[ex_kwarg] = None
+
+        print(inp_kwargs)
+        return func(*input_args, **inp_kwargs)
+
+    def split_args_and_kwargs(self, args_and_kwargs: list[Expression]) -> tuple[list[Expression], dict[str, Expression]]:
+        """
+        :returns: (args, kwargs)
+        """
+
+        args = []
+        kwargs = {}
+
+        for arg in args_and_kwargs:
+            if isinstance(arg, FlagExpr):
+                kwargs[arg.name] = arg.value
+            else:
+                args.append(arg)
+
+        return (args, kwargs)
 
     def _evaluate_expression(self, expr: Expression) -> any:
         match expr:
@@ -98,6 +140,8 @@ class Evaluator:
             case IntegerLitExpr():
                 return expr.value
             case FloatLitExpr():
+                return expr.value
+            case BooleanLitExpr():
                 return expr.value
 
     def _check_type_and_raise(self, arg_idx: int, value: any, expected_type: any) -> bool:

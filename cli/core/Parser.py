@@ -23,6 +23,12 @@ class Expression:
     pass
 
 
+@dataclass
+class FlagExpr(Expression):
+    name: str
+    value: LiteralExpr
+
+
 class LiteralExpr(Expression):
     pass
 
@@ -40,6 +46,11 @@ class IntegerLitExpr(LiteralExpr):
 @dataclass
 class FloatLitExpr(LiteralExpr):
     value: float
+
+
+@dataclass
+class BooleanLitExpr(LiteralExpr):
+    value: bool
 
 
 class Parser:
@@ -69,12 +80,45 @@ class Parser:
         args: list[Expression] = []
 
         while self.not_eof():
-            args.append(self._parse_expression())
+            expr = self._parse_expression()
+            if isinstance(expr, list):
+                args.extend(expr)
+            else:
+                args.append(expr)
 
         return ProgramLineStmt(command, args)
 
-    def _parse_expression(self) -> Expression:
-        return self._parse_primary_expression()
+    def _parse_expression(self) -> Expression | list[Expression]:
+        return self._parse_flag()
+
+    def _parse_flag(self) -> Expression | list[Expression]:
+        match self.peek().kind:
+            case TokenKind.MINUS:
+                return self._parse_char_flag()
+            case TokenKind.DMINUS:
+                return self._parse_double_flag()
+            case _:
+                return self._parse_primary_expression()
+
+    def _parse_char_flag(self) -> Expression | list[Expression]:
+        self.advance()  # EAT MINUS
+        symbol_text = self.advance_expect(TokenKind.Symbol).text
+        flags = []
+        for char in symbol_text:
+            flags.append(FlagExpr(char, BooleanLitExpr(True)))
+
+        return flags
+
+    def _parse_double_flag(self) -> Expression:
+        self.advance()  # Eat DMINUS
+        flag_name = self.advance_expect(TokenKind.Symbol).text
+        if self.peek().kind == TokenKind.EQUALS:
+            self.advance()  # EAT EQUALS
+            flag_value = self._parse_expression()
+        else:
+            flag_value = BooleanLitExpr(True)
+
+        return FlagExpr(flag_name, flag_value)
 
     def _parse_primary_expression(self) -> Expression:
         match self.peek().kind:
