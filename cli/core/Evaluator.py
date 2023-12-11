@@ -10,15 +10,11 @@ from CLI import Env
 LIBRARY_PATH = "cli.libs"
 
 
-class RuntimeValue:
-    pass
-
-
 class Evaluator:
     def __init__(self) -> None:
         self._libraries: dict[str, ModuleType] = {}
         self._commands: dict[str, Callable] = {}
-        self.ctx: dict[str, RuntimeValue] = {}
+        self.ctx: dict[str, any] = {}
 
     def evaluate(self, source: str) -> any:
         parser = Parser()
@@ -191,6 +187,8 @@ class Evaluator:
             case FloatLitExpr():
                 return expr.value
             case BooleanLitExpr():
+                return expr.value
+            case StringLitExpr():
                 return expr.value
 
     def _check_type_and_raise(self, arg_idx: int, value: any, expected_type: any) -> bool:

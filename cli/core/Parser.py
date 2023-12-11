@@ -39,6 +39,11 @@ class SymbolLitExpr(LiteralExpr):
 
 
 @dataclass
+class StringLitExpr(LiteralExpr):
+    value: str
+
+
+@dataclass
 class IntegerLitExpr(LiteralExpr):
     value: int
 
@@ -128,6 +133,8 @@ class Parser:
                 return IntegerLitExpr(int(self.advance().text))
             case TokenKind.Float:
                 return FloatLitExpr(float(self.advance().text))
+            case TokenKind.String:
+                return SymbolLitExpr(self.advance().text)
             case _:
                 raise ParseError(
                     f"Unexpected token {self.peek().kind} at {self.peek().start}")

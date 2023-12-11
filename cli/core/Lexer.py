@@ -19,6 +19,7 @@ class TokenKind(Enum):
     Integer = iota(True)
     Float = iota()
     Symbol = iota()
+    String = iota()
 
     MINUS = iota()
     DMINUS = iota()
@@ -66,6 +67,8 @@ class Lexer:
                     return self.token(TokenKind.DMINUS, start=self.ptr - 1)
                 else:
                     return self.token(TokenKind.MINUS)
+            case '"' | "'":
+                return self.lex_string(char)
 
         if is_digit(char):
             return self.lex_number()
@@ -97,6 +100,16 @@ class Lexer:
             self.advance()
 
         return self.token(TokenKind.Symbol, start)
+
+    def lex_string(self, delim: str) -> Token:
+        start = self.ptr
+
+        while self.not_eof() and self.peek() != delim:
+            self.advance()
+
+        self.advance()  # Eat delim
+
+        return self.token(TokenKind.String, start, text=self.source[start + 1:self.ptr])
 
     def token(self, kind: TokenKind, start: int = None, end: int = None, text: str = None) -> Token:
         """
