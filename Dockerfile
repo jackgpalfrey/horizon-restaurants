@@ -3,6 +3,9 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 COPY ./src ./src
+RUN touch __init__.py
+ENV PYTHONPATH "$PYTHONPATH:/app"
+
 CMD ["python", "./src/main.py"]
 
 FROM prod AS cli
