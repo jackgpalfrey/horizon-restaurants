@@ -51,3 +51,31 @@ def reload(env: Env):
     print("Reloading...")
     env.reload_libraries()
     print("Reloaded.")
+
+
+def get(env: Env, key: str) -> any:
+    """
+    Usage: get <key>
+
+    Gets the value of the given key from the context.
+    """
+    return env.get_ctx(key)
+
+
+def set(env: Env, key: str, value):
+    """
+    Usage: set <key> <value>
+
+    Sets the value of the given key in the context.
+    """
+    env.set_ctx(key, value)
+    return value
+
+
+def ctx(env: Env) -> dict[str, any]:
+    """
+    Usage: ctx
+
+    Gets the context of the evaluator.
+    """
+    return env.get_all_ctx()
