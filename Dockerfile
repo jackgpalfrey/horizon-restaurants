@@ -5,6 +5,9 @@ RUN pip install -r requirements.txt
 COPY ./src ./src
 CMD ["python", "./src/main.py"]
 
+FROM prod AS cli
+COPY ./cli ./cli
+CMD ["python", "-m", "cli/core/repl.py"]
 
 FROM prod AS test
 COPY ./tests ./tests
