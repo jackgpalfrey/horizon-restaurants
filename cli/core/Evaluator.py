@@ -1,44 +1,61 @@
+import importlib
 import inspect
+from types import ModuleType
 from typing import Callable
 from Parser import *
 from errors import *
+from cli.libs.stdlib import echo
+from CLI import Env
+
+LIBRARY_PATH = "cli.libs"
 
 
 class RuntimeValue:
     pass
 
 
-def echonum(num: int | str) -> int:
-    result = num
-    print(result)
-    return result
-
-
-def echo(*text: str, p: bool = False, s: bool = False, repetitions: int = False) -> str:
-    result = " ".join(text)
-
-    if repetitions is not None:
-        result = result * repetitions
-
-    if p:
-        result = "PREFIX: " + result
-
-    print(result)
-    return result
-
-
 class Evaluator:
     def __init__(self) -> None:
-        pass
+        self._libraries: dict[str, ModuleType] = {}
+        self._commands: dict[str, Callable] = {}
+        self.ctx: dict[str, RuntimeValue] = {}
 
     def evaluate(self, source: str) -> any:
         parser = Parser()
         ast = parser.parse_from_source(source)
-        print(ast)
-
-        self._add_command('echo', echonum)
 
         return self._evaluate_ast(ast)
+
+    def include(self, libname: str) -> None:
+        """"
+        Adds library under cli/libs/<lib> to the evaluator's scope.
+        """
+
+        lib_path = f"{LIBRARY_PATH}.{libname}"
+        lib = importlib.import_module(lib_path)
+
+        self._include_module(libname, lib)
+
+    def reload(self) -> None:
+        """
+        Reloads all libraries that have been included into the evaluator.
+        """
+
+        self._commands.clear()
+
+        libs = list(self._libraries.items())
+
+        for lib, module in libs:
+            new_module = importlib.reload(module)
+            self._include_module(lib, new_module)
+
+    def _include_module(self, name: str, module: ModuleType) -> None:
+        functions = inspect.getmembers(module, inspect.isfunction)
+
+        for name, func in functions:
+            self._add_command(name, func)
+
+        self._libraries[name] = module
 
     def _evaluate_ast(self, ast: ProgramStmt) -> any:
         for line in ast.lines:
@@ -51,32 +68,66 @@ class Evaluator:
         return self._execute(command, args)
 
     def _execute(self, command: str, args: list[Expression]) -> any:
-        match command:
-            case 'echo':
-                return self._execute_command(echo, args)
+        func = self._commands.get(command, None)
+        if func is None:
+            raise CommandError(f"Command '{command}' not found")
+
+        try:
+            return self._execute_command(func, args)
+        except (ArgError, TypeError) as e:
+            print(self._get_usage(func))
+
+    def _get_usage(self, func: Callable) -> str:
+        docs = inspect.getdoc(func)
+        if docs is not None:
+            return docs.splitlines()[0]
+
+        spec = inspect.getfullargspec(func)
+        args = spec.args
+        vararg = spec.varargs
+        kwargs = spec.kwonlyargs
+
+        usage = f"Usage: {func.__name__} "
+
+        for arg in args:
+            usage += f"<{arg}> "
+
+        if vararg is not None:
+            usage += f"[<{vararg}> ...] "
+
+        for kwarg in kwargs:
+            usage += f"[--{kwarg} <{kwarg}>] "
+
+        return usage
 
     def _execute_command(self, func: Callable, args_and_kwargs: list[Expression]) -> any:
         args, kwargs = self.split_args_and_kwargs(args_and_kwargs)
-
-        print(args)
-
         spec = inspect.getfullargspec(func)
 
         fnc_args = spec.args
         fnc_vararg = spec.varargs
         fnc_types = spec.annotations
         fnc_kwargs = spec.kwonlyargs
-        fnc_ret_type = fnc_types.get('return', None)
-
-        # print(fnc_args)
-        # print(fnc_vararg)
-        # print(fnc_types)
-        # print(fnc_defaults)
-        print(fnc_kwargs)
 
         input_args = []
 
         arg_ptr = 0
+
+        first_arg = fnc_args[0] if len(fnc_args) > 0 else None
+        first_type = fnc_types.get(first_arg, None)
+
+        try:
+            if (first_type.IS_ENV == True):
+                input_args.append(Env(self))
+                fnc_args.pop(0)
+        except:
+            pass
+
+        match first_type:
+            case Env():
+                print("INSERT")
+                input_args.append(Env(self))
+                fnc_args.pop(0)
 
         while arg_ptr < len(fnc_args) and arg_ptr < len(args):
             arg = self._evaluate_expression(args[arg_ptr])
@@ -101,7 +152,6 @@ class Evaluator:
         inp_kwargs = {}
         for ex_kwarg in fnc_kwargs:
             kwarg_val = None
-            print(kwargs)
 
             if ex_kwarg in kwargs:
                 kwarg_val = self._evaluate_expression(kwargs[ex_kwarg])
@@ -114,7 +164,6 @@ class Evaluator:
             else:
                 inp_kwargs[ex_kwarg] = None
 
-        print(inp_kwargs)
         return func(*input_args, **inp_kwargs)
 
     def split_args_and_kwargs(self, args_and_kwargs: list[Expression]) -> tuple[list[Expression], dict[str, Expression]]:
@@ -154,4 +203,4 @@ class Evaluator:
         return True
 
     def _add_command(self, name: str, func: Callable) -> None:
-        pass
+        self._commands[name] = func

@@ -12,3 +12,7 @@ class ParseError(CLIError):
 
 class ArgError(CLIError):
     pass
+
+
+class CommandError(CLIError):
+    pass
