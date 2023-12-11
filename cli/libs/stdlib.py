@@ -79,3 +79,25 @@ def ctx(env: Env) -> dict[str, any]:
     Gets the context of the evaluator.
     """
     return env.get_all_ctx()
+
+
+def help(env: Env, *_, command: str):
+    """
+    Usage: help [--command=<command>]
+
+    Prints the help message for the given command.
+    """
+    if command is None:
+        for line in env.usage_all():
+            print(line)
+
+    else:
+        print(env.doc(command))
+
+
+def clear():
+    """
+    Clears the console.
+    """
+
+    print("\033[H\033[J", end="")

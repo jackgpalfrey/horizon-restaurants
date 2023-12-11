@@ -44,3 +44,33 @@ class Env:
         """
 
         return self._evaluator.ctx
+
+    def usage(self, cmd: str) -> str:
+        """
+        Returns usage information of given command
+        """
+        func = self._evaluator._commands.get(cmd, None)
+        if func is None:
+            return f"Command '{cmd}' not found."
+
+        return self._evaluator._get_usage(func)[7:]  # Remove 'Usage: '
+
+    def usage_all(self):
+        """
+        Returns usage information of all commands
+        """
+        usages = []
+        for cmd in self._evaluator._commands:
+            usages.append(self.usage(cmd))
+
+        return usages
+
+    def doc(self, cmd: str) -> str:
+        """
+        Returns documentation of given command
+        """
+        func = self._evaluator._commands.get(cmd, None)
+        if func is None:
+            return f"Command '{cmd}' not found."
+
+        return func.__doc__
