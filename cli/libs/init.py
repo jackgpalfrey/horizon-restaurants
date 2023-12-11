@@ -7,3 +7,7 @@ def init():
     """
     Database.connect()
     return True
+
+
+def prompt():
+    return "horizon > "
