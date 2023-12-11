@@ -36,7 +36,7 @@ def dbDisconnect() -> bool:
 
 def dbQuery(query: str, *vars) -> list[tuple]:
     """
-    Usage: dbQuery <query>
+    Usage: dbQuery <query> [...vars]
     """
     if not Database.is_connected():
         print("Not connected to database. Use dbConnect first.")
@@ -47,7 +47,7 @@ def dbQuery(query: str, *vars) -> list[tuple]:
 
 def dbQueryOne(query: str, *vars) -> tuple | None:
     """
-    Usage: dbQueryOne <query>
+    Usage: dbQueryOne <query> [...vars]
     """
     if not Database.is_connected():
         print("Not connected to database. Use dbConnect first.")
@@ -58,7 +58,7 @@ def dbQueryOne(query: str, *vars) -> tuple | None:
 
 def dbExecute(query: str, *vars) -> None:
     """
-    Usage: dbExecute <query>
+    Usage: dbExecute <query> [...vars]
     """
     if not Database.is_connected():
         print("Not connected to database. Use dbConnect first.")
