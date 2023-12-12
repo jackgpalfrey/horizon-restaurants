@@ -1,0 +1,11 @@
+id: 1
+name: Frontend Staff
+extends: 0
+permissions:
+    - order.make
+    - order.update
+    - order.delete
+    - order.discount
+    - reservation.create
+    - reservation.update
+    - reservation.delete

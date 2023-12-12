@@ -1,0 +1,10 @@
+id: 0
+name: Staff
+permissions:
+    - account.view.self
+    - account.update.self
+    - menu.category.view
+    - order.view
+    - branch.view
+    - branch.view.capacity
+    - reservation.view
