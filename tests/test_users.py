@@ -25,6 +25,7 @@ def before_and_after_test():
     UserService.init()
     Role._load_role_file("tests/roles/test-default.yml")
     Role._load_role_file("tests/roles/test-other.yml")
+    Role._load_role_file("tests/roles/test-extends.yml")
 
     yield
 
@@ -124,6 +125,14 @@ def test_can_set_role():
     assert user.get_role().get_id() == 1
     assert user.check_permission("test.one") == False
     assert user.check_permission("other.one") == True
+
+
+def test_roles_can_be_extended():
+    role = Role.get_by_id(2)
+    user.set_role(role)
+    assert user.get_role().get_id() == 2
+    assert user.check_permission("test.one") == True
+    assert user.check_permission("extend.one") == True
 
 
 def test_can_expire_password():
