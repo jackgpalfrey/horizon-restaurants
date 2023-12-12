@@ -34,8 +34,14 @@ class Role:
         extends = data.get("extends", None)
 
         if extends is not None:
-            parent_role = cls.get_by_id(extends)
-            permissions += parent_role._permissions.keys()
+            if type(extends) is list:
+                for parent_role in extends:
+                    parent_role = cls.get_by_id(parent_role)
+                    permissions += parent_role._permissions.keys()
+
+            else:
+                parent_role = cls.get_by_id(extends)
+                permissions += parent_role._permissions.keys()
 
         role = Role(id, name, permissions)
         cls._roles[id] = role
