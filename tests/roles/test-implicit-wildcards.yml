@@ -1,0 +1,4 @@
+id: 3
+name: Implicit Wildcard Test User
+permissions:
+    - expltest

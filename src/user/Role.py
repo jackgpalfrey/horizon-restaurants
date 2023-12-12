@@ -54,7 +54,25 @@ class Role:
         self._add_permission_list(permissions)
 
     def check_permission(self, permission: str) -> bool:
-        return self._permissions.get(permission, False)
+        # Handle explicit wildcard
+        if self._permissions.get(".*", False):
+            return True
+
+        split_permission = permission.split(".")
+
+        return self._check_split_permission(split_permission)
+
+    def _check_split_permission(self, split_permission: list[str]) -> bool:
+        if len(split_permission) == 1:
+            return self._permissions.get(split_permission[0], False)
+
+        permission_str = ".".join(split_permission)
+        result = self._permissions.get(permission_str, None)
+
+        if result is None:
+            return self._check_split_permission(split_permission[:-1])
+
+        return result
 
     def get_name(self) -> str:
         return self._name

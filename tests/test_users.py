@@ -26,6 +26,8 @@ def before_and_after_test():
     Role._load_role_file("tests/roles/test-default.yml")
     Role._load_role_file("tests/roles/test-other.yml")
     Role._load_role_file("tests/roles/test-extends.yml")
+    Role._load_role_file("tests/roles/test-implicit-wildcards.yml")
+    Role._load_role_file("tests/roles/test-explicit-wildcard.yml")
 
     yield
 
@@ -133,6 +135,25 @@ def test_roles_can_be_extended():
     assert user.get_role().get_id() == 2
     assert user.check_permission("test.one") == True
     assert user.check_permission("extend.one") == True
+
+
+def test_implicit_wildcard_permission_works():
+    role = Role.get_by_id(3)
+    user.set_role(role)
+    assert user.get_role().get_id() == 3
+    assert user.check_permission("expltest.one") == True
+    assert user.check_permission("expltest.two") == True
+    assert user.check_permission("expltest.three") == True
+    assert user.check_permission("expltes.four") == False
+
+
+def test_explicit_wildcard_permission_works():
+    role = Role.get_by_id(4)
+    user.set_role(role)
+    assert user.get_role().get_id() == 4
+    assert user.check_permission("my.permission") == True
+    assert user.check_permission("your.permission") == True
+    assert user.check_permission("your.other.permission") == True
 
 
 def test_can_expire_password():
