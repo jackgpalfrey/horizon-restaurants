@@ -1,0 +1,5 @@
+id: 99
+name: Admin
+permissions:
+    - example.permission
+    - example.permission2
