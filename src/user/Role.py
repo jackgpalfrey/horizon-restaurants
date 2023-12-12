@@ -14,8 +14,10 @@ class Role:
 
     @classmethod
     def load_roles(cls):
-        os.scandir(ROLE_DIR_PATH)
-        for entry in os.scandir(ROLE_DIR_PATH):
+        dir = list(os.scandir(ROLE_DIR_PATH))
+        sorted_dir = sorted(dir, key=lambda entry: entry.name)
+
+        for entry in sorted_dir:
             if entry.is_file():
                 Role._load_role_file(entry.path)
 
