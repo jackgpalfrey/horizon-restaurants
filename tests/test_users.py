@@ -1,4 +1,5 @@
 import pytest
+from src.user.Role import Role
 
 from src.utils.Database import Database
 from src.user.UserService import UserService
@@ -85,6 +86,22 @@ def test_cant_set_password_with_incorrect_old_password():
         user.set_password("not the password", newest_password)
 
 
+def test_user_role_defaults_to_zero():
+    print(Role._roles)
+    print(user._get_role_id())
+    assert user.get_role().get_id() == 0
+
+
+def test_user_check_permission():
+    assert user.check_permission("example.basic") == True
+    assert user.check_permission("test") == False
+
+
+def test_raise_without_permission():
+    with pytest.raises(AuthorizationError):
+        user.raise_without_permission("test")
+
+
 def test_can_set_password_with_correct_old_password():
     user.set_password(new_password, newest_password)
     assert user.check_is_password_correct(newest_password) == True
@@ -97,6 +114,12 @@ def test_password_unexpired_after_setting_new_password():
 def test_can_set_full_name():
     user.set_full_name(new_full_name)
     assert user.get_full_name() == new_full_name
+
+
+def test_can_set_role():
+    role = Role.get_by_id(99)
+    user.set_role(role)
+    assert user.get_role().get_id() == 99
 
 
 def test_can_expire_password():

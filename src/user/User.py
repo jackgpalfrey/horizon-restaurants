@@ -1,5 +1,4 @@
-import bcrypt
-
+from .Role import Role
 from .password_utils import hash_password, check_password
 from src.utils.errors import AuthorizationError
 from ..utils.Database import Database
@@ -35,6 +34,24 @@ class User:
         result = Database.execute_and_fetchone(sql, self._user_id)
         return result[0]
 
+    def get_role(self) -> Role:
+        return Role.get_by_id(self._get_role_id())
+
+    def _get_role_id(self) -> int:
+        sql = "SELECT role_id FROM public.user WHERE id=%s;"
+
+        result = Database.execute_and_fetchone(sql, self._user_id)
+        return result[0]
+
+    def check_permission(self, permission: str) -> bool:
+        role = self.get_role()
+        return role.check_permission(permission)
+
+    def raise_without_permission(self, permission: str) -> None:
+        if not self.check_permission(permission):
+            raise AuthorizationError(
+                "You do not have permission to perform this action")
+
     def set_password(self, old: str, new: str) -> None:
         if not self.check_is_password_correct(old):
             raise AuthorizationError("Incorrect password")
@@ -53,6 +70,11 @@ class User:
         sql = "UPDATE public.user SET full_name=%s WHERE id=%s;"
 
         Database.execute_and_commit(sql, full_name, self._user_id)
+
+    def set_role(self, role: Role) -> None:
+        sql = "UPDATE public.user SET role_id=%s WHERE id=%s;"
+
+        Database.execute_and_commit(sql, role.get_id(), self._user_id)
 
     def expire_password(self) -> None:
         sql = "UPDATE public.user SET is_password_expired=TRUE WHERE id=%s;"

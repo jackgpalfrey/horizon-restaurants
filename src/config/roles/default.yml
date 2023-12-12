@@ -1,0 +1,5 @@
+id: 0
+name: Default User
+permissions:
+    - example.basic
+    - example.basic2

@@ -1,18 +1,23 @@
-from src.utils.errors import AlreadyExistsError
+from psycopg2.errors import UniqueViolation
 
+from .Role import Role
+from src.utils.errors import AlreadyExistsError
 from .User import User
 from ..utils.Database import Database
 from .password_utils import hash_password
-from psycopg2.errors import UniqueViolation
 
 
 class UserService:
+    _roles: dict[int, Role] = []
+
     @staticmethod
     def init():
         print("Initializing UserService...")
         admin_user = UserService.get_by_username("admin")
         if admin_user is None:
             UserService.create("admin", "admin", "Administrator")
+
+        Role.load_roles()
 
     @staticmethod
     def create(username: str, password: str, fullname: str) -> User:
