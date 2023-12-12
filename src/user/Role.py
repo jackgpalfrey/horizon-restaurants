@@ -54,16 +54,16 @@ class Role:
         self._add_permission_list(permissions)
 
     def check_permission(self, permission: str) -> bool:
-        # Handle explicit wildcard
-        if self._permissions.get(".*", False):
-            return True
-
         split_permission = permission.split(".")
 
         return self._check_split_permission(split_permission)
 
     def _check_split_permission(self, split_permission: list[str]) -> bool:
         if len(split_permission) == 1:
+            # Handle explict wildcard
+            if self._permissions.get(".*", False):
+                return True
+
             return self._permissions.get(split_permission[0], False)
 
         permission_str = ".".join(split_permission)
@@ -85,4 +85,7 @@ class Role:
             self._add_permission(permission)
 
     def _add_permission(self, permission: str):
-        self._permissions[permission] = True
+        if permission.startswith("~"):
+            self._permissions[permission[1:]] = False
+        else:
+            self._permissions[permission] = True

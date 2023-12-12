@@ -28,6 +28,7 @@ def before_and_after_test():
     Role._load_role_file("tests/roles/test-extends.yml")
     Role._load_role_file("tests/roles/test-implicit-wildcards.yml")
     Role._load_role_file("tests/roles/test-explicit-wildcard.yml")
+    Role._load_role_file("tests/roles/test-negation.yml")
 
     yield
 
@@ -137,7 +138,7 @@ def test_roles_can_be_extended():
     assert user.check_permission("extend.one") == True
 
 
-def test_implicit_wildcard_permission_works():
+def test_implicit_wildcard_permission():
     role = Role.get_by_id(3)
     user.set_role(role)
     assert user.get_role().get_id() == 3
@@ -147,13 +148,22 @@ def test_implicit_wildcard_permission_works():
     assert user.check_permission("expltes.four") == False
 
 
-def test_explicit_wildcard_permission_works():
+def test_explicit_wildcard_permission():
     role = Role.get_by_id(4)
     user.set_role(role)
     assert user.get_role().get_id() == 4
     assert user.check_permission("my.permission") == True
     assert user.check_permission("your.permission") == True
     assert user.check_permission("your.other.permission") == True
+
+
+def test_permission_negation():
+    role = Role.get_by_id(5)
+    user.set_role(role)
+    assert user.get_role().get_id() == 5
+    assert user.check_permission("test.one") == True
+    assert user.check_permission("permission.good") == True
+    assert user.check_permission("permission.bad") == False
 
 
 def test_can_expire_password():
