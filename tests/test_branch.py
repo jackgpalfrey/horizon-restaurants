@@ -9,6 +9,7 @@ from src.utils.Database import Database
 
 branch_name = "Bristol Branch"
 address = "Bristol City"
+# created_branch = BranchService.create("new branch", "aiosfhaf")
 # branch_id = Database.execute_and_fetchone("SELECT id FROM public.branch WHERE name = %s", "new branch")
 
 @pytest.fixture(autouse=True)
@@ -32,3 +33,8 @@ def test_get_branch_by_id():
     created_branch = BranchService.create("new branch", "aiosfhaf")
     got_branch = BranchService.get_by_id(created_branch._branch_id)
     assert created_branch._branch_id == got_branch._branch_id
+
+def test_get_branch_id():
+    created_branch = BranchService.create("new branch", "aiosfhaf")
+    id = created_branch.get_id()
+    assert id == created_branch._branch_id
