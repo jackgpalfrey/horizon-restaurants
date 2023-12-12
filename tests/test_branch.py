@@ -22,3 +22,7 @@ def before_and_after_test():
 def test_create_branch():
     branch = BranchService.create(branch_name, address)
     assert isinstance(branch,Branch)
+
+def test_get_branch_by_name():
+    branch = BranchService.get_by_name(branch_name)
+    assert isinstance(branch,Branch)
