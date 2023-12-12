@@ -23,6 +23,8 @@ def before_and_after_test():
     Database.connect()
     Database.init()
     UserService.init()
+    Role._load_role_file("tests/roles/test-default.yml")
+    Role._load_role_file("tests/roles/test-other.yml")
 
     yield
 
@@ -93,7 +95,7 @@ def test_user_role_defaults_to_zero():
 
 
 def test_user_check_permission():
-    assert user.check_permission("example.basic") == True
+    assert user.check_permission("test.one") == True
     assert user.check_permission("test") == False
 
 
@@ -117,9 +119,11 @@ def test_can_set_full_name():
 
 
 def test_can_set_role():
-    role = Role.get_by_id(99)
+    role = Role.get_by_id(1)
     user.set_role(role)
-    assert user.get_role().get_id() == 99
+    assert user.get_role().get_id() == 1
+    assert user.check_permission("test.one") == False
+    assert user.check_permission("other.one") == True
 
 
 def test_can_expire_password():
