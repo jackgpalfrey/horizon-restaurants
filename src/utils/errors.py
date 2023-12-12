@@ -5,3 +5,11 @@ class HorizonError(Exception):
 
 class AlreadyExistsError(HorizonError):
     pass
+
+
+class AuthenticationError(HorizonError):
+    pass
+
+
+class AuthorizationError(HorizonError):
+    pass

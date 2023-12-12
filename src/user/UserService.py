@@ -1,9 +1,8 @@
-import bcrypt
-
 from src.utils.errors import AlreadyExistsError
 
 from .User import User
-from .utils.Database import Database
+from ..utils.Database import Database
+from .password_utils import hash_password
 from psycopg2.errors import UniqueViolation
 
 
@@ -22,8 +21,8 @@ class UserService:
         VALUES (%s, %s, %s);
         """
 
-        salt = bcrypt.gensalt()
-        hashed_password = bcrypt.hashpw(password.encode("utf-8"), salt)
+        hashed_password = hash_password(password)
+
         try:
             Database.execute_and_commit(
                 sql, username, hashed_password, fullname)
