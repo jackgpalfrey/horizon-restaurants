@@ -10,7 +10,6 @@ PASSWORD_MAX_LEN = 100  # INCLUSIVE
 PASSWORD_REGEX = re.compile(
     r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&])[a-zA-Z\d@$!%*#?&]*$")
 
-
 FULL_NAME_MIN_LEN = 2  # INCLUSIVE
 FULL_NAME_MAX_LEN = 50  # INCLUSIVE
 FULL_NAME_REGEX = re.compile(r"^[a-zA-Z][a-zA-Z ]*[a-zA-Z]$")
@@ -21,15 +20,14 @@ def hash_password(password: str) -> str:
     salt = bcrypt.gensalt()
 
     hash_bytes = bcrypt.hashpw(bytes, salt)
-    hash_str = str(hash_bytes, "utf-8")
-    return hash_str
+    return str(hash_bytes, "utf-8")
 
 
 def check_password(password: str, hashed_password: str) -> bool:
     bytes = password.encode("utf-8")
-    hashed_bytes = hashed_password.encode("utf-8")
+    hash_bytes = hashed_password.encode("utf-8")
 
-    return bcrypt.checkpw(bytes, hashed_bytes)
+    return bcrypt.checkpw(bytes, hash_bytes)
 
 
 def validate_username(username: str) -> bool:
