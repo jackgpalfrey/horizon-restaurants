@@ -25,3 +25,11 @@ def test_create_city():
 def test_get_city_by_name():
     city = CityService.get_by_name(city_name)
     assert isinstance(city, City)
+
+
+def test_get_city_by_id():
+    created_city = CityService.create("Cardiff")
+    got_city = CityService.get_by_id(created_city._city_id)
+    assert type(got_city) == City
+    assert type(got_city._city_id) == str
+    assert created_city._city_id == got_city._city_id
