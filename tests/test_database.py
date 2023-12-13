@@ -61,6 +61,19 @@ def test_can_rollback_transaction():
     assert cur.fetchall() == [('test', 1)]
 
 
+def test_automatically_rollsback_failed_transaction():
+    cur = Database.cursor()
+    sql = "INSERT INTO test_table VALUES ('test', 1);"
+
+    try:
+        Database.execute_and_commit(sql)
+    except Exception:
+        pass
+
+    cur.execute("SELECT * FROM test_table;")
+    assert cur.fetchall() == [('test', 1)]
+
+
 def test_execute_and_commit():
     Database.execute_and_commit(
         "INSERT INTO test_table VALUES ('execommit', 1);")
