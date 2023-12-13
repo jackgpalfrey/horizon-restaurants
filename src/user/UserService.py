@@ -1,5 +1,7 @@
 from psycopg2.errors import UniqueViolation
 
+from .ActiveUser import ActiveUser
+
 from .Role import Role
 from ..utils.errors import AlreadyExistsError, AuthenticationError, InputError
 from .User import User
@@ -78,15 +80,6 @@ class UserService:
         return [User(record[0]) for record in result]
 
     @staticmethod
-    def get_active() -> User:
-        user = UserService._active_user
-
-        if user is None:
-            raise AuthenticationError("No user is logged in")
-
-        return user
-
-    @staticmethod
     def login(username: str, password: str) -> User:
         user = UserService.get_by_username(username)
 
@@ -96,16 +89,12 @@ class UserService:
         if USER_DOSENT_EXIST or INCORRECT_PASSWORD:
             raise AuthenticationError("Username or password incorrect")
 
-        UserService._set_active(user)
+        ActiveUser.set(user)
         return user
 
     @staticmethod
     def logout() -> None:
-        UserService._set_active(None)
-
-    @staticmethod
-    def _set_active(user: User) -> None:
-        UserService._active_user = user
+        ActiveUser.clear()
 
     @staticmethod
     def _validate_create_user(username: str, password: str, full_name: str):
