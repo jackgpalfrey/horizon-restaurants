@@ -5,6 +5,7 @@ from src.utils.Database import Database
 
 city_name = "London"
 store_name = "Manchester"
+new_name = "Bournemouth"
 
 
 @pytest.fixture(autouse=True, scope="module")
@@ -46,3 +47,9 @@ def test_get_city_name():
     created_city = CityService.create("Manchester")
     name = created_city.get_name()
     assert name == store_name
+
+
+def test_set_city_name():
+    created_city = CityService.create("Bath")
+    created_city.set_name(new_name)
+    assert created_city.get_name() == new_name
