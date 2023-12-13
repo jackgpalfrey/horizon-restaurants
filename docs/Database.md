@@ -19,13 +19,13 @@ Used to execute a query on the database. The query is passed as a string and any
 Database.execute("SELECT * FROM users WHERE first_name = %s AND last_name = %s", "Joe", "Mama")
 ```
 
-### Database.execute_and_commit(filename, *vars)
+### Database.execute_and_commit(query, *vars)
 Used to execute a query on the database. The query is passed as a string and any arguments are passed after. The method returns nothing. This method also commits the changes to the database. This is used for queries that change the database.
 
-### Database.execute_and_fetchone(filename, *vars)
+### Database.execute_and_fetchone(query, *vars)
 Used to execute a query on the database. The query is passed as a string and any arguments are passed after. The method returns the first row of the result. This is used for queries that fetch from the database.
 
-### Database.execute_and_fetchall(filename, *vars)
+### Database.execute_and_fetchall(query, *vars)
 Used to execute a query on the database. The query is passed as a string and any arguments are passed after. The method returns all rows of the result. This is used for queries that fetch from the database.
 
 ### Database.cursor()
