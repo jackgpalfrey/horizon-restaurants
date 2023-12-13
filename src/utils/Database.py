@@ -96,6 +96,14 @@ class Database:
         cls.connection.commit()
 
     @classmethod
+    def rollback(cls) -> None:
+        """ 
+        Rolls back transaction
+        Used when an error occurs
+        """
+        cls.connection.rollback()
+
+    @classmethod
     def close(cls) -> None:
         cls.connection.close()
 
