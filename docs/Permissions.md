@@ -36,7 +36,7 @@ To add more create an issue on github.
 - account.update.self - Update your own account - Staff
 - account.update.all - Update any account - Admin
 - account.update-role.all - Update any account's role - Admin
-- account.delete - Delete an account - Admin
+- account.delete.all - Delete an account - Admin
 
 - report.view - View and generate reports - Manager
 

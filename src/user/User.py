@@ -1,3 +1,4 @@
+from .ActiveUser import ActiveUser
 from .Role import Role
 from .utils import hash_password, check_password, validate_full_name, validate_password
 from src.utils.errors import AuthorizationError, InputError
@@ -7,6 +8,9 @@ from ..utils.Database import Database
 class User:
     def __init__(self, user_id: str) -> None:
         self._user_id = user_id
+
+    def get_id(self):
+        return self._user_id
 
     def get_username(self) -> str:
         sql = "SELECT username FROM public.user WHERE id=%s;"
@@ -64,12 +68,24 @@ class User:
     def set_password_dont_validate(self, new: str) -> None:
         sql = "UPDATE public.user SET password=%s, is_password_expired=FALSE WHERE id=%s;"
 
+        active_user = ActiveUser.get()
+        if active_user.get_id() != self._user_id:
+            active_user.raise_without_permission("account.update-password.all")
+        else:
+            ActiveUser.get().raise_without_permission("account.update.self")
+
         hashed_password = hash_password(new)
 
         Database.execute_and_commit(sql, hashed_password, self._user_id)
 
     def set_full_name(self, full_name: str) -> None:
         sql = "UPDATE public.user SET full_name=%s WHERE id=%s;"
+
+        active_user = ActiveUser.get()
+        if active_user.get_id() != self._user_id:
+            active_user.raise_without_permission("account.update-password.all")
+        else:
+            ActiveUser.get().raise_without_permission("account.update.self")
 
         if not validate_full_name(full_name):
             raise InputError("Invalid full name")
@@ -78,6 +94,8 @@ class User:
 
     def set_role(self, role: Role) -> None:
         sql = "UPDATE public.user SET role_id=%s WHERE id=%s;"
+
+        ActiveUser.get().raise_without_permission("account.update-role.all")
 
         Database.execute_and_commit(sql, role.get_id(), self._user_id)
 
@@ -91,5 +109,7 @@ class User:
         sql = """
         DELETE FROM public.user WHERE id=%s;
         """
+
+        ActiveUser.get().raise_without_permission("account.delete.all")
 
         Database.execute_and_commit(sql, self._user_id)

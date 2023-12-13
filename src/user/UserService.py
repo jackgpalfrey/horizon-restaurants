@@ -18,25 +18,28 @@ class UserService:
         print("Initializing UserService...")
         admin_user = UserService.get_by_username("admin")
         if admin_user is None:
-            UserService.create("admin", "admin", "Administrator")
+            admin_user = UserService.create(
+                "admin", "admin", "Administrator", 99)
 
         Role.load_roles()
 
     @staticmethod
-    def create(username: str, password: str, full_name: str) -> User:
+    def create(username: str, password: str, full_name: str, role_id: int = 0) -> User:
         sql = """
-        INSERT INTO public.user (username, password, full_name) 
-        VALUES (%s, %s, %s);
+        INSERT INTO public.user (username, password, full_name, role_id) 
+        VALUES (%s, %s, %s, %s);
         """
 
         if username != "admin":
-            UserService._validate_create_user(username, password, full_name)
+            UserService._validate_create_user(
+                username, password, full_name)
+            ActiveUser.get().raise_without_permission("account.create")
 
         hashed_password = hash_password(password)
 
         try:
             Database.execute_and_commit(
-                sql, username, hashed_password, full_name)
+                sql, username, hashed_password, full_name, role_id)
         except UniqueViolation:
             # FIXME: hotfix-1 fixes this
             Database.connection.rollback()

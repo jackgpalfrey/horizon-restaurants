@@ -1,4 +1,5 @@
 import pytest
+from src.user.ActiveUser import ActiveUser
 from src.user.Role import Role
 
 from src.utils.Database import Database
@@ -8,8 +9,8 @@ from src.utils.errors import AlreadyExistsError, AuthenticationError, Authorizat
 from src.user.utils import validate_full_name, validate_username, validate_password
 
 
-usernames = ["test", "test1"]
-full_names = ["Test User", "Test User Two"]
+usernames = ["test", "test1", "test2"]
+full_names = ["Test User", "Test User Two", "Test User Three"]
 password = "myPassword0!"
 
 
@@ -31,6 +32,8 @@ def before_and_after_test():
     Role._load_role_file("tests/roles/test-explicit-wildcard.yml")
     Role._load_role_file("tests/roles/test-negation.yml")
     Role._load_role_file("tests/roles/test-multi-extends.yml")
+
+    UserService.login("admin", "admin")
 
     yield
 
@@ -269,11 +272,21 @@ def test_login_to_admin_account():
 
 
 def test_get_active_user():
-    user = UserService.get_active()
+    user = ActiveUser.get()
     assert user is not None
     assert isinstance(user, User)
     assert user.get_username() == "admin"
     assert user.get_full_name() == "Administrator"
+
+
+def test_can_delete_user():
+    user = UserService.create(usernames[2], password, full_names[2])
+
+    user = UserService.get_by_username(usernames[2])
+    user.delete()
+
+    user = UserService.get_by_username(usernames[2])
+    assert user is None
 
 
 def test_logout():
@@ -281,12 +294,25 @@ def test_logout():
     assert user is None
 
     with pytest.raises(AuthenticationError):
-        UserService.get_active()
+        ActiveUser.get()
 
 
-def test_can_delete_user():
-    user = UserService.get_by_username(usernames[0])
-    user.delete()
+def test_cant_update_when_logged_out():
+    with pytest.raises(AuthenticationError):
+        user.set_password(newest_password, new_password)
 
-    user = UserService.get_by_username(usernames[0])
-    assert user is None
+    with pytest.raises(AuthenticationError):
+        user.set_full_name(new_full_name)
+
+
+def test_cant_update_any_when_non_admin_role():
+    UserService.login(usernames[1], password)
+
+    with pytest.raises(AuthorizationError):
+        user.set_password(new_password, password)
+
+    with pytest.raises(AuthorizationError):
+        user.set_full_name(full_names[0])
+
+    with pytest.raises(AuthorizationError):
+        user.set_role(Role.get_by_id(1))
