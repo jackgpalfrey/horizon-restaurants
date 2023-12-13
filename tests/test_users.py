@@ -4,7 +4,7 @@ from src.user.Role import Role
 from src.utils.Database import Database
 from src.user.UserService import UserService
 from src.user.User import User
-from src.utils.errors import AlreadyExistsError, AuthorizationError
+from src.utils.errors import AlreadyExistsError, AuthenticationError, AuthorizationError
 
 
 username = "myTestUser"
@@ -196,6 +196,30 @@ def test_get_by_id():
 def test_get_all():
     users = UserService.get_all()
     assert len(users) == 4
+
+
+def test_login_to_admin_account():
+    user = UserService.login("admin", "admin")
+    assert user is not None
+    assert isinstance(user, User)
+    assert user.get_username() == "admin"
+    assert user.get_full_name() == "Administrator"
+
+
+def test_get_active_user():
+    user = UserService.get_active()
+    assert user is not None
+    assert isinstance(user, User)
+    assert user.get_username() == "admin"
+    assert user.get_full_name() == "Administrator"
+
+
+def test_logout():
+    user = UserService.logout()
+    assert user is None
+
+    with pytest.raises(AuthenticationError):
+        UserService.get_active()
 
 
 def test_can_delete_user():

@@ -9,6 +9,7 @@ from .password_utils import hash_password
 
 class UserService:
     _roles: dict[int, Role] = []
+    _active_user: User | None = None
 
     @staticmethod
     def init():
@@ -72,3 +73,33 @@ class UserService:
 
         result = Database.execute_and_fetchall(sql)
         return [User(record[0]) for record in result]
+
+    @staticmethod
+    def get_active() -> User:
+        user = UserService._active_user
+
+        if user is None:
+            raise AuthenticationError("No user is logged in")
+
+        return user
+
+    @staticmethod
+    def login(username: str, password: str) -> User:
+        user = UserService.get_by_username(username)
+
+        USER_DOSENT_EXIST = user is None
+        INCORRECT_PASSWORD = not user.check_is_password_correct(password)
+
+        if USER_DOSENT_EXIST or INCORRECT_PASSWORD:
+            raise AuthenticationError("Username or password incorrect")
+
+        UserService._set_active(user)
+        return user
+
+    @staticmethod
+    def logout() -> None:
+        UserService._set_active(None)
+
+    @staticmethod
+    def _set_active(user: User) -> None:
+        UserService._active_user = user
