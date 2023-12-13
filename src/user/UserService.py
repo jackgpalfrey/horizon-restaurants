@@ -1,10 +1,10 @@
 from psycopg2.errors import UniqueViolation
 
 from .Role import Role
-from ..utils.errors import AlreadyExistsError, AuthenticationError
+from ..utils.errors import AlreadyExistsError, AuthenticationError, InputError
 from .User import User
 from ..utils.Database import Database
-from .password_utils import hash_password
+from .utils import hash_password, validate_username, validate_password, validate_full_name
 
 
 class UserService:
@@ -21,19 +21,22 @@ class UserService:
         Role.load_roles()
 
     @staticmethod
-    def create(username: str, password: str, fullname: str) -> User:
+    def create(username: str, password: str, full_name: str) -> User:
         sql = """
         INSERT INTO public.user (username, password, full_name) 
         VALUES (%s, %s, %s);
         """
 
+        if username != "admin":
+            UserService._validate_create_user(username, password, full_name)
+
         hashed_password = hash_password(password)
 
         try:
             Database.execute_and_commit(
-                sql, username, hashed_password, fullname)
+                sql, username, hashed_password, full_name)
         except UniqueViolation:
-            # FIXME: Should be replaced with Database.rollback() when implemented
+            # FIXME: hotfix-1 fixes this
             Database.connection.rollback()
             raise AlreadyExistsError(f"User {username} already exists")
 
@@ -103,3 +106,17 @@ class UserService:
     @staticmethod
     def _set_active(user: User) -> None:
         UserService._active_user = user
+
+    @staticmethod
+    def _validate_create_user(username: str, password: str, full_name: str):
+        if not validate_username(username):
+            raise InputError(
+                "Invalid username. Must be between 3 and 15 characters, start with a letter, and only contain letters, numbers, and hyphens")
+
+        if not validate_password(password):
+            raise InputError(
+                "Invalid password. Must be between 8 and 100 characters, contain at least one uppercase letter, one lowercase letter, one number, and one special character")
+
+        if not validate_full_name(full_name):
+            raise InputError(
+                "Invalid full name. Must be between 2 and 50 characters, start and end with a letter, and only contain letters and spaces")

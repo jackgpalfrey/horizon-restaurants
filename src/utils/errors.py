@@ -13,3 +13,7 @@ class AuthenticationError(HorizonError):
 
 class AuthorizationError(HorizonError):
     pass
+
+
+class InputError(HorizonError):
+    pass
