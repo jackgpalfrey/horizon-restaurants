@@ -46,7 +46,7 @@ def test_cannot_create_duplicate_branch():
     with pytest.raises(Exception):
         BranchService.create(branch_name, address)
 
-    Database.connection.rollback()
+    # Database.connection.rollback()
 
 
 def test_get_branch_id():
