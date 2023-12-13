@@ -53,8 +53,7 @@ class Database:
         Execute given query
         """
 
-        cur = cls.cursor()
-        cur.execute(query, vars)
+        cls.execute(query, *vars)
         cls.commit()
 
     @classmethod
@@ -63,8 +62,7 @@ class Database:
         Execute given query and return one row
         """
 
-        cur = cls.cursor()
-        cur.execute(query, vars)
+        cur = cls.execute(query, *vars)
         return cur.fetchone()
 
     @classmethod
@@ -73,8 +71,7 @@ class Database:
         Execute given query and return all rows
         """
 
-        cur = cls.cursor()
-        cur.execute(query, vars)
+        cur = cls.execute(query, *vars)
         return cur.fetchall()
 
     @classmethod
@@ -84,7 +81,12 @@ class Database:
         """
 
         cur = cls.cursor()
-        cur.execute(query, vars)
+        try:
+            cur.execute(query, vars)
+        except psycopg2.Error as e:
+            cls.rollback()
+            raise e
+
         return cur
 
     @classmethod
@@ -94,6 +96,14 @@ class Database:
     @classmethod
     def commit(cls) -> None:
         cls.connection.commit()
+
+    @classmethod
+    def rollback(cls) -> None:
+        """ 
+        Rolls back transaction
+        Used when an error occurs
+        """
+        cls.connection.rollback()
 
     @classmethod
     def close(cls) -> None:
