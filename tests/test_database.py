@@ -32,7 +32,7 @@ def test_can_create_table():
     sql = """
         CREATE TABLE test_table
         (
-            name text,
+            name text UNIQUE,
             age integer,
             PRIMARY KEY (name)
         );
