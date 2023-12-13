@@ -1,12 +1,12 @@
 from psycopg2.errors import UniqueViolation
 
-from .ActiveUser import ActiveUser
-
-from .Role import Role
 from ..utils.errors import AlreadyExistsError, AuthenticationError, InputError
-from .User import User
 from ..utils.Database import Database
+
 from .utils import hash_password, validate_username, validate_password, validate_full_name
+from .Role import Role
+from .User import User
+from .ActiveUser import ActiveUser
 
 
 class UserService:
@@ -15,24 +15,42 @@ class UserService:
 
     @staticmethod
     def init():
+        """
+        Creates the admin user if it doesn't exist, and loads all roles from src/config/roles/
+        """
+
         print("Initializing UserService...")
+
         admin_user = UserService.get_by_username("admin")
         if admin_user is None:
-            admin_user = UserService.create(
-                "admin", "admin", "Administrator", 99)
+            UserService.create("admin", "admin", "Administrator", 99)
 
         Role.load_roles()
 
     @staticmethod
     def create(username: str, password: str, full_name: str, role_id: int = 0) -> User:
+        """
+        Create a new user with the given username, password, full name, and optional role id
+
+        :param username: The username of the new user (see ./utils.py for validation rules)
+        :param password: The password of the new user (see ./utils.py for validation rules)
+        :param full_name: The full name of the new user (see ./utils.py for validation rules)
+        :param role_id: The role id of the new user (defaults to 0)
+
+        :raises AlreadyExistsError: If a user with the given username already exists
+        :raises InputError: If any of the parameters are invalid
+        :raises PermissionError: If the current user does not have permission to create users
+
+        :returns: The newly created user
+        """
+
         sql = """
         INSERT INTO public.user (username, password, full_name, role_id) 
         VALUES (%s, %s, %s, %s);
         """
 
         if username != "admin":
-            UserService._validate_create_user(
-                username, password, full_name)
+            UserService._validate_create_user(username, password, full_name)
             ActiveUser.get().raise_without_permission("account.create")
 
         hashed_password = hash_password(password)
@@ -41,19 +59,19 @@ class UserService:
             Database.execute_and_commit(
                 sql, username, hashed_password, full_name, role_id)
         except UniqueViolation:
-            # FIXME: hotfix-1 fixes this
-            Database.connection.rollback()
             raise AlreadyExistsError(f"User {username} already exists")
 
         return UserService.get_by_username(username)
 
     @staticmethod
     def get_by_username(username: str) -> User | None:
-        sql = """
-        SELECT id FROM public.user WHERE username=%s;
+        """
+        Gets a user with a given username, returns None if no user exists with that username
         """
 
+        sql = "SELECT id FROM public.user WHERE username=%s"
         result = Database.execute_and_fetchone(sql, username)
+
         if result is None:
             return None
 
@@ -62,11 +80,13 @@ class UserService:
 
     @staticmethod
     def get_by_id(username: str) -> User | None:
-        sql = """
-        SELECT id FROM public.user WHERE id=%s;
+        """
+        Gets a user with a given id, returns None if no user exists with that id
         """
 
+        sql = "SELECT id FROM public.user WHERE id=%s;"
         result = Database.execute_and_fetchone(sql, username)
+
         if result is None:
             return None
 
@@ -75,15 +95,23 @@ class UserService:
 
     @staticmethod
     def get_all() -> list[User]:
-        sql = """
-        SELECT id FROM public.user;
+        """
+        Get a list of all users as User classes. Returns an empty list if no users exist
         """
 
+        sql = "SELECT id FROM public.user;"
         result = Database.execute_and_fetchall(sql)
+
         return [User(record[0]) for record in result]
 
     @staticmethod
     def login(username: str, password: str) -> User:
+        """
+        Validates credentials and then sets the user as the active user. 
+
+        :raises AuthenticationError: If the username or password is incorrect
+        """
+
         user = UserService.get_by_username(username)
 
         USER_DOSENT_EXIST = user is None
@@ -97,10 +125,19 @@ class UserService:
 
     @staticmethod
     def logout() -> None:
+        """
+        Sets the active user to None
+        """
         ActiveUser.clear()
 
     @staticmethod
     def _validate_create_user(username: str, password: str, full_name: str):
+        """
+        Checks the parameters for UserService.create() to make sure they are valid based on the validation rules in ./utils.py
+
+        :raises InputError: If any of the parameters are invalid
+        """
+
         if not validate_username(username):
             raise InputError(
                 "Invalid username. Must be between 3 and 15 characters, start with a letter, and only contain letters, numbers, and hyphens")
