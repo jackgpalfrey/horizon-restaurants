@@ -31,18 +31,6 @@ def check_password(password: str, hashed_password: str) -> bool:
 
 
 def validate_username(username: str) -> bool:
-    MIN_LENGTH = 3
-    MAX_LENGTH = 15
-    REGEX = re.compile(r"^[a-z][a-z0-9-]*$")
-
-    ABOVE_MIN = MIN_LENGTH <= len(username)
-    BELOW_MAX = len(username) <= MAX_LENGTH
-    CORRECT_FORMAT = REGEX.match(username) is not None
-
-    return ABOVE_MIN and BELOW_MAX and CORRECT_FORMAT
-
-
-def validate_username(username: str) -> bool:
     ABOVE_MIN = len(username) >= USERNAME_MIN_LEN
     BELOW_MAX = len(username) <= USERNAME_MAX_LEN
     CORRECT_FORMAT = USERNAME_REGEX.match(username) is not None
