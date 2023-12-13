@@ -27,3 +27,11 @@ class BranchService:
 
         if result is not None:
             return Branch(result[0])
+
+    @staticmethod
+    def get_all() -> Branch:
+        result = Database.execute_and_fetchall(
+            "SELECT id FROM public.branch")
+
+        if result is not None:
+            return [Branch(record[0]) for record in result]

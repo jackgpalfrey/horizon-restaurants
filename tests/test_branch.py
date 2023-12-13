@@ -46,6 +46,12 @@ def test_get_branch_by_id():
     assert created_branch._branch_id == got_branch._branch_id
 
 
+def test_get_all_branches():
+    branch = BranchService.get_all()
+    assert len(branch) == 2
+    assert type(branch) == list
+
+
 def test_cannot_create_duplicate_branch():
     with pytest.raises(Exception):
         BranchService.create(branch_name, branch_address)
