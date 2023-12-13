@@ -4,16 +4,17 @@ from src.user.Role import Role
 from src.utils.Database import Database
 from src.user.UserService import UserService
 from src.user.User import User
-from src.utils.errors import AlreadyExistsError, AuthenticationError, AuthorizationError
+from src.utils.errors import AlreadyExistsError, AuthenticationError, AuthorizationError, InputError
+from src.user.utils import validate_full_name, validate_username, validate_password
 
 
-username = "myTestUser"
-password = "password"
-full_name = "My Test User"
+usernames = ["test", "test1"]
+full_names = ["Test User", "Test User Two"]
+password = "myPassword0!"
 
-new_password = "newpassword"
-newest_password = "evennewerpassword"
 
+new_password = "newPassw0rd!"
+newest_password = "evenNewerPassw0rd!"
 new_full_name = "New Full Name"
 user: User = None
 
@@ -36,47 +37,98 @@ def before_and_after_test():
     Database.close()
 
 
+def test_username_validation():
+    assert validate_username("test") == True
+    assert validate_username("test123") == True
+    assert validate_username("test-123") == True
+    assert validate_username("Test") == False
+    assert validate_username("123test") == False
+    assert validate_username("test_123") == False
+    assert validate_username("t") == False
+    assert validate_username("te") == True
+    assert validate_username("strlongerthan15c") == False
+    assert validate_username("strequalto15chr") == True
+
+
+def test_password_validation():
+    assert validate_password("mypassword") == False
+    assert validate_password("myPassword") == False
+    assert validate_password("myPassword0") == False
+    assert validate_password("myPassword0!") == True
+    assert validate_password("myPas0!") == False
+    assert validate_password("myPass0!") == True
+    long_pass = "Mysuperduperlongpasswordthatshouldnotbe@llowedbecauseitslongerthanthe100characterslimitbyjustasingle!"
+    assert validate_password(long_pass) == False
+    assert validate_password(long_pass[:-1]) == True
+
+
+def test_full_name_validation():
+    assert validate_full_name("Test User") == True
+    assert validate_full_name("First Middle Last") == True
+    assert validate_full_name("First Middle Last ") == False
+    assert validate_full_name(" First Middle Last") == False
+    assert validate_full_name("First Middle  Last") == False
+    assert validate_full_name("First Middle Last1") == False
+    assert validate_full_name("First Middle Last!") == False
+
+
 def test_can_create_user():
-    user = UserService.create(username, password, full_name)
+    user = UserService.create(usernames[0], password, full_names[0])
     assert user is not None
     assert isinstance(user, User)
 
 
 def test_can_get_user():
-    user = UserService.get_by_username(username)
+    user = UserService.get_by_username(usernames[0])
     assert user is not None
     assert isinstance(user, User)
+    user.get_full_name() == full_names[0]
 
 
 def test_cant_create_duplicate_username():
     with pytest.raises(AlreadyExistsError):
-        UserService.create(username, "test", "Test User")
+        UserService.create(usernames[0], password, full_names[1])
 
 
 def test_can_create_duplicate_password_and_full_name():
-    user = UserService.create("test", password, full_name)
+    user = UserService.create(usernames[1], password, full_names[0])
     assert user is not None
     assert isinstance(user, User)
 
 
 def test_can_get_user_by_username():
     global user
-    user = UserService.get_by_username(username)
+    user = UserService.get_by_username(usernames[0])
     assert user is not None
     assert isinstance(user, User)
 
 
 def test_can_get_users_username():
-    assert user.get_username() == username
+    assert user.get_username() == usernames[0]
 
 
 def test_can_get_users_full_name():
-    assert user.get_full_name() == full_name
+    assert user.get_full_name() == full_names[0]
+
+
+def test_cant_create_invalid_username():
+    with pytest.raises(InputError):
+        UserService.create("invalid!", password, full_names[0])
+
+
+def test_cant_create_invalid_password():
+    with pytest.raises(InputError):
+        UserService.create("invalid", "inval", full_names[0])
+
+
+def test_cant_create_invalid_full_name():
+    with pytest.raises(InputError):
+        UserService.create("invalid", password, "invalid!")
 
 
 def test_check_is_password_correct():
     assert user.check_is_password_correct(password) == True
-    assert user.check_is_password_correct("not the password") == False
+    assert user.check_is_password_correct("notThePassw0rd!") == False
 
 
 def test_password_is_expired_after_creation():
@@ -90,7 +142,7 @@ def test_can_set_password_without_validation():
 
 def test_cant_set_password_with_incorrect_old_password():
     with pytest.raises(AuthorizationError):
-        user.set_password("not the password", newest_password)
+        user.set_password("inc0rrectPassw0rd!", newest_password)
 
 
 def test_user_role_defaults_to_zero():
@@ -109,6 +161,11 @@ def test_raise_without_permission():
         user.raise_without_permission("test")
 
 
+def test_cant_set_password_with_invalid_new_password():
+    with pytest.raises(InputError):
+        user.set_password(new_password, "invalid")
+
+
 def test_can_set_password_with_correct_old_password():
     user.set_password(new_password, newest_password)
     assert user.check_is_password_correct(newest_password) == True
@@ -121,6 +178,11 @@ def test_password_unexpired_after_setting_new_password():
 def test_can_set_full_name():
     user.set_full_name(new_full_name)
     assert user.get_full_name() == new_full_name
+
+
+def test_cant_set_invalid_full_name():
+    with pytest.raises(InputError):
+        user.set_full_name("invalid!")
 
 
 def test_can_set_role():
@@ -185,7 +247,7 @@ def test_can_expire_password():
 
 
 def test_get_by_id():
-    created_user = UserService.create("idtest", "password", "ID Test")
+    created_user = UserService.create("idtest", password, "ID Test")
     user = UserService.get_by_id(created_user._user_id)
     assert isinstance(user, User)
     assert user._user_id == created_user._user_id
@@ -223,8 +285,8 @@ def test_logout():
 
 
 def test_can_delete_user():
-    user = UserService.get_by_username("test")
+    user = UserService.get_by_username(usernames[0])
     user.delete()
 
-    user = UserService.get_by_username("test")
+    user = UserService.get_by_username(usernames[0])
     assert user is None

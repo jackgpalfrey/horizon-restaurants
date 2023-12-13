@@ -1,6 +1,6 @@
 from .Role import Role
-from .password_utils import hash_password, check_password
-from src.utils.errors import AuthorizationError
+from .utils import hash_password, check_password, validate_full_name, validate_password
+from src.utils.errors import AuthorizationError, InputError
 from ..utils.Database import Database
 
 
@@ -56,7 +56,9 @@ class User:
         if not self.check_is_password_correct(old):
             raise AuthorizationError("Incorrect password")
 
-        # TODO: Add password validation logic
+        if not validate_password(new):
+            raise InputError("Invalid password")
+
         self.set_password_dont_validate(new)
 
     def set_password_dont_validate(self, new: str) -> None:
@@ -68,6 +70,9 @@ class User:
 
     def set_full_name(self, full_name: str) -> None:
         sql = "UPDATE public.user SET full_name=%s WHERE id=%s;"
+
+        if not validate_full_name(full_name):
+            raise InputError("Invalid full name")
 
         Database.execute_and_commit(sql, full_name, self._user_id)
 
