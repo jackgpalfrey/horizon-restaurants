@@ -20,3 +20,8 @@ def before_and_after_test():
 def test_create_city():
     city = CityService.create(city_name)
     assert isinstance(city, City)
+
+
+def test_get_city_by_name():
+    city = CityService.get_by_name(city_name)
+    assert isinstance(city, City)

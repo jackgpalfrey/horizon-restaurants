@@ -10,3 +10,11 @@ class CityService:
         city_id = Database.execute_and_fetchone(
             "SELECT id FROM public.city WHERE name = %s", city_name)
         return City(city_id)
+
+    @staticmethod
+    def get_by_name(city_name: str) -> City:
+        result = Database.execute_and_fetchone(
+            "SELECT id FROM public.city WHERE name = %s", city_name)
+
+        if result is not None:
+            return City(result[0])
