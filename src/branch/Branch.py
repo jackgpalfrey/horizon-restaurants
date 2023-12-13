@@ -20,3 +20,8 @@ class Branch:
         address, = Database.execute_and_fetchone(
             "SELECT address from public.branch WHERE id = %s", self._branch_id)
         return address
+
+    def set_branch_name(self, branch_name: str) -> None:
+        branch_id = self.get_id()
+        Database.execute_and_commit(
+            "UPDATE public.branch SET name = %s WHERE id = %s", branch_name, branch_id)
