@@ -12,6 +12,7 @@ branch_address = "Bristol City"
 store_name = "branch3"
 store_address = "aiosfhaf"
 new_name = "Manchester Branch"
+new_address = "Manchester City"
 # created_branch = BranchService.create("new branch", "aiosfhaf")
 # branch_id = Database.execute_and_fetchone("SELECT id FROM public.branch WHERE name = %s", "new branch")
 
@@ -74,3 +75,9 @@ def test_set_branch_name():
     created_branch = BranchService.create("branch5", "aiosfhaf")
     created_branch.set_branch_name(new_name)
     assert created_branch.get_name() == new_name
+
+
+def test_set_branch_address():
+    created_branch = BranchService.create("branch6", "aiosfhaf")
+    created_branch.set_address(new_address)
+    assert created_branch.get_address() == new_address
