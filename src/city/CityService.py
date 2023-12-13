@@ -26,3 +26,11 @@ class CityService:
 
         if result is not None:
             return City(result[0])
+
+    @staticmethod
+    def get_all() -> City:
+        result = Database.execute_and_fetchall(
+            "SELECT id FROM public.city")
+
+        if result is not None:
+            return [City(record[0]) for record in result]

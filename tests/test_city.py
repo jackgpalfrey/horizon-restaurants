@@ -33,3 +33,9 @@ def test_get_city_by_id():
     assert type(got_city) == City
     assert type(got_city._city_id) == str
     assert created_city._city_id == got_city._city_id
+
+
+def test_get_all_cities():
+    city = CityService.get_all()
+    assert len(city) == 2
+    assert type(city) == list
