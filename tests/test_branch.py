@@ -8,6 +8,7 @@ from src.utils.Database import Database
 # by the tests i mean the tests you wrote yourself starting from test_create_branch function.. and so on.
 
 branch_name = "Bristol Branch"
+store_name = "branch3"
 address = "Bristol City"
 # created_branch = BranchService.create("new branch", "aiosfhaf")
 # branch_id = Database.execute_and_fetchone("SELECT id FROM public.branch WHERE name = %s", "new branch")
@@ -54,5 +55,8 @@ def test_get_branch_id():
     id = created_branch.get_id()
     assert id == created_branch._branch_id
 
-# def test_get_branch_name():
-#     created_branch = BranchService.create("new branch", "aiosfhaf")
+
+def test_get_branch_name():
+    created_branch = BranchService.create("branch3", "aiosfhaf")
+    name = created_branch.get_name()
+    assert name == store_name
