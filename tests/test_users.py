@@ -18,7 +18,7 @@ new_full_name = "New Full Name"
 user: User = None
 
 
-@pytest.fixture(autouse=True)
+@pytest.fixture(autouse=True, scope="module")
 def before_and_after_test():
     Database.connect()
     Database.init()
@@ -182,6 +182,20 @@ def test_multiple_extends():
 def test_can_expire_password():
     user.expire_password()
     assert user.check_has_password_expired() == True
+
+
+def test_get_by_id():
+    created_user = UserService.create("idtest", "password", "ID Test")
+    user = UserService.get_by_id(created_user._user_id)
+    assert isinstance(user, User)
+    assert user._user_id == created_user._user_id
+    assert user.get_username() == "idtest"
+    assert user.get_full_name() == "ID Test"
+
+
+def test_get_all():
+    users = UserService.get_all()
+    assert len(users) == 4
 
 
 def test_can_delete_user():

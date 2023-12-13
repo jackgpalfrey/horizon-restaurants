@@ -1,7 +1,7 @@
 from psycopg2.errors import UniqueViolation
 
 from .Role import Role
-from src.utils.errors import AlreadyExistsError
+from ..utils.errors import AlreadyExistsError, AuthenticationError
 from .User import User
 from ..utils.Database import Database
 from .password_utils import hash_password
@@ -32,6 +32,8 @@ class UserService:
             Database.execute_and_commit(
                 sql, username, hashed_password, fullname)
         except UniqueViolation:
+            # FIXME: Should be replaced with Database.rollback() when implemented
+            Database.connection.rollback()
             raise AlreadyExistsError(f"User {username} already exists")
 
         return UserService.get_by_username(username)
@@ -39,7 +41,7 @@ class UserService:
     @staticmethod
     def get_by_username(username: str) -> User | None:
         sql = """
-        SELECT * FROM public.user WHERE username=%s;
+        SELECT id FROM public.user WHERE username=%s;
         """
 
         result = Database.execute_and_fetchone(sql, username)
@@ -48,3 +50,25 @@ class UserService:
 
         id = result[0]
         return User(id)
+
+    @staticmethod
+    def get_by_id(username: str) -> User | None:
+        sql = """
+        SELECT id FROM public.user WHERE id=%s;
+        """
+
+        result = Database.execute_and_fetchone(sql, username)
+        if result is None:
+            return None
+
+        id = result[0]
+        return User(id)
+
+    @staticmethod
+    def get_all() -> list[User]:
+        sql = """
+        SELECT id FROM public.user;
+        """
+
+        result = Database.execute_and_fetchall(sql)
+        return [User(record[0]) for record in result]
