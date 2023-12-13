@@ -1,5 +1,3 @@
-import psycopg2
-
 from src.utils.Database import Database
 
 
@@ -26,7 +24,7 @@ def test_can_create_table():
     sql = """
         CREATE TABLE test_table
         (
-            name text,
+            name text UNIQUE,
             age integer,
             PRIMARY KEY (name)
         );
@@ -42,6 +40,28 @@ def test_can_insert_into_table():
     sql = "INSERT INTO test_table VALUES ('test', 1);"
     cur.execute(sql)
     Database.commit()
+    cur.execute("SELECT * FROM test_table;")
+    assert cur.fetchall() == [('test', 1)]
+
+
+def test_can_rollback_transaction():
+    cur = Database.cursor()
+    sql = "INSERT INTO test_table VALUES ('rollback', 1);"
+    cur.execute(sql)
+    Database.rollback()
+    cur.execute("SELECT * FROM test_table;")
+    assert cur.fetchall() == [('test', 1)]
+
+
+def test_automatically_rollsback_failed_transaction():
+    cur = Database.cursor()
+    sql = "INSERT INTO test_table VALUES ('test', 1);"
+
+    try:
+        Database.execute_and_commit(sql)
+    except Exception:
+        pass
+
     cur.execute("SELECT * FROM test_table;")
     assert cur.fetchall() == [('test', 1)]
 
