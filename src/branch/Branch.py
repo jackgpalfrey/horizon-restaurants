@@ -15,3 +15,8 @@ class Branch:
         name, = Database.execute_and_fetchone(
             "SELECT name FROM public.branch WHERE id = %s", self._branch_id)
         return name
+
+    def get_address(self) -> str:
+        address, = Database.execute_and_fetchone(
+            "SELECT address from public.branch WHERE id = %s", self._branch_id)
+        return address
