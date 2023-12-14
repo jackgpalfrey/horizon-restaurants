@@ -38,3 +38,9 @@ class Branch:
             "SELECT city_id FROM public.branch WHERE id = %s", self._branch_id)
         city = CityService.get_by_id(city_id)
         return city
+
+    def set_city(self, city: City) -> None:
+        branch_id = self.get_id()
+        city_id = city.get_id()
+        Database.execute_and_commit(
+            "UPDATE public.branch SET city_id = %s WHERE id = %s", city_id, branch_id)
