@@ -1,5 +1,7 @@
 # import ..utils.Database from database
 from ..utils.Database import Database
+from ..city.City import City
+from ..city.CityService import CityService
 
 
 class Branch:
@@ -30,3 +32,9 @@ class Branch:
         branch_id = self.get_id()
         Database.execute_and_commit(
             "UPDATE public.branch SET address = %s WHERE id = %s", branch_address, branch_id)
+
+    def get_city(self) -> City:
+        city_id, = Database.execute_and_fetchone(
+            "SELECT city_id FROM public.branch WHERE id = %s", self._branch_id)
+        city = CityService.get_by_id(city_id)
+        return city

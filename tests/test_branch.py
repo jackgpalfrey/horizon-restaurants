@@ -107,3 +107,12 @@ def test_get_by_city():
     city_id = city.get_id()
 
     assert city_id == id
+
+
+def test_get_city():
+    city = CityService.get_by_name("city1")
+    created_branch = BranchService.create("branch7", "aiosfhaf", city)
+    branch_city = created_branch.get_city()
+    city_id = city.get_id()
+    branch_city_id = branch_city.get_id()
+    assert branch_city_id == city_id
