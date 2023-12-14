@@ -17,7 +17,7 @@ The permission system supports implicit wildcards. This means that if a role has
 ## Permission Negation
 
 By prefacing a permission with a `~` it will negate the permission. This means that if a role has the `order` permission but not the `~order.create` permission it will not have the `order.create` permission but will have everything else under `order.*` This is useful for giving a role all permissions for a specific resource except for a few. Note that negation overrides the explict and implicit wildcards. See Permission Precedence for more information.
-account 
+
 ## Permission Precedence
 
 The permission system handles precedence in order of specificity. E.g `account.update.self` will override `account.update` which will override `account` etc. Explicit wildcards have the lowest precedence. 
