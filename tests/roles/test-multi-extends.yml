@@ -1,0 +1,5 @@
+id: 6
+name: Multi Extends Test User
+extends: [0, 1]
+permissions:
+    - permission.cool

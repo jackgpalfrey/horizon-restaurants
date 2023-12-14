@@ -1,0 +1,9 @@
+id: 2
+name: Kitchen Staff
+extends: 0
+permissions:
+    - inventory.view
+    - inventory.create
+    - inventory.update
+    - inventory.delete
+    - order.update.status
