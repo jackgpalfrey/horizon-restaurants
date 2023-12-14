@@ -1,12 +1,19 @@
 from ..utils.Database import Database
 from ..branch.Branch import Branch
+# from ..city.CityService import CityService
+from ..city.City import City
 
 
 class BranchService:
     @staticmethod
-    def create(branch_name: str, address: str) -> Branch:
+    def create(branch_name: str, address: str, city: City) -> Branch:  # "city_name: str"
+        # id = CityService.get_by_name(city_name)
+        print("!!!")
+        print(city)
+        print("!!!")
+        id = city.get_id()
         Database.execute_and_commit(
-            "INSERT INTO public.branch (name, address) VALUES(%s, %s)", branch_name, address)
+            "INSERT INTO public.branch (name, address, city_id) VALUES(%s, %s, %s)", branch_name, address, id)
 
         # branch_id = Database.execute_and_fetchone("SELECT id FROM public.branch WHERE name = %s", branch_name)
         # return Branch(branch_id)
