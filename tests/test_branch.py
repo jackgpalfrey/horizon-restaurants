@@ -96,3 +96,14 @@ def test_set_branch_address():
     created_branch = BranchService.create("branch6", "aiosfhaf", city)
     created_branch.set_address(new_address)
     assert created_branch.get_address() == new_address
+
+
+def test_get_by_city():
+    city = CityService.get_by_name("city4")
+    got_branch = BranchService.get_by_city(city)
+    query = Database.execute_and_fetchone(
+        "SELECT city_id FROM branch WHERE id = %s", got_branch._branch_id)
+    id = query[0]
+    city_id = city.get_id()
+
+    assert city_id == id

@@ -8,9 +8,6 @@ class BranchService:
     @staticmethod
     def create(branch_name: str, address: str, city: City) -> Branch:  # "city_name: str"
         # id = CityService.get_by_name(city_name)
-        print("!!!")
-        print(city)
-        print("!!!")
         id = city.get_id()
         Database.execute_and_commit(
             "INSERT INTO public.branch (name, address, city_id) VALUES(%s, %s, %s)", branch_name, address, id)
@@ -42,3 +39,12 @@ class BranchService:
 
         if result is not None:
             return [Branch(record[0]) for record in result]
+
+    @staticmethod
+    def get_by_city(city: City) -> Branch:
+        id = city.get_id()
+        result = Database.execute_and_fetchone(
+            "SELECT id FROM public.branch WHERE city_id = %s", id)
+
+        if result is not None:
+            return Branch(result[0])
