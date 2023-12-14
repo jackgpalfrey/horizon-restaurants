@@ -21,10 +21,11 @@ class UserService:
 
         print("Initializing UserService...")
 
-        admin_user = UserService.get_by_username("admin")
+        admin_user = UserService.get_by_username("admin", dont_auth=True)
         if admin_user is None:
             UserService.create("admin", "admin", "Administrator", 99)
 
+        ActiveUser.clear()  # Makes sure the active user is None
         Role.load_roles()
 
     @staticmethod
@@ -61,13 +62,20 @@ class UserService:
         except UniqueViolation:
             raise AlreadyExistsError(f"User {username} already exists")
 
-        return UserService.get_by_username(username)
+        return UserService.get_by_username(username, dont_auth=True)
 
     @staticmethod
-    def get_by_username(username: str) -> User | None:
+    def get_by_username(username: str, dont_auth: bool = False) -> User | None:
         """
         Gets a user with a given username, returns None if no user exists with that username
+
+        :raises PermissionError: If the current user does not have permission to view the user
         """
+
+        if not dont_auth:
+            IS_ACTIVE_USER = ActiveUser.get().get_username() == username
+            permission = "account.view.self" if IS_ACTIVE_USER else "account.view.all"
+            ActiveUser.get().raise_without_permission(permission)
 
         sql = "SELECT id FROM public.user WHERE username=%s"
         result = Database.execute_and_fetchone(sql, username)
@@ -79,13 +87,20 @@ class UserService:
         return User(id)
 
     @staticmethod
-    def get_by_id(username: str) -> User | None:
+    def get_by_id(id: str, dont_auth: bool = False) -> User | None:
         """
         Gets a user with a given id, returns None if no user exists with that id
+
+        :raises PermissionError: If the current user does not have permission to view the user
         """
 
+        if not dont_auth:
+            IS_ACTIVE_USER = ActiveUser.get().get_id() == id
+            permission = "account.view.self" if IS_ACTIVE_USER else "account.view.all"
+            ActiveUser.get().raise_without_permission(permission)
+
         sql = "SELECT id FROM public.user WHERE id=%s;"
-        result = Database.execute_and_fetchone(sql, username)
+        result = Database.execute_and_fetchone(sql, id)
 
         if result is None:
             return None
@@ -94,10 +109,15 @@ class UserService:
         return User(id)
 
     @staticmethod
-    def get_all() -> list[User]:
+    def get_all(dont_auth: bool = False) -> list[User]:
         """
         Get a list of all users as User classes. Returns an empty list if no users exist
+
+        :raises PermissionError: If the current user does not have permission to view all users
         """
+
+        if not dont_auth:
+            ActiveUser.get().raise_without_permission("account.view.all")
 
         sql = "SELECT id FROM public.user;"
         result = Database.execute_and_fetchall(sql)
@@ -112,7 +132,7 @@ class UserService:
         :raises AuthenticationError: If the username or password is incorrect
         """
 
-        user = UserService.get_by_username(username)
+        user = UserService.get_by_username(username, dont_auth=True)
 
         USER_DOSENT_EXIST = user is None
         INCORRECT_PASSWORD = not user.check_is_password_correct(password)
