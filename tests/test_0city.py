@@ -26,10 +26,6 @@ def test_create_city():
 
 def test_get_city_by_name():
     city = CityService.get_by_name(city_name)
-    # print("!!!!!")
-    # print(city)
-    # print("!!!!!")
-    # assert False
     assert isinstance(city, City)
 
 
@@ -66,8 +62,9 @@ def test_set_city_name():
 
 
 def test_creating_cities_for_branches():
-    city = CityService.create("city1")
-    city = CityService.create("city2")
-    city = CityService.create("city3")
-    city = CityService.create("city4")
+    city = CityService.create("Bath")
+    city = CityService.create("Reading")
+    city = CityService.create("Oxford")
+    city = CityService.create("Plymouth")
+    city = CityService.create("Liverpool")
     assert isinstance(city, City)
