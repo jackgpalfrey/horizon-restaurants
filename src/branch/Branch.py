@@ -35,8 +35,7 @@ class Branch:
         """
         if not validate_branch_name(branch_name):
             # FIXME: Replace with correct error
-            raise Exception(
-                "Invalid name")
+            raise Exception("Invalid name")
 
         Database.execute_and_commit(
             "UPDATE public.branch SET name = %s WHERE id = %s", branch_name, self._branch_id)
@@ -49,8 +48,7 @@ class Branch:
         """
         if not validate_branch_address(branch_address):
             # FIXME: Replace with correct error
-            raise Exception(
-                "Invalid address")
+            raise Exception("Invalid address")
 
         Database.execute_and_commit(
             "UPDATE public.branch SET address = %s WHERE id = %s", branch_address, self._branch_id)

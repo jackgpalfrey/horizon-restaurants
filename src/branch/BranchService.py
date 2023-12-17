@@ -49,8 +49,7 @@ class BranchService:
 
     @staticmethod
     def get_all() -> list[Branch]:
-        result = Database.execute_and_fetchall(
-            "SELECT id FROM public.branch")
+        result = Database.execute_and_fetchall("SELECT id FROM public.branch")
 
         if result is not None:
             return [Branch(record[0]) for record in result]
@@ -65,10 +64,8 @@ class BranchService:
         """
         if not validate_branch_name(branch_name):
             # FIXME: Replace with correct error
-            raise Exception(
-                "Invalid name.")
+            raise Exception("Invalid name.")
 
         if not validate_branch_address(address):
             # FIXME: Replace with correct error
-            raise Exception(
-                "Invalid address.")
+            raise Exception("Invalid address.")

@@ -22,8 +22,7 @@ class City:
         """
         if not validate_city_name(city_name):
             # FIXME: Replace with correct error
-            raise Exception(
-                "Invalid name.")
+            raise Exception("Invalid name.")
 
         city_id = self.get_id()
         Database.execute_and_commit(

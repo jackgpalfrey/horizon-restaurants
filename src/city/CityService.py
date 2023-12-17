@@ -39,8 +39,7 @@ class CityService:
 
     @staticmethod
     def get_all() -> list[City]:
-        result = Database.execute_and_fetchall(
-            "SELECT id FROM public.city")
+        result = Database.execute_and_fetchall("SELECT id FROM public.city")
 
         if result is not None:
             return [City(record[0]) for record in result]
@@ -55,5 +54,4 @@ class CityService:
         """
         if not validate_city_name(city_name):
             # FIXME: Replace with correct error
-            raise Exception(
-                "Invalid name.")
+            raise Exception("Invalid name.")
