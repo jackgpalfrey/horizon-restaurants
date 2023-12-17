@@ -52,6 +52,7 @@ def test_get_all_branches():
 
 def test_cannot_create_duplicate_branch():
     city = CityService.get_by_name("Essex")
+    # FIXME: Replace with correct error
     with pytest.raises(Exception):
         BranchService.create(branch_name, branch_address, city)
 

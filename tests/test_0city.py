@@ -47,7 +47,7 @@ def test_get_all_cities():
 
 
 def test_get_city_name():
-    created_city = CityService.create("Manchester")
+    created_city = CityService.create(store_name)
     name = created_city.get_name()
     assert name == store_name
 
