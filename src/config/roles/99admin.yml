@@ -1,0 +1,8 @@
+id: 99
+name: Admin
+extends: 4
+permissions:
+    - .*
+    - account
+    - city
+    - branch

@@ -9,13 +9,7 @@ def test_database_connection():
 
 
 def test_can_delete_tables():
-    cur = Database.cursor()
-    sql = """
-        DROP TABLE IF EXISTS test_table;
-        DROP TABLE IF EXISTS init_check_table;
-    """
-    cur.execute(sql)
-    Database.commit()
+    Database.DEBUG_delete_all_tables("DANGEROUSLY DELETE ALL TABLES")
 
 
 def test_can_run_init_sql():

@@ -1,0 +1,6 @@
+id: 2
+name: Extended User
+extends: 0
+permissions:
+    - extend.one
+    - extend.two
