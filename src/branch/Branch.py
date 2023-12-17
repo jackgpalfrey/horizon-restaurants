@@ -1,7 +1,7 @@
 from ..utils.Database import Database
 from ..city.City import City
 from ..city.CityService import CityService
-from ..branch.utils import validate_branch_name, validate_branch_address
+from .utils import validate_branch_name, validate_branch_address
 
 
 class Branch:

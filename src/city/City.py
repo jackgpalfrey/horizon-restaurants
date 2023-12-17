@@ -1,5 +1,5 @@
 from ..utils.Database import Database
-from ..city.utils import validate_city_name
+from .utils import validate_city_name
 
 
 class City:

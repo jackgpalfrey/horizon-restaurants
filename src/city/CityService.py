@@ -1,6 +1,6 @@
 from ..utils.Database import Database
-from ..city.City import City
-from ..city.utils import validate_city_name
+from .City import City
+from .utils import validate_city_name
 
 
 class CityService:
