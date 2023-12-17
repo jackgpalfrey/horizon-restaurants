@@ -41,6 +41,8 @@ def test_get_city_by_id():
 def test_get_all_cities():
     city = CityService.get_all()
     assert len(city) == 2
+    for i in range(len(city)):
+        assert isinstance(city[i], City)
     assert type(city) == list
 
 
