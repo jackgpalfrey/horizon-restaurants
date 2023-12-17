@@ -3,6 +3,7 @@ from src.branch.BranchService import BranchService
 from src.city.CityService import CityService
 from src.branch.Branch import Branch
 from src.utils.Database import Database
+from src.branch.utils import validate_branch_name, validate_branch_address
 
 branch_name = "Bristol Branch"
 branch_address = "15-29 Union St, Bristol BS1 2DF"
@@ -122,3 +123,13 @@ def test_set_city():
     created_branch.set_city(new_city)
     city_id = created_branch.get_city().get_id()
     assert city_id == new_city.get_id()
+
+
+def test_branch_name_validation():
+    assert validate_branch_name("Test Branch") == True
+    assert validate_branch_name("South Bristol Branch") == True
+    assert validate_branch_name("South Bristol Branch ") == False
+    assert validate_branch_name(" South Bristol Branch") == False
+    assert validate_branch_name("South Bristol  Branch") == False
+    assert validate_branch_name("South Bristol Branch1") == False
+    assert validate_branch_name("South Bristol Branch!") == False

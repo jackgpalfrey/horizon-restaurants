@@ -1,6 +1,7 @@
 from ..utils.Database import Database
 from ..city.City import City
 from ..city.CityService import CityService
+from ..branch.utils import validate_branch_name, validate_branch_address
 
 
 class Branch:
@@ -27,14 +28,25 @@ class Branch:
         return city
 
     def set_branch_name(self, branch_name: str) -> None:
+        if not validate_branch_name(branch_name):
+            # FIXME: Replace with correct error
+            raise Exception(
+                "Invalid name")
+
         Database.execute_and_commit(
             "UPDATE public.branch SET name = %s WHERE id = %s", branch_name, self._branch_id)
 
     def set_address(self, branch_address: str) -> None:
+        if not validate_branch_address(branch_address):
+            # FIXME: Replace with correct error
+            raise Exception(
+                "Invalid address")
+
         Database.execute_and_commit(
             "UPDATE public.branch SET address = %s WHERE id = %s", branch_address, self._branch_id)
 
     def set_city(self, city: City) -> None:
         city_id = city.get_id()
+
         Database.execute_and_commit(
             "UPDATE public.branch SET city_id = %s WHERE id = %s", city_id, self._branch_id)

@@ -1,11 +1,15 @@
 from ..utils.Database import Database
 from ..branch.Branch import Branch
 from ..city.City import City
+from ..branch.utils import validate_branch_name, validate_branch_address
 
 
 class BranchService:
     @staticmethod
     def create(branch_name: str, address: str, city: City) -> Branch:
+
+        BranchService._validate_create_branch(branch_name, address)
+
         id = city.get_id()
         Database.execute_and_commit(
             "INSERT INTO public.branch (name, address, city_id) VALUES(%s, %s, %s)", branch_name, address, id)
@@ -44,3 +48,16 @@ class BranchService:
 
         if result is not None:
             return [Branch(record[0]) for record in result]
+
+    @staticmethod
+    def _validate_create_branch(branch_name: str, address: str):
+
+        if not validate_branch_name(branch_name):
+            # FIXME: Replace with correct error
+            raise Exception(
+                "Invalid name.")
+
+        if not validate_branch_address(address):
+            # FIXME: Replace with correct error
+            raise Exception(
+                "Invalid address.")
