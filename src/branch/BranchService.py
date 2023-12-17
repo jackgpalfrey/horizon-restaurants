@@ -23,7 +23,7 @@ class BranchService:
         return BranchService.get_by_name(branch_name)
 
     @staticmethod
-    def get_by_name(branch_name: str) -> Branch:
+    def get_by_name(branch_name: str) -> Branch | None:
         result = Database.execute_and_fetchone(
             "SELECT id FROM public.branch WHERE name = %s", branch_name)
 
@@ -39,7 +39,7 @@ class BranchService:
             return Branch(result[0])
 
     @staticmethod
-    def get_by_city(city: City) -> Branch:
+    def get_by_city(city: City) -> list[Branch]:
         id = city.get_id()
         result = Database.execute_and_fetchone(
             "SELECT id FROM public.branch WHERE city_id = %s", id)
@@ -48,7 +48,7 @@ class BranchService:
             return Branch(result[0])
 
     @staticmethod
-    def get_all() -> Branch:
+    def get_all() -> list[Branch]:
         result = Database.execute_and_fetchall(
             "SELECT id FROM public.branch")
 
@@ -56,7 +56,7 @@ class BranchService:
             return [Branch(record[0]) for record in result]
 
     @staticmethod
-    def _validate_create_branch(branch_name: str, address: str):
+    def _validate_create_branch(branch_name: str, address: str) -> None:
         """
         Validates given name and address based on validation logic in ./utils.py
         through length and character checking. Called in the create() method for branch.

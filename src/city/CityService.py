@@ -22,7 +22,7 @@ class CityService:
         return City(result[0])
 
     @staticmethod
-    def get_by_name(city_name: str) -> City:
+    def get_by_name(city_name: str) -> City | None:
         result = Database.execute_and_fetchone(
             "SELECT id FROM public.city WHERE name = %s", city_name)
 
@@ -38,7 +38,7 @@ class CityService:
             return City(result[0])
 
     @staticmethod
-    def get_all() -> City:
+    def get_all() -> list[City]:
         result = Database.execute_and_fetchall(
             "SELECT id FROM public.city")
 
