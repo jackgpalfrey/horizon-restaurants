@@ -12,22 +12,27 @@ class Branch:
         return self._branch_id
 
     def get_name(self) -> str:
-        name, = Database.execute_and_fetchone(
+        name = Database.execute_and_fetchone(
             "SELECT name FROM public.branch WHERE id = %s", self._branch_id)
-        return name
+        return name[0]
 
     def get_address(self) -> str:
-        address, = Database.execute_and_fetchone(
+        address = Database.execute_and_fetchone(
             "SELECT address from public.branch WHERE id = %s", self._branch_id)
-        return address
+        return address[0]
 
     def get_city(self) -> City:
-        city_id, = Database.execute_and_fetchone(
+        city_id = Database.execute_and_fetchone(
             "SELECT city_id FROM public.branch WHERE id = %s", self._branch_id)
-        city = CityService.get_by_id(city_id)
+        city = CityService.get_by_id(city_id[0])
         return city
 
     def set_branch_name(self, branch_name: str) -> None:
+        """
+        Sets a new branch name using given parameter.
+
+        :raises Exception: If branch name is invalid the branch name is not set.
+        """
         if not validate_branch_name(branch_name):
             # FIXME: Replace with correct error
             raise Exception(
@@ -37,6 +42,11 @@ class Branch:
             "UPDATE public.branch SET name = %s WHERE id = %s", branch_name, self._branch_id)
 
     def set_address(self, branch_address: str) -> None:
+        """
+        Sets a new branch address using given parameter.
+
+        :raises Exception: If branch address is invalid the address is not set.
+        """
         if not validate_branch_address(branch_address):
             # FIXME: Replace with correct error
             raise Exception(

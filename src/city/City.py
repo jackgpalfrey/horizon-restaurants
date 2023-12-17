@@ -10,12 +10,16 @@ class City:
         return self._city_id
 
     def get_name(self) -> str:
-        name, = Database.execute_and_fetchone(
+        name = Database.execute_and_fetchone(
             "SELECT name FROM public.city WHERE id = %s", self._city_id)
-        return name
+        return name[0]
 
     def set_name(self, city_name: str) -> None:
+        """
+        Sets a new city name using given parameter.
 
+        :raises Exception: If city name is invalid the city name is not set.
+        """
         if not validate_city_name(city_name):
             # FIXME: Replace with correct error
             raise Exception(
