@@ -1,10 +1,14 @@
 from ..utils.Database import Database
 from ..city.City import City
+from ..city.utils import validate_city_name
 
 
 class CityService:
     @staticmethod
     def create(city_name: str) -> City:
+
+        CityService._validate_create_city(city_name)
+
         Database.execute_and_commit(
             "INSERT INTO public.city (name) VALUES(%s)", city_name)
         result = Database.execute_and_fetchone(
@@ -34,3 +38,11 @@ class CityService:
 
         if result is not None:
             return [City(record[0]) for record in result]
+
+    @staticmethod
+    def _validate_create_city(city_name: str):
+
+        if not validate_city_name(city_name):
+            # FIXME: Replace with correct error
+            raise Exception(
+                "Invalid name.")

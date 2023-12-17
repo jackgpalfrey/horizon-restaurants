@@ -1,4 +1,5 @@
 from ..utils.Database import Database
+from ..city.utils import validate_city_name
 
 
 class City:
@@ -14,6 +15,12 @@ class City:
         return name
 
     def set_name(self, city_name: str) -> None:
+
+        if not validate_city_name(city_name):
+            # FIXME: Replace with correct error
+            raise Exception(
+                "Invalid name.")
+
         city_id = self.get_id()
         Database.execute_and_commit(
             "UPDATE public.city SET name = %s WHERE id = %s", city_name, city_id)

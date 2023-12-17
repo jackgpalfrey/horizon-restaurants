@@ -2,6 +2,7 @@ import pytest
 from src.city.CityService import CityService
 from src.city.City import City
 from src.utils.Database import Database
+from src.city.utils import validate_city_name
 
 city_name = "London"
 store_name = "Manchester"
@@ -68,3 +69,13 @@ def test_creating_cities_for_branches():
     city = CityService.create("Plymouth")
     city = CityService.create("Liverpool")
     assert isinstance(city, City)
+
+
+def test_branch_name_validation():
+    assert validate_city_name("Test City") == True
+    assert validate_city_name("Bristol") == True
+    assert validate_city_name("Bristol City ") == False
+    assert validate_city_name(" Bristol City") == False
+    assert validate_city_name("Bristol  City") == False
+    assert validate_city_name("Bristol City1") == False
+    assert validate_city_name("Bristol City!") == False
