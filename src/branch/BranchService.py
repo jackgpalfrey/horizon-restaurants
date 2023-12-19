@@ -16,9 +16,9 @@ class BranchService:
 
         BranchService._validate_create_branch(branch_name, address)
 
-        id = city.get_id()
+        city_id = city.get_id()
         Database.execute_and_commit(
-            "INSERT INTO public.branch (name, address, city_id) VALUES(%s, %s, %s)", branch_name, address, id)
+            "INSERT INTO public.branch (name, address, city_id) VALUES(%s, %s, %s)", branch_name, address, city_id)
 
         return BranchService.get_by_name(branch_name)
 

@@ -6,5 +6,7 @@ CREATE TABLE IF NOT EXISTS public.User
     full_name text NOT NULL,
     role_id integer NOT NULL DEFAULT 0,
     is_password_expired boolean NOT NULL DEFAULT true,
-    PRIMARY KEY (id)
+    branch_id uuid,
+    PRIMARY KEY (id),
+    CONSTRAINT fk_branch FOREIGN KEY (branch_id) REFERENCES branch(id) ON DELETE SET NULL
 )

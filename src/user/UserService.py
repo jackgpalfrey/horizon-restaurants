@@ -7,6 +7,7 @@ from .utils import hash_password, validate_username, validate_password, validate
 from .Role import Role
 from .User import User
 from .ActiveUser import ActiveUser
+from ..branch.Branch import Branch
 
 
 class UserService:
@@ -23,13 +24,13 @@ class UserService:
 
         admin_user = UserService.get_by_username("admin", dont_auth=True)
         if admin_user is None:
-            UserService.create("admin", "admin", "Administrator", 99)
+            UserService.create("admin", "admin", "Administrator", role_id=99)
 
         ActiveUser.clear()  # Makes sure the active user is None
         Role.load_roles()
 
     @staticmethod
-    def create(username: str, password: str, full_name: str, role_id: int = 0) -> User:
+    def create(username: str, password: str, full_name: str, branch: Branch | None = None, role_id: int = 0) -> User:
         """
         Create a new user with the given username, password, full name, and optional role id
 
@@ -46,8 +47,8 @@ class UserService:
         """
 
         sql = """
-        INSERT INTO public.user (username, password, full_name, role_id) 
-        VALUES (%s, %s, %s, %s);
+        INSERT INTO public.user (username, password, full_name, role_id, branch_id) 
+        VALUES (%s, %s, %s, %s, %s);
         """
 
         if username != "admin":
@@ -56,9 +57,11 @@ class UserService:
 
         hashed_password = hash_password(password)
 
+        branch_id = branch.get_id() if branch is not None else None
+
         try:
             Database.execute_and_commit(
-                sql, username, hashed_password, full_name, role_id)
+                sql, username, hashed_password, full_name, role_id, branch_id)
         except UniqueViolation:
             raise AlreadyExistsError(f"User {username} already exists")
 
