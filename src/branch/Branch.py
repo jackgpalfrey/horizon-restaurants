@@ -1,12 +1,16 @@
-from ..utils.Database import Database
 from ..city.City import City
 from ..city.CityService import CityService
-from .utils import validate_branch_name, validate_branch_address
+from ..menu.BranchMenu import BranchMenu
+from ..utils.Database import Database
+from .utils import validate_branch_address, validate_branch_name
 
 
 class Branch:
     def __init__(self, branch_id: str) -> None:
         self._branch_id = branch_id
+
+    def menu(self):
+        return BranchMenu(self._branch_id)
 
     def get_id(self) -> str:
         return self._branch_id
