@@ -63,14 +63,14 @@ class Branch:
 
     def get_staff(self) -> list[User]:
         result = Database.execute_and_fetchall(
-            "SELECT id FROM public.user WHERE branch_id = %s", self._branch_id)
+            "SELECT user_id FROM public.branchstaff WHERE branch_id = %s", self._branch_id)
 
         if result is not None:
             return [User(record[0]) for record in result]
 
     def get_manager(self) -> User:
         result = Database.execute_and_fetchone(
-            "SELECT id FROM public.user WHERE branch_id = %s AND role_id = %s", self._branch_id, 4)
+            "SELECT user_id FROM public.branchstaff WHERE branch_id = %s AND role_id = %s", self._branch_id, 4)
 
         if result is not None:
             user = UserService.get_by_id(result[0])

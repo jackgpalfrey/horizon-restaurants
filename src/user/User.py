@@ -15,17 +15,17 @@ class User:
         return self._user_id
 
     def get_username(self) -> str:
-        sql = "SELECT username FROM public.user WHERE id=%s;"
+        sql = "SELECT username FROM public.staff WHERE id=%s;"
 
         return Database.execute_and_fetchone(sql, self.get_id())[0]
 
     def get_full_name(self) -> str:
-        sql = "SELECT full_name FROM public.user WHERE id=%s;"
+        sql = "SELECT full_name FROM public.staff WHERE id=%s;"
 
         return Database.execute_and_fetchone(sql, self._user_id)[0]
 
     def check_is_password_correct(self, password: str) -> bool:
-        sql = "SELECT password FROM public.user WHERE id=%s;"
+        sql = "SELECT password FROM public.staff WHERE id=%s;"
 
         result = Database.execute_and_fetchone(sql, self._user_id)
         correct_hashed_password = result[0]
@@ -33,7 +33,7 @@ class User:
         return check_password(password, correct_hashed_password)
 
     def check_has_password_expired(self) -> bool:
-        sql = "SELECT is_password_expired FROM public.user WHERE id=%s;"
+        sql = "SELECT is_password_expired FROM public.staff WHERE id=%s;"
 
         return Database.execute_and_fetchone(sql, self._user_id)[0]
 
@@ -41,7 +41,7 @@ class User:
         return Role.get_by_id(self._get_role_id())
 
     def _get_role_id(self) -> int:
-        sql = "SELECT role_id FROM public.user WHERE id=%s;"
+        sql = "SELECT role_id FROM public.staff WHERE id=%s;"
 
         return Database.execute_and_fetchone(sql, self._user_id)[0]
 
@@ -83,7 +83,7 @@ class User:
         :raises PermissionError: If the current user does not have permission to update the password
         """
 
-        sql = "UPDATE public.user SET password=%s, is_password_expired=FALSE WHERE id=%s;"
+        sql = "UPDATE public.staff SET password=%s, is_password_expired=FALSE WHERE id=%s;"
 
         active_user = ActiveUser.get()
         THIS_IS_ACTIVE_USER = active_user.get_id() == self._user_id
@@ -102,7 +102,7 @@ class User:
         :raises InputError: If the new full name is invalid
         :raises PermissionError: If the current user does not have permission to update the full name
         """
-        sql = "UPDATE public.user SET full_name=%s WHERE id=%s;"
+        sql = "UPDATE public.staff SET full_name=%s WHERE id=%s;"
 
         active_user = ActiveUser.get()
         THIS_IS_ACTIVE_USER = active_user.get_id() == self._user_id
@@ -122,14 +122,14 @@ class User:
         :raises PermissionError: If the current user does not have permission to update the role
         """
 
-        sql = "UPDATE public.user SET role_id=%s WHERE id=%s;"
+        sql = "UPDATE public.staff SET role_id=%s WHERE id=%s;"
 
         ActiveUser.get().raise_without_permission("account.update-role.all")
 
         Database.execute_and_commit(sql, role.get_id(), self._user_id)
 
     def expire_password(self) -> None:
-        sql = "UPDATE public.user SET is_password_expired=TRUE WHERE id=%s;"
+        sql = "UPDATE public.staff SET is_password_expired=TRUE WHERE id=%s;"
 
         Database.execute_and_commit(sql, self._user_id)
 
@@ -142,7 +142,7 @@ class User:
         """
 
         # Could cause issues with references, might be best to switch to soft deletion and a cron job
-        sql = "DELETE FROM public.user WHERE id=%s;"
+        sql = "DELETE FROM public.staff WHERE id=%s;"
 
         ActiveUser.get().raise_without_permission("account.delete.all")
 

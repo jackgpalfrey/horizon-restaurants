@@ -51,8 +51,8 @@ class UserService:
         """
 
         sql = """
-        INSERT INTO public.user (username, password, full_name, role_id, branch_id) 
-        VALUES (%s, %s, %s, %s, %s);
+        INSERT INTO public.staff (username, password, full_name, role_id) 
+        VALUES (%s, %s, %s, %s);
         """
 
         if username != "admin":
@@ -61,13 +61,23 @@ class UserService:
 
         hashed_password = hash_password(password)
 
-        branch_id = branch.get_id() if branch is not None else None
-
         try:
             Database.execute_and_commit(
-                sql, username, hashed_password, full_name, role_id, branch_id)
+                sql, username, hashed_password, full_name, role_id)
         except UniqueViolation:
             raise AlreadyExistsError(f"User {username} already exists")
+
+        branch_id = branch.get_id() if branch is not None else None
+        user = UserService.get_by_username(username, dont_auth=True)
+        user_id = user.get_id()
+
+        branch_sql = """
+        INSERT INTO public.branchstaff (user_id, branch_id, role_id) 
+        VALUES (%s, %s, %s);
+        """
+
+        Database.execute_and_commit(
+            branch_sql, user_id, branch_id, role_id)
 
         return UserService.get_by_username(username, dont_auth=True)
 
@@ -84,7 +94,7 @@ class UserService:
             permission = "account.view.self" if IS_ACTIVE_USER else "account.view.all"
             ActiveUser.get().raise_without_permission(permission)
 
-        sql = "SELECT id FROM public.user WHERE username=%s"
+        sql = "SELECT id FROM public.staff WHERE username=%s"
         result = Database.execute_and_fetchone(sql, username)
 
         if result is None:
@@ -106,7 +116,7 @@ class UserService:
             permission = "account.view.self" if IS_ACTIVE_USER else "account.view.all"
             ActiveUser.get().raise_without_permission(permission)
 
-        sql = "SELECT id FROM public.user WHERE id=%s;"
+        sql = "SELECT id FROM public.staff WHERE id=%s;"
         result = Database.execute_and_fetchone(sql, id)
 
         if result is None:
@@ -126,7 +136,7 @@ class UserService:
         if not dont_auth:
             ActiveUser.get().raise_without_permission("account.view.all")
 
-        sql = "SELECT id FROM public.user;"
+        sql = "SELECT id FROM public.staff;"
         result = Database.execute_and_fetchall(sql)
 
         return [User(record[0]) for record in result]
