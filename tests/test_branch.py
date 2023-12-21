@@ -2,6 +2,8 @@ import pytest
 from src.branch.BranchService import BranchService
 from src.city.CityService import CityService
 from src.branch.Branch import Branch
+from src.user.UserService import UserService
+from src.user.User import User
 from src.utils.Database import Database
 from src.branch.utils import validate_branch_name, validate_branch_address
 
@@ -18,6 +20,9 @@ def before_and_after_test():
     Database.connect()
     Database.DEBUG_delete_all_tables("DANGEROUSLY DELETE ALL TABLES")
     Database.init()
+    UserService.init()
+
+    UserService.login("admin", "admin")
 
     yield
 
@@ -135,3 +140,18 @@ def test_branch_name_validation():
     assert validate_branch_name("South Bristol  Branch") == False
     assert validate_branch_name("South Bristol Branch1") == False
     assert validate_branch_name("South Bristol Branch!") == False
+
+
+def test_get_staff():
+    branch = BranchService.get_by_name("Bristol Branch")
+    user = UserService.create(
+        "manager", "myPassword0!", "Test User One", branch, role_id=4)
+    user = UserService.create(
+        "front-end1", "myPassword0!", "Test User Two", branch, role_id=1)
+    user = UserService.create(
+        "front-end2", "myPassword0!", "Test User Three", branch, role_id=1)
+    users = branch.get_staff()
+    assert isinstance(branch, Branch)
+    assert isinstance(user, User)
+    assert type(users) == list
+    assert len(users) == 3

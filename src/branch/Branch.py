@@ -1,6 +1,7 @@
 from ..utils.Database import Database
 from ..city.City import City
 from ..city.CityService import CityService
+from ..user.User import User
 from .utils import validate_branch_name, validate_branch_address
 
 
@@ -58,3 +59,10 @@ class Branch:
 
         Database.execute_and_commit(
             "UPDATE public.branch SET city_id = %s WHERE id = %s", city_id, self._branch_id)
+
+    def get_staff(self) -> list[User]:
+        result = Database.execute_and_fetchall(
+            "SELECT id FROM public.user WHERE branch_id = %s", self._branch_id)
+
+        if result is not None:
+            return [User(record[0]) for record in result]
