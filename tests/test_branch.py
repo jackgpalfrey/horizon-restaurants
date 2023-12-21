@@ -155,3 +155,12 @@ def test_get_staff():
     assert isinstance(user, User)
     assert type(users) == list
     assert len(users) == 3
+
+
+def test_get_manager():
+    branch = BranchService.get_by_name("Bristol Branch")
+    manager = branch.get_manager()
+    manager_role = manager.get_role()
+    manager_role_id = manager_role.get_id()
+    assert isinstance(manager, User)
+    assert manager_role_id == 4

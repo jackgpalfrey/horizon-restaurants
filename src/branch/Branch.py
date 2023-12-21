@@ -2,6 +2,7 @@ from ..utils.Database import Database
 from ..city.City import City
 from ..city.CityService import CityService
 from ..user.User import User
+from ..user.UserService import UserService
 from .utils import validate_branch_name, validate_branch_address
 
 
@@ -66,3 +67,11 @@ class Branch:
 
         if result is not None:
             return [User(record[0]) for record in result]
+
+    def get_manager(self) -> User:
+        result = Database.execute_and_fetchone(
+            "SELECT id FROM public.user WHERE branch_id = %s AND role_id = %s", self._branch_id, 4)
+
+        if result is not None:
+            user = UserService.get_by_id(result[0])
+            return user
