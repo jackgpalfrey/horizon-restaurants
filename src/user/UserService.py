@@ -7,7 +7,11 @@ from .utils import hash_password, validate_username, validate_password, validate
 from .Role import Role
 from .User import User
 from .ActiveUser import ActiveUser
-from ..branch.Branch import Branch
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from ..branch.Branch import Branch
 
 
 class UserService:
@@ -30,7 +34,7 @@ class UserService:
         Role.load_roles()
 
     @staticmethod
-    def create(username: str, password: str, full_name: str, branch: Branch | None = None, role_id: int = 0) -> User:
+    def create(username: str, password: str, full_name: str, branch: "Branch" = None, role_id: int = 0) -> User:
         """
         Create a new user with the given username, password, full name, and optional role id
 

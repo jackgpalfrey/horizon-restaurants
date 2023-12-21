@@ -16,6 +16,7 @@ new_address = "12a Oxford Rd, Manchester M1 5QA"
 @pytest.fixture(autouse=True, scope="module")
 def before_and_after_test():
     Database.connect()
+    Database.DEBUG_delete_all_tables("DANGEROUSLY DELETE ALL TABLES")
     Database.init()
 
     yield
@@ -24,7 +25,7 @@ def before_and_after_test():
 
 
 def test_create_branch():
-    city = CityService.get_by_name("London")
+    city = CityService.create("Bristol")
     branch = BranchService.create(branch_name, branch_address, city)
     assert isinstance(branch, Branch)
 
@@ -35,7 +36,7 @@ def test_get_branch_by_name():
 
 
 def test_get_branch_by_id():
-    city = CityService.get_by_name("Reading")
+    city = CityService.create("Leicester")
     created_branch = BranchService.create(
         "Reading Branch", "Unit 17 Horn Hill Rd, Hornhill Road, Worcester WR4 0SX", city)
     got_branch = BranchService.get_by_id(created_branch._branch_id)
@@ -51,14 +52,14 @@ def test_get_all_branches():
 
 
 def test_cannot_create_duplicate_branch():
-    city = CityService.get_by_name("Essex")
+    city = CityService.create("Nottingham")
     # FIXME: Replace with correct error
     with pytest.raises(Exception):
         BranchService.create(branch_name, branch_address, city)
 
 
 def test_get_branch_id():
-    city = CityService.get_by_name("Cardiff")
+    city = CityService.create("Cambridge")
     created_branch = BranchService.create(
         "Cardiff Branch", "Blackpole Rd, Worcester WR3 8HP", city)
     id = created_branch.get_id()
@@ -66,7 +67,7 @@ def test_get_branch_id():
 
 
 def test_get_branch_name():
-    city = CityService.get_by_name("Oxford")
+    city = CityService.create("Exeter")
     created_branch = BranchService.create(
         "Oxford Branch", "Netherton Rd, Ross-on-Wye HR9 7QJ", city)
     name = created_branch.get_name()
@@ -74,7 +75,7 @@ def test_get_branch_name():
 
 
 def test_get_branch_address():
-    city = CityService.get_by_name("Essex")
+    city = CityService.create("Norwich")
     created_branch = BranchService.create(
         "Essex Branch", "116-118 Lower Borough Walls, Bath BA1 1QU", city)
     address = created_branch.get_address()
@@ -82,7 +83,7 @@ def test_get_branch_address():
 
 
 def test_set_branch_name():
-    city = CityService.get_by_name("Manchester")
+    city = CityService.create("Leeds")
     created_branch = BranchService.create(
         "Manchester", "10 Straits Parade, Fishponds, Bristol BS16 2LA", city)
     created_branch.set_branch_name(new_name)
@@ -90,7 +91,7 @@ def test_set_branch_name():
 
 
 def test_set_branch_address():
-    city = CityService.get_by_name("Bath")
+    city = CityService.create("Lichfield")
     created_branch = BranchService.create(
         "Bath Branch", "4 Eastgate Rd, Bristol BS5 6XX", city)
     created_branch.set_address(new_address)
@@ -98,7 +99,7 @@ def test_set_branch_address():
 
 
 def test_get_by_city():
-    city = CityService.get_by_name("Reading")
+    city = CityService.get_by_name("Norwich")
     got_branch = BranchService.get_by_city(city)
     query = Database.execute_and_fetchone(
         "SELECT city_id FROM branch WHERE id = %s", got_branch._branch_id)
@@ -108,7 +109,7 @@ def test_get_by_city():
 
 
 def test_get_city():
-    city = CityService.get_by_name("Plymouth")
+    city = CityService.get_by_name("Leeds")
     created_branch = BranchService.create(
         "Plymouth Branch", "12a Oxford Rd, Manchester M1 5QA", city)
     branch_city_id = created_branch.get_city().get_id()
@@ -117,10 +118,10 @@ def test_get_city():
 
 
 def test_set_city():
-    city = CityService.get_by_name("Liverpool")
+    city = CityService.get_by_name("Cambridge")
     created_branch = BranchService.create(
-        "Liverpool Branch", "67 Broadmead, Bristol BS1 3DX", city)
-    new_city = CityService.create("Alexandria")
+        "Lancaster Branch", "67 Broadmead, Bristol BS1 3DX", city)
+    new_city = CityService.create("Lancaster")
     created_branch.set_city(new_city)
     city_id = created_branch.get_city().get_id()
     assert city_id == new_city.get_id()

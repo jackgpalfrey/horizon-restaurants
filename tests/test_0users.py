@@ -14,7 +14,6 @@ usernames = ["test", "test1", "test2"]
 full_names = ["Test User", "Test User Two", "Test User Three"]
 password = "myPassword0!"
 
-
 new_password = "newPassw0rd!"
 newest_password = "evenNewerPassw0rd!"
 new_full_name = "New Full Name"
@@ -24,6 +23,7 @@ user: User = None
 @pytest.fixture(autouse=True, scope="module")
 def before_and_after_test():
     Database.connect()
+    Database.DEBUG_delete_all_tables("DANGEROUSLY DELETE ALL TABLES")
     Database.init()
     UserService.init()
     Role._load_role_file("tests/roles/test-default.yml")
@@ -77,8 +77,7 @@ def test_full_name_validation():
 
 
 def test_can_create_user():
-    branch = BranchService.get_by_name("Bristol Branch")
-    user = UserService.create(usernames[0], password, full_names[0], branch)
+    user = UserService.create(usernames[0], password, full_names[0])
     assert user is not None
     assert isinstance(user, User)
 
@@ -91,14 +90,12 @@ def test_can_get_user():
 
 
 def test_cant_create_duplicate_username():
-    branch = BranchService.get_by_name("Bristol Branch")
     with pytest.raises(AlreadyExistsError):
-        UserService.create(usernames[0], password, full_names[1], branch)
+        UserService.create(usernames[0], password, full_names[1])
 
 
 def test_can_create_duplicate_password_and_full_name():
-    branch = BranchService.get_by_name("Bristol Branch")
-    user = UserService.create(usernames[1], password, full_names[0], branch)
+    user = UserService.create(usernames[1], password, full_names[0])
     assert user is not None
     assert isinstance(user, User)
 
@@ -119,21 +116,18 @@ def test_can_get_users_full_name():
 
 
 def test_cant_create_invalid_username():
-    branch = BranchService.get_by_name("Bristol Branch")
     with pytest.raises(InputError):
-        UserService.create("invalid!", password, full_names[0], branch)
+        UserService.create("invalid!", password, full_names[0])
 
 
 def test_cant_create_invalid_password():
-    branch = BranchService.get_by_name("Bristol Branch")
     with pytest.raises(InputError):
-        UserService.create("invalid", "inval", full_names[0], branch)
+        UserService.create("invalid", "inval", full_names[0])
 
 
 def test_cant_create_invalid_full_name():
-    branch = BranchService.get_by_name("Bristol Branch")
     with pytest.raises(InputError):
-        UserService.create("invalid", password, "invalid!", branch)
+        UserService.create("invalid", password, "invalid!")
 
 
 def test_check_is_password_correct():
@@ -257,8 +251,7 @@ def test_can_expire_password():
 
 
 def test_get_by_id():
-    branch = BranchService.get_by_name("Bristol Branch")
-    created_user = UserService.create("idtest", password, "ID Test", branch)
+    created_user = UserService.create("idtest", password, "ID Test")
     user = UserService.get_by_id(created_user._user_id)
     assert isinstance(user, User)
     assert user._user_id == created_user._user_id
@@ -288,8 +281,7 @@ def test_get_active_user():
 
 
 def test_can_delete_user():
-    branch = BranchService.get_by_name("Bristol Branch")
-    user = UserService.create(usernames[2], password, full_names[2], branch)
+    user = UserService.create(usernames[2], password, full_names[2])
 
     user = UserService.get_by_username(usernames[2])
     user.delete()
