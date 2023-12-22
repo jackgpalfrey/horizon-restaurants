@@ -72,12 +72,14 @@ class UserService:
         user_id = user.get_id()
 
         branch_sql = """
-        INSERT INTO public.branchstaff (user_id, branch_id, role_id) 
-        VALUES (%s, %s, %s);
+        INSERT INTO public.branchstaff (user_id, branch_id) 
+        VALUES (%s, %s);
         """
 
-        Database.execute_and_commit(
-            branch_sql, user_id, branch_id, role_id)
+        if branch_id is not None:
+
+            Database.execute_and_commit(
+                branch_sql, user_id, branch_id)
 
         return UserService.get_by_username(username, dont_auth=True)
 

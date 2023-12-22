@@ -150,7 +150,7 @@ def test_get_staff():
     user = UserService.create(
         "front-end1", "myPassword0!", "Test User Two", branch, role_id=1)
     user = UserService.create(
-        "manager2", "myPassword0!", "Test User Three", branch2, role_id=4)
+        "manager1", "myPassword0!", "Test User Three", branch2, role_id=4)
     users = branch.get_staff()
     users2 = branch2.get_staff()
     assert isinstance(branch, Branch)

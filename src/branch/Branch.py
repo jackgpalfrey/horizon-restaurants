@@ -3,11 +3,14 @@ from ..city.City import City
 from ..city.CityService import CityService
 from ..user.User import User
 from ..user.UserService import UserService
+from ..user.Role import Role
 from .utils import validate_branch_name, validate_branch_address
+
+MANAGER_ROLE_ID = 4
 
 
 class Branch:
-    def __init__(self, branch_id: str) -> None:
+    def __init__(self, branch_id: str):
         self._branch_id = branch_id
 
     def get_id(self) -> str:
@@ -68,9 +71,9 @@ class Branch:
         if result is not None:
             return [User(record[0]) for record in result]
 
-    def get_manager(self) -> User:
+    def get_manager(self) -> User | None:
         result = Database.execute_and_fetchone(
-            "SELECT user_id FROM public.branchstaff WHERE branch_id = %s AND role_id = %s", self._branch_id, 4)
+            "SELECT user_id FROM public.branchstaff INNER JOIN public.staff ON public.staff.id = public.branchstaff.user_id WHERE branch_id = %s AND role_id = %s;", self._branch_id, MANAGER_ROLE_ID)
 
         if result is not None:
             user = UserService.get_by_id(result[0])
