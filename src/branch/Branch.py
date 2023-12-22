@@ -2,11 +2,14 @@ from ..utils.Database import Database
 from ..city.City import City
 from ..city.CityService import CityService
 from .utils import validate_branch_name, validate_branch_address
-
+from ..event.BranchEvents import BranchEvents
 
 class Branch:
     def __init__(self, branch_id: str) -> None:
         self._branch_id = branch_id
+
+    def events(self) -> BranchEvents:
+        return BranchEvents(self._branch_id)
 
     def get_id(self) -> str:
         return self._branch_id
