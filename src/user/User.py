@@ -4,6 +4,11 @@ from .utils import hash_password, check_password, validate_full_name, validate_p
 from src.utils.errors import AuthorizationError, InputError
 from ..utils.Database import Database
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from ..branch.Branch import Branch
+
 
 class User:
     def __init__(self, user_id: str) -> None:
@@ -147,3 +152,19 @@ class User:
         ActiveUser.get().raise_without_permission("account.delete.all")
 
         Database.execute_and_commit(sql, self._user_id)
+
+    def set_branch(self, branch: "Branch") -> None:
+
+        sql_check = "SELECT user_id FROM public.branchstaff WHERE user_id = %s"
+
+        check = Database.execute_and_fetchone(sql_check, self._user_id)
+        branch_id = branch.get_id()
+
+        ActiveUser.get().raise_without_permission("branch.update")
+
+        if check is not None:
+            sql = "UPDATE public.branchstaff SET branch_id=%s WHERE user_id=%s;"
+        else:
+            sql = "INSERT INTO public.branchstaff (branch_id, user_id) VALUES (%s, %s);"
+
+        Database.execute_and_commit(sql, branch_id, self._user_id)

@@ -8,6 +8,7 @@ from src.user.User import User
 from src.utils.errors import AlreadyExistsError, AuthenticationError, AuthorizationError, InputError
 from src.user.utils import validate_full_name, validate_username, validate_password
 from src.branch.BranchService import BranchService
+from src.city.CityService import CityService
 
 
 usernames = ["test", "test1", "test2"]
@@ -288,6 +289,20 @@ def test_can_delete_user():
 
     user = UserService.get_by_username(usernames[2])
     assert user is None
+
+
+def test_set_branch():
+    city = CityService.create("Derby")
+    branch = BranchService.create(
+        "Derby Branch", "4 Eastgate Rd, Bristol BS5 6XX", city)
+    print(ActiveUser.get().get_role().get_id())
+    print("!!!")
+    user = UserService.create(
+        "manager2", "myPassword0!", "Test User Six", role_id=4)
+    user.set_branch(branch)
+    staff = branch.get_staff()
+    assert type(staff) == list
+    assert len(staff) == 1
 
 
 def test_logout():
