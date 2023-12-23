@@ -4,6 +4,13 @@ from .utils import hash_password, check_password, validate_full_name, validate_p
 from src.utils.errors import AuthorizationError, InputError
 from ..utils.Database import Database
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from ..branch.Branch import Branch
+
+MANAGER_ROLE_ID = 4
+
 
 class User:
     def __init__(self, user_id: str) -> None:
@@ -15,17 +22,17 @@ class User:
         return self._user_id
 
     def get_username(self) -> str:
-        sql = "SELECT username FROM public.user WHERE id=%s;"
+        sql = "SELECT username FROM public.staff WHERE id=%s;"
 
         return Database.execute_and_fetchone(sql, self.get_id())[0]
 
     def get_full_name(self) -> str:
-        sql = "SELECT full_name FROM public.user WHERE id=%s;"
+        sql = "SELECT full_name FROM public.staff WHERE id=%s;"
 
         return Database.execute_and_fetchone(sql, self._user_id)[0]
 
     def check_is_password_correct(self, password: str) -> bool:
-        sql = "SELECT password FROM public.user WHERE id=%s;"
+        sql = "SELECT password FROM public.staff WHERE id=%s;"
 
         result = Database.execute_and_fetchone(sql, self._user_id)
         correct_hashed_password = result[0]
@@ -33,7 +40,7 @@ class User:
         return check_password(password, correct_hashed_password)
 
     def check_has_password_expired(self) -> bool:
-        sql = "SELECT is_password_expired FROM public.user WHERE id=%s;"
+        sql = "SELECT is_password_expired FROM public.staff WHERE id=%s;"
 
         return Database.execute_and_fetchone(sql, self._user_id)[0]
 
@@ -41,7 +48,7 @@ class User:
         return Role.get_by_id(self._get_role_id())
 
     def _get_role_id(self) -> int:
-        sql = "SELECT role_id FROM public.user WHERE id=%s;"
+        sql = "SELECT role_id FROM public.staff WHERE id=%s;"
 
         return Database.execute_and_fetchone(sql, self._user_id)[0]
 
@@ -83,7 +90,7 @@ class User:
         :raises PermissionError: If the current user does not have permission to update the password
         """
 
-        sql = "UPDATE public.user SET password=%s, is_password_expired=FALSE WHERE id=%s;"
+        sql = "UPDATE public.staff SET password=%s, is_password_expired=FALSE WHERE id=%s;"
 
         active_user = ActiveUser.get()
         THIS_IS_ACTIVE_USER = active_user.get_id() == self._user_id
@@ -102,7 +109,7 @@ class User:
         :raises InputError: If the new full name is invalid
         :raises PermissionError: If the current user does not have permission to update the full name
         """
-        sql = "UPDATE public.user SET full_name=%s WHERE id=%s;"
+        sql = "UPDATE public.staff SET full_name=%s WHERE id=%s;"
 
         active_user = ActiveUser.get()
         THIS_IS_ACTIVE_USER = active_user.get_id() == self._user_id
@@ -122,14 +129,14 @@ class User:
         :raises PermissionError: If the current user does not have permission to update the role
         """
 
-        sql = "UPDATE public.user SET role_id=%s WHERE id=%s;"
+        sql = "UPDATE public.staff SET role_id=%s WHERE id=%s;"
 
         ActiveUser.get().raise_without_permission("account.update-role.all")
 
         Database.execute_and_commit(sql, role.get_id(), self._user_id)
 
     def expire_password(self) -> None:
-        sql = "UPDATE public.user SET is_password_expired=TRUE WHERE id=%s;"
+        sql = "UPDATE public.staff SET is_password_expired=TRUE WHERE id=%s;"
 
         Database.execute_and_commit(sql, self._user_id)
 
@@ -142,8 +149,33 @@ class User:
         """
 
         # Could cause issues with references, might be best to switch to soft deletion and a cron job
-        sql = "DELETE FROM public.user WHERE id=%s;"
+        sql = "DELETE FROM public.staff WHERE id=%s;"
 
         ActiveUser.get().raise_without_permission("account.delete.all")
 
         Database.execute_and_commit(sql, self._user_id)
+
+    def set_branch(self, branch: "Branch") -> None:
+        """
+        Assigns user to branch. If user already assigned, branch_id associated with
+        user is updated. Otherwise, a new entry is made to assign the user to a branch.
+
+        :raises PermissionError: If the current user does not have permission to update branches.
+        """
+
+        role = self.get_role()
+        role_id = role.get_id()
+
+        sql_check = "SELECT user_id FROM public.branchstaff WHERE user_id = %s"
+
+        check = Database.execute_and_fetchone(sql_check, self._user_id)
+        branch_id = branch.get_id()
+
+        ActiveUser.get().raise_without_permission("branch.update")
+
+        if check is not None and role_id != MANAGER_ROLE_ID:
+            sql = "UPDATE public.branchstaff SET branch_id=%s WHERE user_id=%s;"
+        else:
+            sql = "INSERT INTO public.branchstaff (branch_id, user_id) VALUES (%s, %s);"
+
+        Database.execute_and_commit(sql, branch_id, self._user_id)

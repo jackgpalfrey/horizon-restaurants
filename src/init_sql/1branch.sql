@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS branch(
+CREATE TABLE IF NOT EXISTS public.branch(
     id uuid NOT NULL DEFAULT gen_random_uuid() UNIQUE,
     name text NOT NULL UNIQUE,
     address text NOT NULL,

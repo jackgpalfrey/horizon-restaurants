@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS public.User
+CREATE TABLE IF NOT EXISTS public.staff
 (
     id uuid NOT NULL DEFAULT gen_random_uuid() UNIQUE,
     username text NOT NULL UNIQUE,

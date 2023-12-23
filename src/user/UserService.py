@@ -8,6 +8,11 @@ from .Role import Role
 from .User import User
 from .ActiveUser import ActiveUser
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from ..branch.Branch import Branch
+
 
 class UserService:
     _roles: dict[int, Role] = []
@@ -23,13 +28,13 @@ class UserService:
 
         admin_user = UserService.get_by_username("admin", dont_auth=True)
         if admin_user is None:
-            UserService.create("admin", "admin", "Administrator", 99)
+            UserService.create("admin", "admin", "Administrator", role_id=99)
 
         ActiveUser.clear()  # Makes sure the active user is None
         Role.load_roles()
 
     @staticmethod
-    def create(username: str, password: str, full_name: str, role_id: int = 0) -> User:
+    def create(username: str, password: str, full_name: str, branch: "Branch" = None, role_id: int = 0) -> User:
         """
         Create a new user with the given username, password, full name, and optional role id
 
@@ -46,7 +51,7 @@ class UserService:
         """
 
         sql = """
-        INSERT INTO public.user (username, password, full_name, role_id) 
+        INSERT INTO public.staff (username, password, full_name, role_id) 
         VALUES (%s, %s, %s, %s);
         """
 
@@ -61,6 +66,11 @@ class UserService:
                 sql, username, hashed_password, full_name, role_id)
         except UniqueViolation:
             raise AlreadyExistsError(f"User {username} already exists")
+
+        user = UserService.get_by_username(username, dont_auth=True)
+
+        if branch is not None:
+            user.set_branch(branch)
 
         return UserService.get_by_username(username, dont_auth=True)
 
@@ -77,7 +87,7 @@ class UserService:
             permission = "account.view.self" if IS_ACTIVE_USER else "account.view.all"
             ActiveUser.get().raise_without_permission(permission)
 
-        sql = "SELECT id FROM public.user WHERE username=%s"
+        sql = "SELECT id FROM public.staff WHERE username=%s"
         result = Database.execute_and_fetchone(sql, username)
 
         if result is None:
@@ -99,7 +109,7 @@ class UserService:
             permission = "account.view.self" if IS_ACTIVE_USER else "account.view.all"
             ActiveUser.get().raise_without_permission(permission)
 
-        sql = "SELECT id FROM public.user WHERE id=%s;"
+        sql = "SELECT id FROM public.staff WHERE id=%s;"
         result = Database.execute_and_fetchone(sql, id)
 
         if result is None:
@@ -119,8 +129,24 @@ class UserService:
         if not dont_auth:
             ActiveUser.get().raise_without_permission("account.view.all")
 
-        sql = "SELECT id FROM public.user;"
+        sql = "SELECT id FROM public.staff;"
         result = Database.execute_and_fetchall(sql)
+
+        return [User(record[0]) for record in result]
+
+    @staticmethod
+    def get_all_at_branch(branch: "Branch", dont_auth: bool = False) -> list[User]:
+        """
+        Get a list of all users at a given branch as User classes. Returns an empty list if no users exist at that branch.
+
+        :raises PermissionError: If the current user does not have permission to view all users
+        """
+
+        if not dont_auth:
+            ActiveUser.get().raise_without_permission("account.view.all")
+
+        sql = "SELECT user_id FROM public.branchstaff WHERE branch_id=%s;"
+        result = Database.execute_and_fetchall(sql, branch.get_id())
 
         return [User(record[0]) for record in result]
 

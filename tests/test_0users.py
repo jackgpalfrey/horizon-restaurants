@@ -7,12 +7,13 @@ from src.user.UserService import UserService
 from src.user.User import User
 from src.utils.errors import AlreadyExistsError, AuthenticationError, AuthorizationError, InputError
 from src.user.utils import validate_full_name, validate_username, validate_password
+from src.branch.BranchService import BranchService
+from src.city.CityService import CityService
 
 
 usernames = ["test", "test1", "test2"]
 full_names = ["Test User", "Test User Two", "Test User Three"]
 password = "myPassword0!"
-
 
 new_password = "newPassw0rd!"
 newest_password = "evenNewerPassw0rd!"
@@ -23,6 +24,7 @@ user: User = None
 @pytest.fixture(autouse=True, scope="module")
 def before_and_after_test():
     Database.connect()
+    Database.DEBUG_delete_all_tables("DANGEROUSLY DELETE ALL TABLES")
     Database.init()
     UserService.init()
     Role._load_role_file("tests/roles/test-default.yml")
@@ -263,6 +265,23 @@ def test_get_all():
     assert len(users) == 4
 
 
+def test_get_all_at_branch():
+    city = CityService.create("Lancaster")
+    branch = BranchService.create(
+        "Lancaster Branch", "67 Broadmead, Lancaster BS1 3DX", city)
+    UserService.create(
+        "manageruser", "myPassword0!", "TestUser One", branch, role_id=4)
+    UserService.create(
+        "frontenduser", "myPassword0!", "TestUser Two", branch, role_id=1)
+    UserService.create(
+        "kitchenuser", "myPassword0!", "TestUser Three", branch, role_id=2)
+    UserService.create(
+        "chefuser", "myPassword0!", "TestUser Four", branch, role_id=3)
+    users = UserService.get_all_at_branch(branch)
+    assert type(users) == list
+    assert len(users) == 4
+
+
 def test_login_to_admin_account():
     user = UserService.login("admin", "admin")
     assert user is not None
@@ -287,6 +306,18 @@ def test_can_delete_user():
 
     user = UserService.get_by_username(usernames[2])
     assert user is None
+
+
+def test_set_branch():
+    city = CityService.create("Derby")
+    branch = BranchService.create(
+        "Derby Branch", "4 Eastgate Rd, Bristol BS5 6XX", city)
+    user = UserService.create(
+        "manager2", "myPassword0!", "Test User Six", role_id=4)
+    user.set_branch(branch)
+    staff = branch.get_staff()
+    assert type(staff) == list
+    assert len(staff) == 1
 
 
 def test_logout():

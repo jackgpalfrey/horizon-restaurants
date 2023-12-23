@@ -1,6 +1,7 @@
 from ..utils.Database import Database
 from .City import City
 from .utils import validate_city_name
+from src.utils.errors import InputError
 
 
 class CityService:
@@ -47,11 +48,10 @@ class CityService:
     @staticmethod
     def _validate_create_city(city_name: str):
         """
-        Validates given name on validation logic in ./utils.py through length and
+        Validates given name based on validation logic in ./utils.py through length and
         character checking. Called in the create() method for city.
 
-        :raises Exception: If city name input is invalid.
+        :raises InputError: If city name input is invalid.
         """
         if not validate_city_name(city_name):
-            # FIXME: Replace with correct error
-            raise Exception("Invalid name.")
+            raise InputError("Invalid name.")
