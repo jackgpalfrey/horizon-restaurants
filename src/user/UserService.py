@@ -70,7 +70,6 @@ class UserService:
         user = UserService.get_by_username(username, dont_auth=True)
 
         if branch is not None:
-
             user.set_branch(branch)
 
         return UserService.get_by_username(username, dont_auth=True)

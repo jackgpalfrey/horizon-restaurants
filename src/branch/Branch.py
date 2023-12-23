@@ -67,38 +67,34 @@ class Branch:
         result = Database.execute_and_fetchall(
             "SELECT user_id FROM public.branchstaff WHERE branch_id = %s", self._branch_id)
 
-        if result is not None:
-            return [User(record[0]) for record in result]
+        return [User(record[0]) for record in result]
 
     def get_manager(self) -> User | None:
         result = Database.execute_and_fetchone(
             "SELECT user_id FROM public.branchstaff INNER JOIN public.staff ON public.staff.id = public.branchstaff.user_id WHERE public.branchstaff.branch_id = %s AND public.staff.role_id = %s;", self._branch_id, MANAGER_ROLE_ID)
 
         if result is not None:
-            user = UserService.get_by_id(result[0])
-            return user
+            return UserService.get_by_id(result[0])
 
     def set_manager(self, user: User) -> None:
         role = user.get_role()
         role_id = role.get_id()
         if role_id != MANAGER_ROLE_ID:
             raise InputError("Given user is not with manager role.")
-        else:
-            manager_id = user.get_id()
-            branch_manager_id = self.get_manager().get_id(
-            ) if self.get_manager() is not None else None
-            manager_assigned = Database.execute_and_fetchone(
-                "SELECT user_id FROM public.branchstaff WHERE user_id = %s", manager_id)
-            branch_has_manager = Database.execute_and_fetchone(
-                "SELECT user_id FROM public.branchstaff WHERE user_id = %s AND branch_id = %s", branch_manager_id, self._branch_id)
+        manager_id = user.get_id()
+        branch_manager_id = self.get_manager().get_id(
+        ) if self.get_manager() is not None else None
+        manager_assigned = Database.execute_and_fetchone(
+            "SELECT user_id FROM public.branchstaff WHERE user_id = %s", manager_id)
+        branch_has_manager = Database.execute_and_fetchone(
+            "SELECT user_id FROM public.branchstaff WHERE user_id = %s AND branch_id = %s", branch_manager_id, self._branch_id)
 
-            if branch_has_manager is not None:
-                raise AlreadyExistsError(
-                    "Given branch already assigned a manager.")
-            else:
-                if manager_assigned is not None:
-                    # if manager already assigned, the entry will be deleted to remove link between user and any other branches. Each user can work at only one branch.
-                    Database.execute_and_commit(
-                        "DELETE FROM public.branchstaff WHERE user_id = %s", manager_id)
-                Database.execute_and_commit(
-                    "INSERT INTO public.branchstaff (user_id, branch_id) VALUES (%s, %s);", manager_id, self._branch_id)
+        if branch_has_manager is not None:
+            raise AlreadyExistsError(
+                "Given branch already assigned a manager.")
+        if manager_assigned is not None:
+            # if manager already assigned, the entry will be deleted to remove link between user and any other branches. Each user can work at only one branch.
+            Database.execute_and_commit(
+                "DELETE FROM public.branchstaff WHERE user_id = %s", manager_id)
+        Database.execute_and_commit(
+            "INSERT INTO public.branchstaff (user_id, branch_id) VALUES (%s, %s);", manager_id, self._branch_id)
