@@ -85,17 +85,18 @@ class Branch:
             raise InputError("Given user is not with manager role.")
         else:
             manager_id = user.get_id()
-
-            check_if_manager_assigned = Database.execute_and_fetchone(
+            branch_manager_id = self.get_manager().get_id(
+            ) if self.get_manager() is not None else None
+            manager_assigned = Database.execute_and_fetchone(
                 "SELECT user_id FROM public.branchstaff WHERE user_id = %s", manager_id)
-            check_if_branch_has_manager = Database.execute_and_fetchone(
-                "SELECT user_id FROM public.branchstaff WHERE branch_id = %s", self._branch_id)
+            branch_has_manager = Database.execute_and_fetchone(
+                "SELECT user_id FROM public.branchstaff WHERE user_id = %s AND branch_id = %s", branch_manager_id, self._branch_id)
 
-            if check_if_branch_has_manager is not None:
+            if branch_has_manager is not None:
                 raise AlreadyExistsError(
                     "Given branch already assigned a manager.")
             else:
-                if check_if_manager_assigned is not None:
+                if manager_assigned is not None:
                     # if manager already assigned, the entry will be deleted and a new one will be made with the given parameters.
                     Database.execute_and_commit(
                         "DELETE FROM public.branchstaff WHERE user_id = %s", manager_id)
