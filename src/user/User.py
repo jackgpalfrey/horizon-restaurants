@@ -156,6 +156,12 @@ class User:
         Database.execute_and_commit(sql, self._user_id)
 
     def set_branch(self, branch: "Branch") -> None:
+        """
+        Assigns user to branch. If user already assigned, branch_id associated with
+        user is updated. Otherwise, a new entry is made to assign the user to a branch.
+
+        :raises PermissionError: If the current user does not have permission to update branches.
+        """
 
         role = self.get_role()
         role_id = role.get_id()

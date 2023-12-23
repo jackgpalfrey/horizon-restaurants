@@ -51,7 +51,7 @@ class CityService:
         Validates given name on validation logic in ./utils.py through length and
         character checking. Called in the create() method for city.
 
-        :raises Exception: If city name input is invalid.
+        :raises InputError: If city name input is invalid.
         """
         if not validate_city_name(city_name):
             raise InputError("Invalid name.")

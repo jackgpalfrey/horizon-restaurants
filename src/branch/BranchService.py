@@ -14,7 +14,7 @@ class BranchService:
         Creates a new branch using the given parameters.
         A record of the created branch is added to the database.
 
-        :raises Exception: If branch name or address inputs are invalid the branch is not created.
+        :raises AlreadyExistsError: If branch name or address inputs are invalid the branch is not created.
         """
 
         BranchService._validate_create_branch(branch_name, address)

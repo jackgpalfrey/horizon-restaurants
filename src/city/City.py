@@ -19,7 +19,7 @@ class City:
         """
         Sets a new city name using given parameter.
 
-        :raises Exception: If city name is invalid the city name is not set.
+        :raises InputError: If city name is invalid the city name is not set.
         """
         if not validate_city_name(city_name):
             raise InputError("Invalid name.")

@@ -97,15 +97,8 @@ class Branch:
                     "Given branch already assigned a manager.")
             else:
                 if manager_assigned is not None:
-                    # if manager already assigned, the entry will be deleted and a new one will be made with the given parameters.
+                    # if manager already assigned, the entry will be deleted to remove link between user and any other branches. Each user can work at only one branch.
                     Database.execute_and_commit(
                         "DELETE FROM public.branchstaff WHERE user_id = %s", manager_id)
-                # if manager isn't already assigned, a new entry is made.
                 Database.execute_and_commit(
                     "INSERT INTO public.branchstaff (user_id, branch_id) VALUES (%s, %s);", manager_id, self._branch_id)
-
-    # def raise_invalid_branch_name(self, permission: str) -> None:
-    #     """
-    #     :raises InputError: If given branch name is invalid
-    #     """
-    #     raise InputError("Invalid branch name")
