@@ -77,6 +77,15 @@ class Branch:
             return UserService.get_by_id(result[0])
 
     def set_manager(self, user: User) -> None:
+        """
+        Assigns manager to branch and performs necessary checks to ensure user can be assigned.
+        Checks if manager already assigned to a branch and deletes the entry if it exists, a new
+        entry is made using the given parameters. Checks if branch given has a manager, if that
+        is the case, no entry is made because each branch can only have one manager.
+
+        :raises InputError: If given user role is not manager role
+        :raises AlreadyExistsError: If given branch already assigned a manager.
+        """
         role = user.get_role()
         role_id = role.get_id()
         if role_id != MANAGER_ROLE_ID:

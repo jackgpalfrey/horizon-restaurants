@@ -48,7 +48,7 @@ class CityService:
     @staticmethod
     def _validate_create_city(city_name: str):
         """
-        Validates given name on validation logic in ./utils.py through length and
+        Validates given name based on validation logic in ./utils.py through length and
         character checking. Called in the create() method for city.
 
         :raises InputError: If city name input is invalid.
