@@ -9,6 +9,8 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from ..branch.Branch import Branch
 
+MANAGER_ROLE_ID = 4
+
 
 class User:
     def __init__(self, user_id: str) -> None:
@@ -155,6 +157,9 @@ class User:
 
     def set_branch(self, branch: "Branch") -> None:
 
+        role = self.get_role()
+        role_id = role.get_id()
+
         sql_check = "SELECT user_id FROM public.branchstaff WHERE user_id = %s"
 
         check = Database.execute_and_fetchone(sql_check, self._user_id)
@@ -162,7 +167,7 @@ class User:
 
         ActiveUser.get().raise_without_permission("branch.update")
 
-        if check is not None:
+        if check is not None and role_id != MANAGER_ROLE_ID:
             sql = "UPDATE public.branchstaff SET branch_id=%s WHERE user_id=%s;"
         else:
             sql = "INSERT INTO public.branchstaff (branch_id, user_id) VALUES (%s, %s);"

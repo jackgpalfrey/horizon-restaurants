@@ -167,3 +167,48 @@ def test_get_manager():
     manager_role_id = manager_role.get_id()
     assert isinstance(manager, User)
     assert manager_role_id == 4
+
+
+def test_set_manager():
+    branch = BranchService.get_by_name("Plymouth Branch")
+    manager = UserService.create(
+        "manager2", "myPassword0!", "Test User Five", role_id=4)
+    assert isinstance(manager, User)
+    branch.set_manager(manager)
+    new_manager = branch.get_manager()
+    manager_id = manager.get_id()
+    new_manager_id = new_manager.get_id()
+    assert manager_id == new_manager_id
+    assert isinstance(new_manager, User)
+
+
+def test_cant_assign_same_manager():
+    branch = BranchService.get_by_name("Bristol Branch")
+    branch2 = BranchService.get_by_name("Bath Branch")
+    manager = branch2.get_manager()
+    # FIXME: Replace with correct error
+    with pytest.raises(Exception):
+        branch.set_manager(manager)
+
+
+def test_cant_set_manager_with_wrong_role():
+    branch = BranchService.get_by_name("Bath Branch")
+    user = UserService.create(
+        "front-end2", "myPassword0!", "Test User Four", role_id=1)
+    # FIXME: Replace with correct error
+    with pytest.raises(Exception):
+        branch.set_manager(user)
+
+
+def test_set_manager_with_assigned_branch():
+    # Lancaster branch not assigned a manager
+    branch = BranchService.get_by_name("Lancaster Branch")
+    branch2 = BranchService.get_by_name("Bath Branch")
+    manager = branch2.get_manager()
+    manager_id = manager.get_id()
+    branch.set_manager(manager)
+    new_manager = branch.get_manager()
+    new_manager_id = new_manager.get_id()
+    assert manager_id == new_manager_id
+    assert isinstance(new_manager, User)
+    assert branch2.get_manager() == None

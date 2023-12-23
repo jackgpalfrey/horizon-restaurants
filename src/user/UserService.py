@@ -67,19 +67,11 @@ class UserService:
         except UniqueViolation:
             raise AlreadyExistsError(f"User {username} already exists")
 
-        branch_id = branch.get_id() if branch is not None else None
         user = UserService.get_by_username(username, dont_auth=True)
-        user_id = user.get_id()
 
-        branch_sql = """
-        INSERT INTO public.branchstaff (user_id, branch_id) 
-        VALUES (%s, %s);
-        """
+        if branch is not None:
 
-        if branch_id is not None:
-
-            Database.execute_and_commit(
-                branch_sql, user_id, branch_id)
+            user.set_branch(branch)
 
         return UserService.get_by_username(username, dont_auth=True)
 
