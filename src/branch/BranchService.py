@@ -1,7 +1,10 @@
+from psycopg2.errors import UniqueViolation
 from ..utils.Database import Database
 from ..city.City import City
 from .Branch import Branch
 from .utils import validate_branch_name, validate_branch_address
+from src.utils.errors import InputError
+from src.utils.errors import AlreadyExistsError
 
 
 class BranchService:
@@ -17,8 +20,12 @@ class BranchService:
         BranchService._validate_create_branch(branch_name, address)
 
         city_id = city.get_id()
-        Database.execute_and_commit(
-            "INSERT INTO public.branch (name, address, city_id) VALUES(%s, %s, %s)", branch_name, address, city_id)
+
+        try:
+            Database.execute_and_commit(
+                "INSERT INTO public.branch (name, address, city_id) VALUES(%s, %s, %s)", branch_name, address, city_id)
+        except UniqueViolation:
+            raise AlreadyExistsError(f"Branch {branch_name} already exists")
 
         return BranchService.get_by_name(branch_name)
 
@@ -60,12 +67,10 @@ class BranchService:
         Validates given name and address based on validation logic in ./utils.py
         through length and character checking. Called in the create() method for branch.
 
-        :raises Exception: If branch name or address inputs are invalid.
+        :raises InputError: If branch name or address inputs are invalid.
         """
         if not validate_branch_name(branch_name):
-            # FIXME: Replace with correct error
-            raise Exception("Invalid name.")
+            raise InputError("Invalid name.")
 
         if not validate_branch_address(address):
-            # FIXME: Replace with correct error
-            raise Exception("Invalid address.")
+            raise InputError("Invalid address.")

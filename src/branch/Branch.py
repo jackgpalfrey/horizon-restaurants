@@ -4,6 +4,7 @@ from ..city.CityService import CityService
 from ..user.User import User
 from ..user.UserService import UserService
 from ..user.Role import Role
+from src.utils.errors import InputError, AlreadyExistsError
 from .utils import validate_branch_name, validate_branch_address
 
 MANAGER_ROLE_ID = 4
@@ -36,11 +37,10 @@ class Branch:
         """
         Sets a new branch name using given parameter.
 
-        :raises Exception: If branch name is invalid the branch name is not set.
+        :raises InputError: If branch name is invalid the branch name is not set.
         """
         if not validate_branch_name(branch_name):
-            # FIXME: Replace with correct error
-            raise Exception("Invalid name")
+            raise InputError("Invalid branch name")
 
         Database.execute_and_commit(
             "UPDATE public.branch SET name = %s WHERE id = %s", branch_name, self._branch_id)
@@ -49,11 +49,10 @@ class Branch:
         """
         Sets a new branch address using given parameter.
 
-        :raises Exception: If branch address is invalid the address is not set.
+        :raises InputError: If branch address is invalid the address is not set.
         """
         if not validate_branch_address(branch_address):
-            # FIXME: Replace with correct error
-            raise Exception("Invalid address")
+            raise InputError("Invalid address")
 
         Database.execute_and_commit(
             "UPDATE public.branch SET address = %s WHERE id = %s", branch_address, self._branch_id)
@@ -83,7 +82,7 @@ class Branch:
         role = user.get_role()
         role_id = role.get_id()
         if role_id != MANAGER_ROLE_ID:
-            raise Exception("Given user is not with manager role.")
+            raise InputError("Given user is not with manager role.")
         else:
             manager_id = user.get_id()
 
@@ -93,7 +92,8 @@ class Branch:
                 "SELECT user_id FROM public.branchstaff WHERE branch_id = %s", self._branch_id)
 
             if check_if_branch_has_manager is not None:
-                raise Exception("Given branch already assigned a manager.")
+                raise AlreadyExistsError(
+                    "Given branch already assigned a manager.")
             else:
                 if check_if_manager_assigned is not None:
                     # if manager already assigned, the entry will be deleted and a new one will be made with the given parameters.
@@ -102,3 +102,9 @@ class Branch:
                 # if manager isn't already assigned, a new entry is made.
                 Database.execute_and_commit(
                     "INSERT INTO public.branchstaff (user_id, branch_id) VALUES (%s, %s);", manager_id, self._branch_id)
+
+    # def raise_invalid_branch_name(self, permission: str) -> None:
+    #     """
+    #     :raises InputError: If given branch name is invalid
+    #     """
+    #     raise InputError("Invalid branch name")

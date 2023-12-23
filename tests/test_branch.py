@@ -5,6 +5,7 @@ from src.branch.Branch import Branch
 from src.user.UserService import UserService
 from src.user.User import User
 from src.utils.Database import Database
+from src.utils.errors import InputError, AlreadyExistsError
 from src.branch.utils import validate_branch_name, validate_branch_address
 
 branch_name = "Bristol Branch"
@@ -58,8 +59,7 @@ def test_get_all_branches():
 
 def test_cannot_create_duplicate_branch():
     city = CityService.create("Nottingham")
-    # FIXME: Replace with correct error
-    with pytest.raises(Exception):
+    with pytest.raises(AlreadyExistsError):
         BranchService.create(branch_name, branch_address, city)
 
 
@@ -186,8 +186,7 @@ def test_cant_assign_same_manager():
     branch = BranchService.get_by_name("Bristol Branch")
     branch2 = BranchService.get_by_name("Bath Branch")
     manager = branch2.get_manager()
-    # FIXME: Replace with correct error
-    with pytest.raises(Exception):
+    with pytest.raises(AlreadyExistsError):
         branch.set_manager(manager)
 
 
@@ -195,8 +194,7 @@ def test_cant_set_manager_with_wrong_role():
     branch = BranchService.get_by_name("Bath Branch")
     user = UserService.create(
         "front-end2", "myPassword0!", "Test User Four", role_id=1)
-    # FIXME: Replace with correct error
-    with pytest.raises(Exception):
+    with pytest.raises(InputError):
         branch.set_manager(user)
 
 

@@ -1,6 +1,7 @@
 from ..utils.Database import Database
 from .City import City
 from .utils import validate_city_name
+from src.utils.errors import InputError
 
 
 class CityService:
@@ -53,5 +54,4 @@ class CityService:
         :raises Exception: If city name input is invalid.
         """
         if not validate_city_name(city_name):
-            # FIXME: Replace with correct error
-            raise Exception("Invalid name.")
+            raise InputError("Invalid name.")

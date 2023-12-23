@@ -312,8 +312,6 @@ def test_set_branch():
     city = CityService.create("Derby")
     branch = BranchService.create(
         "Derby Branch", "4 Eastgate Rd, Bristol BS5 6XX", city)
-    print(ActiveUser.get().get_role().get_id())
-    print("!!!")
     user = UserService.create(
         "manager2", "myPassword0!", "Test User Six", role_id=4)
     user.set_branch(branch)
