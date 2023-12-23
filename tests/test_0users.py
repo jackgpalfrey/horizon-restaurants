@@ -265,6 +265,23 @@ def test_get_all():
     assert len(users) == 4
 
 
+def test_get_all_at_branch():
+    city = CityService.create("Lancaster")
+    branch = BranchService.create(
+        "Lancaster Branch", "67 Broadmead, Lancaster BS1 3DX", city)
+    UserService.create(
+        "manageruser", "myPassword0!", "TestUser One", branch, role_id=4)
+    UserService.create(
+        "frontenduser", "myPassword0!", "TestUser Two", branch, role_id=1)
+    UserService.create(
+        "kitchenuser", "myPassword0!", "TestUser Three", branch, role_id=2)
+    UserService.create(
+        "chefuser", "myPassword0!", "TestUser Four", branch, role_id=3)
+    users = UserService.get_all_at_branch(branch)
+    assert type(users) == list
+    assert len(users) == 4
+
+
 def test_login_to_admin_account():
     user = UserService.login("admin", "admin")
     assert user is not None

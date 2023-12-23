@@ -136,6 +136,22 @@ class UserService:
         return [User(record[0]) for record in result]
 
     @staticmethod
+    def get_all_at_branch(branch: "Branch", dont_auth: bool = False) -> list[User]:
+        """
+        Get a list of all users at a given branch as User classes. Returns an empty list if no users exist at that branch.
+
+        :raises PermissionError: If the current user does not have permission to view all users
+        """
+
+        if not dont_auth:
+            ActiveUser.get().raise_without_permission("account.view.all")
+
+        sql = "SELECT user_id FROM public.branchstaff WHERE branch_id=%s;"
+        result = Database.execute_and_fetchall(sql, branch.get_id())
+
+        return [User(record[0]) for record in result]
+
+    @staticmethod
     def login(username: str, password: str) -> User:
         """
         Validates credentials and then sets the user as the active user. 
