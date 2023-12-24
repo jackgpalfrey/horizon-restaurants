@@ -31,3 +31,13 @@ def test_create_table():
     result = table.create(branch, 1, 4)
     assert isinstance(table, BranchTables)
     assert isinstance(result, Table)
+
+
+def test_get_by_id():
+    branch = BranchService.get_by_name("Bristol")
+    branch_tables = branch.tables()
+    table = branch_tables.create(branch, 2, 4)
+    got_table = branch_tables.get_by_id(table._table_id)
+    assert type(got_table) == Table
+    assert type(got_table._table_id) == str
+    assert table._table_id == got_table._table_id

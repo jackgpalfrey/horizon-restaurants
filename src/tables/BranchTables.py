@@ -22,3 +22,10 @@ class BranchTables:
             "SELECT id FROM public.table WHERE table_number = %s AND branch_id=%s;", table_number, branch_id)
 
         return Table(result[0])
+
+    def get_by_id(self, table_id: str) -> Table:
+        result = Database.execute_and_fetchone(
+            "SELECT id FROM public.table WHERE id = %s", table_id)
+
+        if result is not None:
+            return Table(result[0])
