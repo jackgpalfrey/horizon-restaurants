@@ -42,3 +42,8 @@ class BranchTables:
             "SELECT id FROM public.table WHERE capacity = %s", table_capacity)
 
         return [Table(record[0]) for record in result]
+
+    def get_all(self) -> list[Table] | None:
+        result = Database.execute_and_fetchall("SELECT id FROM public.table")
+
+        return [Table(record[0]) for record in result]
