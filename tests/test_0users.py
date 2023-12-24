@@ -1,14 +1,22 @@
 import pytest
-from src.user.ActiveUser import ActiveUser
-from src.user.Role import Role
-
-from src.utils.Database import Database
-from src.user.UserService import UserService
-from src.user.User import User
-from src.utils.errors import AlreadyExistsError, AuthenticationError, AuthorizationError, InputError
-from src.user.utils import validate_full_name, validate_username, validate_password
 from src.branch.BranchService import BranchService
 from src.city.CityService import CityService
+from src.user.ActiveUser import ActiveUser
+from src.user.Role import Role
+from src.user.User import User
+from src.user.UserService import UserService
+from src.user.utils import (
+    validate_full_name,
+    validate_password,
+    validate_username
+)
+from src.utils.Database import Database
+from src.utils.errors import (
+    AlreadyExistsError,
+    AuthenticationError,
+    AuthorizationError,
+    InputError,
+)
 
 
 usernames = ["test", "test1", "test2"]
@@ -18,7 +26,7 @@ password = "myPassword0!"
 new_password = "newPassw0rd!"
 newest_password = "evenNewerPassw0rd!"
 new_full_name = "New Full Name"
-user: User = None
+user: User | None = None
 
 
 @pytest.fixture(autouse=True, scope="module")
@@ -43,38 +51,39 @@ def before_and_after_test():
 
 
 def test_username_validation():
-    assert validate_username("test") == True
-    assert validate_username("test123") == True
-    assert validate_username("test-123") == True
-    assert validate_username("Test") == False
-    assert validate_username("123test") == False
-    assert validate_username("test_123") == False
-    assert validate_username("t") == False
-    assert validate_username("te") == True
-    assert validate_username("strlongerthan15c") == False
-    assert validate_username("strequalto15chr") == True
+    assert validate_username("test") is True
+    assert validate_username("test123") is True
+    assert validate_username("test-123") is True
+    assert validate_username("Test") is False
+    assert validate_username("123test") is False
+    assert validate_username("test_123") is False
+    assert validate_username("t") is False
+    assert validate_username("te") is True
+    assert validate_username("strlongerthan15c") is False
+    assert validate_username("strequalto15chr") is True
 
 
 def test_password_validation():
-    assert validate_password("mypassword") == False
-    assert validate_password("myPassword") == False
-    assert validate_password("myPassword0") == False
-    assert validate_password("myPassword0!") == True
-    assert validate_password("myPas0!") == False
-    assert validate_password("myPass0!") == True
-    long_pass = "Mysuperduperlongpasswordthatshouldnotbe@llowedbecauseitslongerthanthe100characterslimitbyjustasingle!"
-    assert validate_password(long_pass) == False
-    assert validate_password(long_pass[:-1]) == True
+    assert validate_password("mypassword") is False
+    assert validate_password("myPassword") is False
+    assert validate_password("myPassword0") is False
+    assert validate_password("myPassword0!") is True
+    assert validate_password("myPas0!") is False
+    assert validate_password("myPass0!") is True
+    long_pass = "Mysuperduperlongpasswordthatshouldnotbe@llowedbecauseits\
+longerthanthe100characterslimitbyjustasingle!"
+    assert validate_password(long_pass) is False
+    assert validate_password(long_pass[:-1]) is True
 
 
 def test_full_name_validation():
-    assert validate_full_name("Test User") == True
-    assert validate_full_name("First Middle Last") == True
-    assert validate_full_name("First Middle Last ") == False
-    assert validate_full_name(" First Middle Last") == False
-    assert validate_full_name("First Middle  Last") == False
-    assert validate_full_name("First Middle Last1") == False
-    assert validate_full_name("First Middle Last!") == False
+    assert validate_full_name("Test User") is True
+    assert validate_full_name("First Middle Last") is True
+    assert validate_full_name("First Middle Last ") is False
+    assert validate_full_name(" First Middle Last") is False
+    assert validate_full_name("First Middle  Last") is False
+    assert validate_full_name("First Middle Last1") is False
+    assert validate_full_name("First Middle Last!") is False
 
 
 def test_can_create_user():
@@ -87,7 +96,7 @@ def test_can_get_user():
     user = UserService.get_by_username(usernames[0])
     assert user is not None
     assert isinstance(user, User)
-    user.get_full_name() == full_names[0]
+    assert user.get_full_name() == full_names[0]
 
 
 def test_cant_create_duplicate_username():
@@ -109,10 +118,12 @@ def test_can_get_user_by_username():
 
 
 def test_can_get_users_username():
+    assert user is not None
     assert user.get_username() == usernames[0]
 
 
 def test_can_get_users_full_name():
+    assert user is not None
     assert user.get_full_name() == full_names[0]
 
 
@@ -132,123 +143,146 @@ def test_cant_create_invalid_full_name():
 
 
 def test_check_is_password_correct():
-    assert user.check_is_password_correct(password) == True
-    assert user.check_is_password_correct("notThePassw0rd!") == False
+    assert user is not None
+    assert user.check_is_password_correct(password) is True
+    assert user.check_is_password_correct("notThePassw0rd!") is False
 
 
 def test_password_is_expired_after_creation():
-    assert user.check_has_password_expired() == True
+    assert user is not None
+    assert user.check_has_password_expired() is True
 
 
 def test_can_set_password_without_validation():
+    assert user is not None
     user.set_password_dont_validate(new_password)
-    assert user.check_is_password_correct(new_password) == True
+    assert user.check_is_password_correct(new_password) is True
 
 
 def test_cant_set_password_with_incorrect_old_password():
+    assert user is not None
     with pytest.raises(AuthorizationError):
         user.set_password("inc0rrectPassw0rd!", newest_password)
 
 
 def test_user_role_defaults_to_zero():
-    print(Role._roles)
-    print(user._get_role_id())
+    assert user is not None
     assert user.get_role().get_id() == 0
 
 
 def test_user_check_permission():
-    assert user.check_permission("test.one") == True
-    assert user.check_permission("test") == False
+    assert user is not None
+    assert user.check_permission("test.one") is True
+    assert user.check_permission("test") is False
 
 
 def test_raise_without_permission():
+    assert user is not None
     with pytest.raises(AuthorizationError):
         user.raise_without_permission("test")
 
 
 def test_cant_set_password_with_invalid_new_password():
+    assert user is not None
     with pytest.raises(InputError):
         user.set_password(new_password, "invalid")
 
 
 def test_can_set_password_with_correct_old_password():
+    assert user is not None
     user.set_password(new_password, newest_password)
-    assert user.check_is_password_correct(newest_password) == True
+    assert user.check_is_password_correct(newest_password) is True
 
 
 def test_password_unexpired_after_setting_new_password():
-    assert user.check_has_password_expired() == False
+    assert user is not None
+    assert user.check_has_password_expired() is False
 
 
 def test_can_set_full_name():
+    assert user is not None
     user.set_full_name(new_full_name)
     assert user.get_full_name() == new_full_name
 
 
 def test_cant_set_invalid_full_name():
+    assert user is not None
     with pytest.raises(InputError):
         user.set_full_name("invalid!")
 
 
 def test_can_set_role():
+    assert user is not None
     role = Role.get_by_id(1)
+    assert role is not None
     user.set_role(role)
     assert user.get_role().get_id() == 1
-    assert user.check_permission("test.one") == False
-    assert user.check_permission("other.one") == True
+    assert user.check_permission("test.one") is False
+    assert user.check_permission("other.one") is True
 
 
 def test_roles_can_be_extended():
+    assert user is not None
     role = Role.get_by_id(2)
+    assert role is not None
     user.set_role(role)
     assert user.get_role().get_id() == 2
-    assert user.check_permission("test.one") == True
-    assert user.check_permission("extend.one") == True
+    assert user.check_permission("test.one") is True
+    assert user.check_permission("extend.one") is True
 
 
 def test_implicit_wildcard_permission():
+    assert user is not None
     role = Role.get_by_id(3)
+    assert role is not None
     user.set_role(role)
     assert user.get_role().get_id() == 3
-    assert user.check_permission("expltest.one") == True
-    assert user.check_permission("expltest.two") == True
-    assert user.check_permission("expltest.three") == True
-    assert user.check_permission("expltes.four") == False
+    assert user.check_permission("expltest.one") is True
+    assert user.check_permission("expltest.two") is True
+    assert user.check_permission("expltest.three") is True
+    assert user.check_permission("expltes.four") is False
 
 
 def test_explicit_wildcard_permission():
+    assert user is not None
     role = Role.get_by_id(4)
+    assert role is not None
     user.set_role(role)
     assert user.get_role().get_id() == 4
-    assert user.check_permission("my.permission") == True
-    assert user.check_permission("your.permission") == True
-    assert user.check_permission("your.other.permission") == True
+    assert user.check_permission("my.permission") is True
+    assert user.check_permission("your.permission") is True
+    assert user.check_permission("your.other.permission") is True
 
 
 def test_permission_negation():
+    assert user is not None
     role = Role.get_by_id(5)
+    assert role is not None
     user.set_role(role)
     assert user.get_role().get_id() == 5
-    assert user.check_permission("test.one") == True
-    assert user.check_permission("permission.good") == True
-    assert user.check_permission("permission.bad") == False
+    assert user.check_permission("test.one") is True
+    assert user.check_permission("permission.good") is True
+    assert user.check_permission("permission.bad") is False
 
 
 def test_multiple_extends():
+    assert user is not None
     role = Role.get_by_id(6)
+    assert role is not None
     user.set_role(role)
     assert user.get_role().get_id() == 6
-    assert user.check_permission("test.one") == True
-    assert user.check_permission("test.two") == True
-    assert user.check_permission("other.one") == True
-    assert user.check_permission("other.two") == True
-    assert user.check_permission("permission.cool") == True
-    assert user.check_permission("random.one") == False
+    assert user.check_permission("test.one") is True
+    assert user.check_permission("test.two") is True
+    assert user.check_permission("other.one") is True
+    assert user.check_permission("other.two") is True
+    assert user.check_permission("permission.cool") is True
+    assert user.check_permission("random.one") is False
 
 
 def test_can_expire_password():
+    assert user is not None
     user.expire_password()
-    assert user.check_has_password_expired() == True
+    assert user.check_has_password_expired() is True
 
 
 def test_get_by_id():
@@ -278,7 +312,7 @@ def test_get_all_at_branch():
     UserService.create(
         "chefuser", "myPassword0!", "TestUser Four", branch, role_id=3)
     users = UserService.get_all_at_branch(branch)
-    assert type(users) == list
+    assert isinstance(users, list)
     assert len(users) == 4
 
 
@@ -299,9 +333,9 @@ def test_get_active_user():
 
 
 def test_can_delete_user():
-    user = UserService.create(usernames[2], password, full_names[2])
-
+    UserService.create(usernames[2], password, full_names[2])
     user = UserService.get_by_username(usernames[2])
+    assert user is not None
     user.delete()
 
     user = UserService.get_by_username(usernames[2])
@@ -316,7 +350,7 @@ def test_set_branch():
         "manager2", "myPassword0!", "Test User Six", role_id=4)
     user.set_branch(branch)
     staff = branch.get_staff()
-    assert type(staff) == list
+    assert isinstance(staff, list)
     assert len(staff) == 1
 
 
@@ -329,6 +363,7 @@ def test_logout():
 
 
 def test_cant_update_when_logged_out():
+    assert user is not None
     with pytest.raises(AuthenticationError):
         user.set_password(newest_password, new_password)
 
@@ -337,6 +372,7 @@ def test_cant_update_when_logged_out():
 
 
 def test_cant_update_any_when_non_admin_role():
+    assert user is not None
     UserService.login(usernames[1], password)
 
     with pytest.raises(AuthorizationError):
@@ -346,4 +382,6 @@ def test_cant_update_any_when_non_admin_role():
         user.set_full_name(full_names[0])
 
     with pytest.raises(AuthorizationError):
-        user.set_role(Role.get_by_id(1))
+        role = Role.get_by_id(1)
+        assert role is not None
+        user.set_role(role)
