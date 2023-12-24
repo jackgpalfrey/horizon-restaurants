@@ -14,3 +14,8 @@ class Table:
         capacity = Database.execute_and_fetchone(
             "SELECT capacity FROM public.table WHERE id = %s", self._table_id)
         return capacity[0]
+
+    def set_capacity(self, table_capacity: int) -> None:
+
+        Database.execute_and_commit(
+            "UPDATE public.table SET capacity = %s WHERE id = %s", table_capacity, self._table_id)
