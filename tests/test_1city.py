@@ -33,8 +33,8 @@ def test_get_city_by_name():
 def test_get_city_by_id():
     created_city = CityService.create("Cardiff")
     got_city = CityService.get_by_id(created_city._city_id)
-    assert type(got_city) == City
-    assert type(got_city._city_id) == str
+    assert isinstance(got_city, City)
+    assert isinstance(got_city._city_id, str)
     assert created_city._city_id == got_city._city_id
 
 
@@ -43,7 +43,7 @@ def test_get_all_cities():
     assert len(city) == 2
     for i in range(len(city)):
         assert isinstance(city[i], City)
-    assert type(city) == list
+    assert isinstance(city, list)
 
 
 def test_get_city_name():
@@ -74,10 +74,10 @@ def test_creating_cities_for_branches():
 
 
 def test_branch_name_validation():
-    assert validate_city_name("Test City") == True
-    assert validate_city_name("Bristol") == True
-    assert validate_city_name("Bristol City ") == False
-    assert validate_city_name(" Bristol City") == False
-    assert validate_city_name("Bristol  City") == False
-    assert validate_city_name("Bristol City1") == False
-    assert validate_city_name("Bristol City!") == False
+    assert validate_city_name("Test City") is True
+    assert validate_city_name("Bristol") is True
+    assert validate_city_name("Bristol City ") is False
+    assert validate_city_name(" Bristol City") is False
+    assert validate_city_name("Bristol  City") is False
+    assert validate_city_name("Bristol City1") is False
+    assert validate_city_name("Bristol City!") is False
