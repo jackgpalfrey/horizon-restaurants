@@ -77,7 +77,6 @@ def test_get_table_number():
     table = branch_tables.create(branch, 3, 2)
     table_number = table.get_table_number()
     assert table_number == 3
-    assert table_number == table.get_table_number()
 
 
 def test_get_table_capacity():
@@ -86,4 +85,3 @@ def test_get_table_capacity():
     table = branch_tables.create(branch, 4, 6)
     capacity = table.get_capacity()
     assert capacity == 6
-    assert capacity == table.get_capacity()
