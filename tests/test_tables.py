@@ -41,3 +41,10 @@ def test_get_by_id():
     assert type(got_table) == Table
     assert type(got_table._table_id) == str
     assert table._table_id == got_table._table_id
+
+
+def test_get_by_number():
+    branch = BranchService.get_by_name("Bristol")
+    branch_tables = branch.tables()
+    got_table = branch_tables.get_by_number(2)
+    assert isinstance(got_table, Table)

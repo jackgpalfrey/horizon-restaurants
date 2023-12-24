@@ -29,3 +29,10 @@ class BranchTables:
 
         if result is not None:
             return Table(result[0])
+
+    def get_by_number(self, table_number: int) -> Table | None:
+        result = Database.execute_and_fetchone(
+            "SELECT table_number FROM public.table WHERE table_number = %s", table_number)
+
+        if result is not None:
+            return Table(result[0])
