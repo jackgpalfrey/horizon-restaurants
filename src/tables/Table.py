@@ -17,10 +17,23 @@ class Table:
         return capacity[0]
 
     def set_capacity(self, table_capacity: int) -> None:
+        """
+        Updates the table capicity to the given capacity.
+
+        :raises AuthorizationError: If active user does not have permission to update tables.
+        """
+
+        ActiveUser.get().raise_without_permission("table.update")
+
         Database.execute_and_commit(
             "UPDATE public.table SET capacity = %s WHERE id = %s", table_capacity, self._table_id)
 
     def delete(self) -> None:
+        """
+        Deletes the table record from the database.
+
+        :raises AuthorizationError: If active user does not have permission to delete tables.
+        """
 
         ActiveUser.get().raise_without_permission("table.delete")
 
