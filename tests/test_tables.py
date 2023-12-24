@@ -50,15 +50,6 @@ def test_get_table_by_number():
     assert isinstance(got_table, Table)
 
 
-def test_get_table_capacity():
-    branch = BranchService.get_by_name("Bristol")
-    branch_tables = branch.tables()
-    table = branch_tables.create(branch, 3, 6)
-    capacity = table.get_capacity()
-    assert capacity == 6
-    assert capacity == table.get_capacity()
-
-
 def test_find_table_by_capacity():
     branch = BranchService.get_by_name("Bristol")
     branch_tables = branch.tables()
@@ -74,7 +65,25 @@ def test_get_all_tables():
     branch = BranchService.get_by_name("Bristol")
     branch_tables = branch.tables()
     tables = branch_tables.get_all()
-    assert len(tables) == 3
+    assert len(tables) == 2
     for i in range(len(tables)):
         assert isinstance(tables[i], Table)
     assert type(tables) == list
+
+
+def test_get_table_number():
+    branch = BranchService.get_by_name("Bristol")
+    branch_tables = branch.tables()
+    table = branch_tables.create(branch, 3, 2)
+    table_number = table.get_table_number()
+    assert table_number == 3
+    assert table_number == table.get_table_number()
+
+
+def test_get_table_capacity():
+    branch = BranchService.get_by_name("Bristol")
+    branch_tables = branch.tables()
+    table = branch_tables.create(branch, 4, 6)
+    capacity = table.get_capacity()
+    assert capacity == 6
+    assert capacity == table.get_capacity()

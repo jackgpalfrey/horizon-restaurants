@@ -5,6 +5,11 @@ class Table:
     def __init__(self, table_id: str):
         self._table_id = table_id
 
+    def get_table_number(self) -> str:
+        table_number = Database.execute_and_fetchone(
+            "SELECT table_number FROM public.table WHERE id = %s", self._table_id)
+        return table_number[0]
+
     def get_capacity(self) -> int:
         capacity = Database.execute_and_fetchone(
             "SELECT capacity FROM public.table WHERE id = %s", self._table_id)
