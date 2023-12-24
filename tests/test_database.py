@@ -1,5 +1,3 @@
-import psycopg2
-
 from src.utils.Database import Database
 
 
