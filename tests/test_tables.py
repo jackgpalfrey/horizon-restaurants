@@ -21,3 +21,13 @@ def before_and_after_test():
     yield
 
     Database.close()
+
+
+def test_create_table():
+    city = CityService.create("Bristol")
+    branch = BranchService.create(
+        "Bristol", "15-29 Union St, Bristol BS1 2DF", city)
+    table = branch.tables()
+    result = table.create(branch, 1, 4)
+    assert isinstance(table, BranchTables)
+    assert isinstance(result, Table)
