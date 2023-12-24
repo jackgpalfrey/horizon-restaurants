@@ -48,3 +48,12 @@ def test_get_by_number():
     branch_tables = branch.tables()
     got_table = branch_tables.get_by_number(2)
     assert isinstance(got_table, Table)
+
+
+def test_get_capacity():
+    branch = BranchService.get_by_name("Bristol")
+    branch_tables = branch.tables()
+    table = branch_tables.create(branch, 3, 6)
+    capacity = table.get_capacity()
+    assert capacity == 6
+    assert capacity == table.get_capacity()
