@@ -1,4 +1,3 @@
-from ..branch.Branch import Branch
 from .Table import Table
 from ..utils.Database import Database
 

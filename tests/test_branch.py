@@ -2,6 +2,7 @@ import pytest
 from src.branch.BranchService import BranchService
 from src.city.CityService import CityService
 from src.branch.Branch import Branch
+from src.tables.BranchTables import BranchTables
 from src.user.UserService import UserService
 from src.user.User import User
 from src.utils.Database import Database
@@ -210,3 +211,10 @@ def test_set_manager_with_assigned_branch():
     assert manager_id == new_manager_id
     assert isinstance(new_manager, User)
     assert branch2.get_manager() == None
+
+
+def test_create_instance_BranchTables():
+    city = CityService.create("Plymouth")
+    table = BranchService.create(
+        "Test Branch", "15-29 Union St, Bristol BS1 2DF", city).tables()
+    assert isinstance(table, BranchTables)

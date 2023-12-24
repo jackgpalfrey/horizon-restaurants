@@ -1,0 +1,23 @@
+import pytest
+from src.branch.BranchService import BranchService
+from src.city.CityService import CityService
+from src.branch.Branch import Branch
+from src.tables.Table import Table
+from src.tables.BranchTables import BranchTables
+from src.user.UserService import UserService
+from src.utils.Database import Database
+from src.utils.errors import InputError, AlreadyExistsError
+
+
+@pytest.fixture(autouse=True, scope="module")
+def before_and_after_test():
+    Database.connect()
+    Database.DEBUG_delete_all_tables("DANGEROUSLY DELETE ALL TABLES")
+    Database.init()
+    UserService.init()
+
+    UserService.login("admin", "admin")
+
+    yield
+
+    Database.close()

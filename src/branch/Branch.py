@@ -1,11 +1,12 @@
+from .utils import validate_branch_name, validate_branch_address
+from src.utils.errors import InputError, AlreadyExistsError
 from ..utils.Database import Database
 from ..city.City import City
 from ..city.CityService import CityService
 from ..user.User import User
 from ..user.UserService import UserService
 from ..user.Role import Role
-from src.utils.errors import InputError, AlreadyExistsError
-from .utils import validate_branch_name, validate_branch_address
+from ..tables.BranchTables import BranchTables
 
 MANAGER_ROLE_ID = 4
 
@@ -13,6 +14,9 @@ MANAGER_ROLE_ID = 4
 class Branch:
     def __init__(self, branch_id: str):
         self._branch_id = branch_id
+
+    def tables(self):
+        return BranchTables(self._branch_id)
 
     def get_id(self) -> str:
         return self._branch_id
