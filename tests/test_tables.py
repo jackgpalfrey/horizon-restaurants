@@ -95,3 +95,11 @@ def test_set_table_capacity():
     table.set_capacity(2)
     assert isinstance(table, Table)
     assert table.get_capacity() == 2
+
+
+def test_delete_table():
+    branch = BranchService.get_by_name("Bristol")
+    branch_tables = branch.tables()
+    table = branch_tables.get_by_number(1)
+    table.delete()
+    assert branch_tables.get_by_number(1) is None

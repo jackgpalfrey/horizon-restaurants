@@ -1,4 +1,5 @@
 from ..utils.Database import Database
+from ..user.ActiveUser import ActiveUser
 
 
 class Table:
@@ -16,6 +17,12 @@ class Table:
         return capacity[0]
 
     def set_capacity(self, table_capacity: int) -> None:
-
         Database.execute_and_commit(
             "UPDATE public.table SET capacity = %s WHERE id = %s", table_capacity, self._table_id)
+
+    def delete(self) -> None:
+
+        ActiveUser.get().raise_without_permission("table.delete")
+
+        Database.execute_and_commit(
+            "DELETE FROM public.table WHERE id = %s", self._table_id)
