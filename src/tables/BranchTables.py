@@ -36,3 +36,10 @@ class BranchTables:
 
         if result is not None:
             return Table(result[0])
+
+    def find_by_capacity(self, table_capacity: int) -> Table:
+        result = Database.execute_and_fetchone(
+            "SELECT id FROM public.table WHERE capacity = %s", table_capacity)
+
+        if result is not None:
+            return Table(result[0])
