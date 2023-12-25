@@ -47,7 +47,7 @@ class BranchTables:
 
     def find_by_capacity(self, table_capacity: int) -> list[Table]:
         result = Database.execute_and_fetchall(
-            "SELECT id FROM public.table WHERE capacity = %s", table_capacity)
+            "SELECT id FROM public.table WHERE capacity >= %s ORDER BY capacity", table_capacity)
 
         return [Table(record[0]) for record in result]
 
