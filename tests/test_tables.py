@@ -28,7 +28,7 @@ def test_create_table():
     branch = BranchService.create(
         "Bristol", "15-29 Union St, Bristol BS1 2DF", city)
     table = branch.tables()
-    result = table.create(branch, 1, 4)
+    result = table.create(1, 4)
     assert isinstance(table, BranchTables)
     assert isinstance(result, Table)
 
@@ -36,7 +36,7 @@ def test_create_table():
 def test_get_table_by_id():
     branch = BranchService.get_by_name("Bristol")
     branch_tables = branch.tables()
-    table = branch_tables.create(branch, 2, 2)
+    table = branch_tables.create(2, 2)
     got_table = branch_tables.get_by_id(table._table_id)
     assert type(got_table) == Table
     assert type(got_table._table_id) == str
@@ -75,7 +75,7 @@ def test_get_all_tables():
 def test_get_table_number():
     branch = BranchService.get_by_name("Bristol")
     branch_tables = branch.tables()
-    table = branch_tables.create(branch, 3, 2)
+    table = branch_tables.create(3, 2)
     table_number = table.get_table_number()
     assert table_number == 3
 
@@ -83,7 +83,7 @@ def test_get_table_number():
 def test_get_table_capacity():
     branch = BranchService.get_by_name("Bristol")
     branch_tables = branch.tables()
-    table = branch_tables.create(branch, 4, 6)
+    table = branch_tables.create(4, 6)
     capacity = table.get_capacity()
     assert capacity == 6
 

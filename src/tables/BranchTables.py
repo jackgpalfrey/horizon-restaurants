@@ -12,7 +12,7 @@ class BranchTables:
     def __init__(self, branch_id: str):
         self._branch_id = branch_id
 
-    def create(self, branch: "Branch", table_number: int, table_capacity: int) -> Table:
+    def create(self, table_number: int, table_capacity: int) -> Table:
         """
         Creates a new table using the given parameters.
         A record of the created table is added to the database.
@@ -20,14 +20,14 @@ class BranchTables:
         :raises AuthorizationError: If active user does not have permission to create tables.
         """
 
-        branch_id = branch.get_id()
+        # branch_id = branch.get_id()
 
         ActiveUser.get().raise_without_permission("table.create")
 
         Database.execute_and_commit(
-            "INSERT INTO public.table (table_number, capacity, branch_id) VALUES(%s, %s, %s)", table_number, table_capacity, branch_id)
+            "INSERT INTO public.table (table_number, capacity, branch_id) VALUES(%s, %s, %s)", table_number, table_capacity, self._branch_id)
         result = Database.execute_and_fetchone(
-            "SELECT id FROM public.table WHERE table_number = %s AND branch_id=%s;", table_number, branch_id)
+            "SELECT id FROM public.table WHERE table_number = %s AND branch_id=%s;", table_number, self._branch_id)
 
         return Table(result[0])
 
