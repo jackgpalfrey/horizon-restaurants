@@ -20,8 +20,6 @@ class BranchTables:
         :raises AuthorizationError: If active user does not have permission to create tables.
         """
 
-        # branch_id = branch.get_id()
-
         ActiveUser.get().raise_without_permission("table.create")
 
         Database.execute_and_commit(
