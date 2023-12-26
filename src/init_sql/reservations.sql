@@ -1,8 +1,9 @@
-CREATE TABLE IF NOT EXISTS public.table(
+CREATE TABLE IF NOT EXISTS public.reservations(
     id uuid NOT NULL DEFAULT gen_random_uuid() UNIQUE,
     customer_name text NOT NULL,
-    start_time DATETIME NOT NULL,
-    end_time DATETIME,
+    reservation_date DATE NOT NULL,
+    start_time TIME NOT NULL,
+    end_time TIME NOT NULL,
     guest_num uuid NOT NULL,
     table_id uuid NOT NULL,
     PRIMARY KEY (id),
