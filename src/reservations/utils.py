@@ -1,5 +1,6 @@
 import re
 from datetime import datetime
+from ..tables.Table import Table
 
 CUSTOMER_NAME_MIN_LEN = 5  # INCLUSIVE
 CUSTOMER_NAME_MAX_LEN = 50  # INCLUSIVE
@@ -23,3 +24,10 @@ def validate_customer_name(customer_name: str):
     CORRECT_FORMAT = CUSTOMER_NAME_REGEX.match(customer_name) is not None
 
     return ABOVE_MIN and BELOW_MAX and CORRECT_FORMAT
+
+
+def validate_guest_num(table: Table, guest_num: int):
+    table_capacity = table.get_capacity()
+    CAPACITY_SUFFICIENT = table_capacity >= guest_num
+
+    return CAPACITY_SUFFICIENT

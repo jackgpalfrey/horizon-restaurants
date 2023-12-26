@@ -78,4 +78,23 @@ def test_cant_create_reservation_with_invalid_customer_name():
     branch_reservation = branch.reservations()
     with pytest.raises(InputError):
         branch_reservation.create(
-            table, "abc", "2023-12-25", start_time, guest_num)
+            table, "abc", "2023-12-26", start_time, guest_num)
+
+
+def test_can_create_reservation_with_bigger_capacity():
+    branch = BranchService.get_by_name("Bristol")
+    branch_table = branch.tables()
+    table = branch_table.get_by_number(1)
+    branch_reservation = branch.reservations()
+    branch_reservation.create(
+        table, "Rosales Dennis", "2023-12-26", start_time, 2)
+
+
+def test_cant_create_reservation_with_insufficient_capacity():
+    branch = BranchService.get_by_name("Bristol")
+    branch_table = branch.tables()
+    table = branch_table.get_by_number(1)
+    branch_reservation = branch.reservations()
+    with pytest.raises(InputError):
+        branch_reservation.create(
+            table, "Dennis Mccullough", "2023-12-26", start_time, 5)

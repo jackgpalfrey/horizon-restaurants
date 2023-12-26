@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from .Reservation import Reservation
-from .utils import validate_reservation_date, validate_customer_name
+from .utils import validate_reservation_date, validate_customer_name, validate_guest_num
 from ..tables.Table import Table
 from ..user.ActiveUser import ActiveUser
 from ..utils.Database import Database
@@ -21,7 +21,7 @@ class BranchReservations:
         reservation_date = datetime.strptime(reservation_date, '%Y-%m-%d')
 
         BranchReservations._validate_create_reservation(
-            table_id, customer_name, reservation_date, guest_num)
+            table, customer_name, reservation_date, guest_num)
 
         # reference: https://blog.finxter.com/how-to-add-time-onto-a-datetime-object-in-python/
 
@@ -39,12 +39,12 @@ class BranchReservations:
 
         return Reservation(id)
 
-    def _validate_create_reservation(table_id: str, customer_name: str, reservation_date: datetime, guest_num: int) -> None:
+    def _validate_create_reservation(table: Table, customer_name: str, reservation_date: datetime, guest_num: int) -> None:
         """
         Validates given date, guest number, and customer name based on validation logic
         in ./utils.py Called in the create() method for reservations.
 
-        :raises InputError: If customer name, reservation date, or guest number is invalid.
+        :raises InputError: If reservation date, customer name, or guest number is invalid.
         :raises AlreadyExistsError: If customer name provided already has a reservation booked.
         """
 
@@ -54,3 +54,6 @@ class BranchReservations:
 
         if not validate_customer_name(customer_name):
             raise InputError("Invalid customer name.")
+
+        if not validate_guest_num(table, guest_num):
+            raise InputError("Customer number exceeds table capacity.")
