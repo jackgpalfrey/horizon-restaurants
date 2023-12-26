@@ -7,7 +7,7 @@ from src.utils.Database import Database
 
 customer_name = "Glenn Juarez"
 reservation_date = "2023-12-26"  # FORMAT YY/MM/DD
-start_time = "14:50"  # FORMAT HH:MM
+start_time = "21:50"  # FORMAT HH:MM
 guest_num = 4
 
 

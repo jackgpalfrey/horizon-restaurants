@@ -1,8 +1,10 @@
 from datetime import datetime, timedelta
 from .Reservation import Reservation
+from .utils import validate_reservation_date
 from ..tables.Table import Table
 from ..user.ActiveUser import ActiveUser
 from ..utils.Database import Database
+from src.utils.errors import InputError
 
 
 class BranchReservations:
@@ -14,6 +16,12 @@ class BranchReservations:
         ActiveUser.get().raise_without_permission("reservation.create")
 
         table_id = table._table_id
+
+        # reference: https://www.digitalocean.com/community/tutorials/python-string-to-datetime-strptime
+        reservation_date = datetime.strptime(reservation_date, '%Y-%m-%d')
+
+        BranchReservations._validate_create_reservation(
+            table_id, customer_name, reservation_date, guest_num)
 
         # reference: https://blog.finxter.com/how-to-add-time-onto-a-datetime-object-in-python/
 
@@ -30,3 +38,16 @@ class BranchReservations:
         id = result[0]
 
         return Reservation(id)
+
+    def _validate_create_reservation(table_id: str, customer_name: str, reservation_date: datetime, guest_num: int) -> None:
+        """
+        Validates given date, guest number, and customer name based on validation logic
+        in ./utils.py Called in the create() method for reservations.
+
+        :raises InputError: If customer name, reservation date, or guest number is invalid.
+        :raises AlreadyExistsError: If customer name provided already has a reservation booked.
+        """
+
+        if not validate_reservation_date(reservation_date):
+            raise InputError(
+                "Invalid reservation date. The reservation must be booked today or at a future date.")
