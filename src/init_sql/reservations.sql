@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS public.reservations(
     reservation_date DATE NOT NULL,
     start_time TIME NOT NULL,
     end_time TIME NOT NULL,
-    guest_num uuid NOT NULL,
+    guest_num integer NOT NULL,
     table_id uuid NOT NULL,
     branch_id uuid NOT NULL,
     PRIMARY KEY (id),
