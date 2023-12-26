@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from .Reservation import Reservation
-from .utils import validate_reservation_date
+from .utils import validate_reservation_date, validate_customer_name
 from ..tables.Table import Table
 from ..user.ActiveUser import ActiveUser
 from ..utils.Database import Database
@@ -51,3 +51,6 @@ class BranchReservations:
         if not validate_reservation_date(reservation_date):
             raise InputError(
                 "Invalid reservation date. The reservation must be booked today or at a future date.")
+
+        if not validate_customer_name(customer_name):
+            raise InputError("Invalid customer name.")

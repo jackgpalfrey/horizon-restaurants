@@ -2,6 +2,7 @@ import pytest
 from src.branch.BranchService import BranchService
 from src.city.CityService import CityService
 from src.reservations.Reservation import Reservation
+from src.reservations.utils import validate_customer_name
 from src.user.UserService import UserService
 from src.utils.Database import Database
 from src.utils.errors import InputError
@@ -56,3 +57,25 @@ def test_cant_create_reservation_with_past_date():
     with pytest.raises(InputError):
         branch_reservation.create(
             table, "Mark Raymond", "2023-12-25", start_time, guest_num)
+
+
+def test_customer_name_validation():
+    assert validate_customer_name("Dennis Mccullough") == True
+    assert validate_customer_name("Dennis Rosales Mccullough") == True
+    assert validate_customer_name("Dennis Rosales Mccullough ") == False
+    assert validate_customer_name(" Dennis Rosales Mccullough") == False
+    assert validate_customer_name("Dennis Rosales  Mccullough") == False
+    assert validate_customer_name("1234") == False
+    assert validate_customer_name("1 1 1!") == False
+    assert validate_customer_name("Dennis1 Rosales2 Mccullough3") == False
+    assert validate_customer_name("1Dennis 2Rosales 3Mccullough") == False
+
+
+def test_cant_create_reservation_with_invalid_customer_name():
+    branch = BranchService.get_by_name("Bristol")
+    branch_table = branch.tables()
+    table = branch_table.get_by_number(1)
+    branch_reservation = branch.reservations()
+    with pytest.raises(InputError):
+        branch_reservation.create(
+            table, "abc", "2023-12-25", start_time, guest_num)
