@@ -7,6 +7,7 @@ from ..user.User import User
 from ..user.UserService import UserService
 from ..user.Role import Role
 from ..tables.BranchTables import BranchTables
+from ..reservations.BranchReservations import BranchReservations
 
 MANAGER_ROLE_ID = 4
 
@@ -17,6 +18,9 @@ class Branch:
 
     def tables(self):
         return BranchTables(self._branch_id)
+
+    def reservations(self):
+        return BranchReservations(self._branch_id)
 
     def get_id(self) -> str:
         return self._branch_id
