@@ -1,9 +1,7 @@
 """Module for Branch Managment."""
 from typing import Any
 from ..city.City import City
-from ..city.CityService import CityService
 from ..user.User import User
-from ..user.UserService import UserService
 from ..utils.Database import Database
 from ..utils.errors import AlreadyExistsError, InputError
 from .utils import validate_branch_address, validate_branch_name
@@ -39,7 +37,7 @@ class Branch:
         city_id: Any = Database.execute_and_fetchone(
             "SELECT city_id FROM public.branch WHERE id = %s", self._branch_id)
 
-        return CityService.get_by_id(city_id[0])
+        return City(city_id[0])
 
     def set_branch_name(self, branch_name: str) -> None:
         """
@@ -94,7 +92,7 @@ class Branch:
             sql, self._branch_id, MANAGER_ROLE_ID)
 
         if result is not None:
-            return UserService.get_by_id(result[0])
+            return User(result[0])
 
     def set_manager(self, user: User) -> None:
         """

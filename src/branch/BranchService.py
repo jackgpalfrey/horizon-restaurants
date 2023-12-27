@@ -1,6 +1,4 @@
 """Module for creating and accessing branches."""
-from typing import Any
-
 from psycopg2.errors import UniqueViolation
 
 from src.utils.errors import InputError
@@ -30,14 +28,18 @@ class BranchService:
         city_id = city.get_id()
 
         try:
-            Database.execute_and_commit(
+            cursor = Database.execute(
                 "INSERT INTO public.branch (name, address, city_id)\
-                VALUES(%s, %s, %s)", branch_name, address, city_id)
+                VALUES (%s, %s, %s) RETURNING id",
+                branch_name, address, city_id)
         except UniqueViolation:
             raise AlreadyExistsError(f"Branch {branch_name} already exists")
 
-        branch: Any = BranchService.get_by_name(branch_name)
-        return branch
+        Database.commit()
+        result = cursor.fetchone()
+        assert result is not None
+
+        return Branch(result[0])
 
     @staticmethod
     def get_by_name(branch_name: str) -> Branch | None:

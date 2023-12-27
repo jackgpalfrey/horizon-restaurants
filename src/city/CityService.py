@@ -20,10 +20,13 @@ class CityService:
         """
         CityService._validate_create_city(city_name)
 
-        Database.execute_and_commit(
-            "INSERT INTO public.city (name) VALUES(%s)", city_name)
-        result = Database.execute_and_fetchone(
-            "SELECT id FROM public.city WHERE name = %s", city_name)
+        cursor = Database.execute(
+            "INSERT INTO public.city (name) VALUES(%s) RETURNING id",
+            city_name)
+
+        Database.commit()
+        result = cursor.fetchone()
+
         assert result is not None  # TODO: See City.py todo
         return City(result[0])
 

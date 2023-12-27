@@ -57,7 +57,7 @@ class UserService:
         """
         sql = """
         INSERT INTO public.staff (username, password, full_name, role_id)
-        VALUES (%s, %s, %s, %s);
+        VALUES (%s, %s, %s, %s) RETURNING id;
         """
 
         # Creating an admin account is handle immediately at initialisation
@@ -69,13 +69,15 @@ class UserService:
         hashed_password = hash_password(password)
 
         try:
-            Database.execute_and_commit(
+            cursor = Database.execute(
                 sql, username, hashed_password, full_name, role_id)
         except UniqueViolation:
             raise AlreadyExistsError(f"User {username} already exists")
 
-        user = UserService.get_by_username(username, dont_auth=True)
-        assert user is not None
+        Database.commit()
+        result = cursor.fetchone()
+        assert result is not None
+        user = User(result[0])
 
         if branch is not None:
             user.set_branch(branch)
