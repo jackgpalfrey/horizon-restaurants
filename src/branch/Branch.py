@@ -1,9 +1,12 @@
 """Module for Branch Managment."""
 from typing import Any
+
+from src.utils.errors import AlreadyExistsError, InputError
+
 from ..city.City import City
+from ..tables.BranchTables import BranchTables
 from ..user.User import User
 from ..utils.Database import Database
-from ..utils.errors import AlreadyExistsError, InputError
 from .utils import validate_branch_address, validate_branch_name
 
 MANAGER_ROLE_ID = 4
@@ -15,6 +18,10 @@ class Branch:
     def __init__(self, branch_id: str):
         """Do not call outside of BranchService."""
         self._branch_id = branch_id
+
+    def tables(self):
+        """Access table managment methods."""
+        return BranchTables(self._branch_id)
 
     def get_id(self) -> str:
         """Get ID of branch."""
