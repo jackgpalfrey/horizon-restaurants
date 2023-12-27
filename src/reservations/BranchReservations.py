@@ -53,3 +53,10 @@ class BranchReservations:
 
         if not validate_guest_num(table, guest_num):
             raise InputError("Customer number exceeds table capacity.")
+
+    def get_by_id(self, reservation_id: str) -> Reservation:
+        result = Database.execute_and_fetchone(
+            "SELECT id FROM public.reservations WHERE id = %s", reservation_id)
+
+        if result is not None:
+            return Reservation(result[0])

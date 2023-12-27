@@ -274,6 +274,20 @@ def test_set_invalid_guest_num():
     assert table is not None
     branch_reservation = branch.reservations()
     reservation = branch_reservation.create(
-        table, "Kyran Fuller", reservation_time, 4)
+        table, "Ophelia Pineda", reservation_time, 4)
     with pytest.raises(InputError):
         reservation.set_num_people(8)
+
+
+def test_get_by_id():
+    branch = BranchService.get_by_name("Bristol")
+    assert branch is not None
+    branch_table = branch.tables()
+    table = branch_table.get_by_number(1)
+    assert table is not None
+    branch_reservation = branch.reservations()
+    reservation = branch_reservation.create(
+        table, "Tony Barrett", reservation_time, 4)
+    got_reservation = branch_reservation.get_by_id(reservation._reservation_id)
+    assert isinstance(got_reservation, Reservation)
+    assert got_reservation._reservation_id == reservation._reservation_id
