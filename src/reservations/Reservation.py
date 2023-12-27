@@ -28,6 +28,12 @@ class Reservation:
 
         return time[0]
 
+    def get_num_people(self) -> int:
+        guest_num = Database.execute_and_fetchone(
+            "SELECT guest_num FROM public.reservations WHERE id = %s", self._reservation_id)
+
+        return guest_num[0]
+
     def set_time(self, reservation_time: datetime) -> None:
 
         ActiveUser.get().raise_without_permission("reservation.update")
