@@ -18,8 +18,6 @@ class BranchReservations:
         table_id = table._table_id
 
         # reference: https://www.digitalocean.com/community/tutorials/python-string-to-datetime-strptime
-        reservation_time = datetime.strptime(
-            reservation_time, '%Y-%m-%d %H:%M')
 
         BranchReservations._validate_create_reservation(
             table, customer_name, reservation_time, guest_num)
@@ -28,7 +26,6 @@ class BranchReservations:
 
         duration = timedelta(hours=2)
         end_time = reservation_time + duration
-        end_time = end_time.strftime("%X")
 
         cursor = Database.execute("INSERT INTO public.reservations(customer_name, reservation_time, end_time, guest_num, table_id, branch_id)VALUES(%s, %s, %s, %s, %s, %s) RETURNING id",
                                   customer_name, reservation_time, end_time, guest_num, table_id, self._branch_id)

@@ -7,9 +7,11 @@ from src.reservations.utils import validate_customer_name
 from src.user.UserService import UserService
 from src.utils.Database import Database
 from src.utils.errors import InputError
+from datetime import datetime
 
 customer_name = "Glenn Juarez"
-reservation_time = "2023-12-27 21:50"  # FORMAT YY/MM/DD HH:MM
+reservation_time = datetime.strptime(
+    "2023-12-27 14:30", '%Y-%m-%d %H:%M')  # FORMAT YY/MM/DD HH:MM
 guest_num = 4
 
 
@@ -44,8 +46,10 @@ def test_can_create_reservation_with_future_date():
     branch_table = branch.tables()
     table = branch_table.get_by_number(1)
     branch_reservation = branch.reservations()
+    time = datetime.strptime(
+        "2023-12-28 14:30", '%Y-%m-%d %H:%M')
     reservation = branch_reservation.create(
-        table, "Bianca Mcgrath", "2023-12-28 21:50", guest_num)
+        table, "Bianca Mcgrath", time, guest_num)
     assert isinstance(reservation, Reservation)
 
 
@@ -54,9 +58,11 @@ def test_cant_create_reservation_with_past_date():
     branch_table = branch.tables()
     table = branch_table.get_by_number(1)
     branch_reservation = branch.reservations()
+    time = datetime.strptime(
+        "2023-12-25 14:30", '%Y-%m-%d %H:%M')
     with pytest.raises(InputError):
         branch_reservation.create(
-            table, "Mark Raymond", "2023-12-25 21:50", guest_num)
+            table, "Mark Raymond", time, guest_num)
 
 
 def test_customer_name_validation():

@@ -1,6 +1,8 @@
 from ..tables.Table import Table
-from ..tables.BranchTables import BranchTables
+from ..user.ActiveUser import ActiveUser
 from ..utils.Database import Database
+from .utils import validate_reservation_date
+from src.utils.errors import InputError
 from datetime import datetime
 
 
@@ -20,10 +22,8 @@ class Reservation:
 
         return customer_name[0]
 
-    def get_time(self) -> datetime:
-        result = Database.execute_and_fetchone(
+    def get_time(self) -> str:
+        time = Database.execute_and_fetchone(
             "SELECT reservation_time FROM public.reservations WHERE id = %s", self._reservation_id)
 
-        time = result[0].strftime('%Y-%m-%d %H:%M')
-
-        return time
+        return time[0]
