@@ -43,8 +43,10 @@ def test_create_reservation():
 
 def test_can_create_reservation_with_future_date():
     branch = BranchService.get_by_name("Bristol")
+    assert branch is not None
     branch_table = branch.tables()
     table = branch_table.get_by_number(1)
+    assert table is not None
     branch_reservation = branch.reservations()
     time = datetime.strptime(
         "2023-12-28 14:30", '%Y-%m-%d %H:%M')
@@ -55,8 +57,10 @@ def test_can_create_reservation_with_future_date():
 
 def test_cant_create_reservation_with_past_date():
     branch = BranchService.get_by_name("Bristol")
+    assert branch is not None
     branch_table = branch.tables()
     table = branch_table.get_by_number(1)
+    assert table is not None
     branch_reservation = branch.reservations()
     time = datetime.strptime(
         "2023-12-25 14:30", '%Y-%m-%d %H:%M')
@@ -79,8 +83,10 @@ def test_customer_name_validation():
 
 def test_cant_create_reservation_with_invalid_customer_name():
     branch = BranchService.get_by_name("Bristol")
+    assert branch is not None
     branch_table = branch.tables()
     table = branch_table.get_by_number(1)
+    assert table is not None
     branch_reservation = branch.reservations()
     with pytest.raises(InputError):
         branch_reservation.create(
@@ -89,8 +95,10 @@ def test_cant_create_reservation_with_invalid_customer_name():
 
 def test_can_create_reservation_with_bigger_capacity():
     branch = BranchService.get_by_name("Bristol")
+    assert branch is not None
     branch_table = branch.tables()
     table = branch_table.get_by_number(1)
+    assert table is not None
     branch_reservation = branch.reservations()
     branch_reservation.create(
         table, "Rosales Dennis", reservation_time, 2)
@@ -98,8 +106,10 @@ def test_can_create_reservation_with_bigger_capacity():
 
 def test_cant_create_reservation_with_insufficient_capacity():
     branch = BranchService.get_by_name("Bristol")
+    assert branch is not None
     branch_table = branch.tables()
     table = branch_table.get_by_number(1)
+    assert table is not None
     branch_reservation = branch.reservations()
     with pytest.raises(InputError):
         branch_reservation.create(
@@ -108,8 +118,10 @@ def test_cant_create_reservation_with_insufficient_capacity():
 
 def test_get_table():
     branch = BranchService.get_by_name("Bristol")
+    assert branch is not None
     branch_table = branch.tables()
     table = branch_table.get_by_number(1)
+    assert table is not None
     branch_reservation = branch.reservations()
     reservation = branch_reservation.create(
         table, "Rosales Mccullough", reservation_time, 4)
@@ -120,8 +132,10 @@ def test_get_table():
 
 def test_get_customer_name():
     branch = BranchService.get_by_name("Bristol")
+    assert branch is not None
     branch_table = branch.tables()
     table = branch_table.get_by_number(1)
+    assert table is not None
     branch_reservation = branch.reservations()
     reservation = branch_reservation.create(
         table, "Charlotte Chandler", reservation_time, 4)
@@ -132,10 +146,30 @@ def test_get_customer_name():
 
 def test_get_time():
     branch = BranchService.get_by_name("Bristol")
+    assert branch is not None
     branch_table = branch.tables()
     table = branch_table.get_by_number(1)
+    assert table is not None
     branch_reservation = branch.reservations()
     reservation = branch_reservation.create(
         table, "Zaara Carter", reservation_time, 4)
     time = reservation.get_time()
+    assert time is not None
     assert time == reservation_time
+
+
+def test_set_time():
+    branch = BranchService.get_by_name("Bristol")
+    assert branch is not None
+    branch_table = branch.tables()
+    table = branch_table.get_by_number(1)
+    assert table is not None
+    branch_reservation = branch.reservations()
+    reservation = branch_reservation.create(
+        table, "Hannah Carter", reservation_time, 4)
+    time = datetime.strptime(
+        "2023-12-29 17:30", '%Y-%m-%d %H:%M')
+    reservation.set_time(time)
+    got_time = reservation.get_time()
+    assert got_time is not None
+    assert time == got_time

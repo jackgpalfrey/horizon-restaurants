@@ -27,3 +27,14 @@ class Reservation:
             "SELECT reservation_time FROM public.reservations WHERE id = %s", self._reservation_id)
 
         return time[0]
+
+    def set_time(self, reservation_time: datetime) -> None:
+
+        ActiveUser.get().raise_without_permission("reservation.update")
+
+        if not validate_reservation_date(reservation_time):
+            raise InputError(
+                "Invalid reservation date. The reservation must be booked today or at a future date.")
+
+        Database.execute_and_commit(
+            "UPDATE public.reservations SET reservation_time = %s WHERE id = %s", reservation_time, self._reservation_id)
