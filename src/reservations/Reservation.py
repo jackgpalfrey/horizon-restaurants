@@ -22,7 +22,7 @@ class Reservation:
 
         return customer_name[0]
 
-    def get_time(self) -> str:
+    def get_time(self) -> datetime:
         time = Database.execute_and_fetchone(
             "SELECT reservation_time FROM public.reservations WHERE id = %s", self._reservation_id)
 
