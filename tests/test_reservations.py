@@ -9,8 +9,7 @@ from src.utils.Database import Database
 from src.utils.errors import InputError
 
 customer_name = "Glenn Juarez"
-reservation_date = "2023-12-27"  # FORMAT YY/MM/DD
-start_time = "21:50"  # FORMAT HH:MM
+reservation_time = "2023-12-27 21:50"  # FORMAT YY/MM/DD HH:MM
 guest_num = 4
 
 
@@ -36,7 +35,7 @@ def test_create_reservation():
     table = branch_table.create(1, 4)
     branch_reservation = branch.reservations()
     reservation = branch_reservation.create(
-        table, customer_name, reservation_date, start_time, guest_num)
+        table, customer_name, reservation_time, guest_num)
     assert isinstance(reservation, Reservation)
 
 
@@ -46,7 +45,7 @@ def test_can_create_reservation_with_future_date():
     table = branch_table.get_by_number(1)
     branch_reservation = branch.reservations()
     reservation = branch_reservation.create(
-        table, "Bianca Mcgrath", "2023-12-28", start_time, guest_num)
+        table, "Bianca Mcgrath", "2023-12-28 21:50", guest_num)
     assert isinstance(reservation, Reservation)
 
 
@@ -57,7 +56,7 @@ def test_cant_create_reservation_with_past_date():
     branch_reservation = branch.reservations()
     with pytest.raises(InputError):
         branch_reservation.create(
-            table, "Mark Raymond", "2023-12-25", start_time, guest_num)
+            table, "Mark Raymond", "2023-12-25 21:50", guest_num)
 
 
 def test_customer_name_validation():
@@ -79,7 +78,7 @@ def test_cant_create_reservation_with_invalid_customer_name():
     branch_reservation = branch.reservations()
     with pytest.raises(InputError):
         branch_reservation.create(
-            table, "abc", reservation_date, start_time, guest_num)
+            table, "abc", reservation_time,  guest_num)
 
 
 def test_can_create_reservation_with_bigger_capacity():
@@ -88,7 +87,7 @@ def test_can_create_reservation_with_bigger_capacity():
     table = branch_table.get_by_number(1)
     branch_reservation = branch.reservations()
     branch_reservation.create(
-        table, "Rosales Dennis", reservation_date, start_time, 2)
+        table, "Rosales Dennis", reservation_time, 2)
 
 
 def test_cant_create_reservation_with_insufficient_capacity():
@@ -98,7 +97,7 @@ def test_cant_create_reservation_with_insufficient_capacity():
     branch_reservation = branch.reservations()
     with pytest.raises(InputError):
         branch_reservation.create(
-            table, "Dennis Mccullough", reservation_date, start_time, 5)
+            table, "Dennis Mccullough", reservation_time, 5)
 
 
 def test_get_table():
@@ -107,7 +106,7 @@ def test_get_table():
     table = branch_table.get_by_number(1)
     branch_reservation = branch.reservations()
     reservation = branch_reservation.create(
-        table, "Rosales Mccullough", reservation_date, start_time, 4)
+        table, "Rosales Mccullough", reservation_time, 4)
     got_table = reservation.get_table()
     assert isinstance(got_table, Table)
     assert got_table.get_table_number() == 1
@@ -119,7 +118,7 @@ def test_get_customer_name():
     table = branch_table.get_by_number(1)
     branch_reservation = branch.reservations()
     reservation = branch_reservation.create(
-        table, "Charlotte Chandler", reservation_date, start_time, 4)
+        table, "Charlotte Chandler", reservation_time, 4)
     customer_name = reservation.get_customer_name()
     assert customer_name == "Charlotte Chandler"
     assert isinstance(customer_name, str)

@@ -1,8 +1,7 @@
 CREATE TABLE IF NOT EXISTS public.reservations(
     id uuid NOT NULL DEFAULT gen_random_uuid() UNIQUE,
     customer_name text NOT NULL,
-    reservation_date DATE NOT NULL,
-    start_time TIME NOT NULL,
+    reservation_time TIMESTAMP NOT NULL,
     end_time TIME NOT NULL,
     guest_num integer NOT NULL,
     table_id uuid NOT NULL,

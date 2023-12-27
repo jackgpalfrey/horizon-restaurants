@@ -11,28 +11,27 @@ class BranchReservations:
     def __init__(self, branch_id: str):
         self._branch_id = branch_id
 
-    def create(self, table: Table, customer_name: str, reservation_date: datetime, start_time: datetime, guest_num: int) -> Reservation:
+    def create(self, table: Table, customer_name: str, reservation_time: datetime, guest_num: int) -> Reservation:
 
         ActiveUser.get().raise_without_permission("reservation.create")
 
         table_id = table._table_id
 
         # reference: https://www.digitalocean.com/community/tutorials/python-string-to-datetime-strptime
-        reservation_date = datetime.strptime(reservation_date, '%Y-%m-%d')
+        reservation_time = datetime.strptime(
+            reservation_time, '%Y-%m-%d %H:%M')
 
         BranchReservations._validate_create_reservation(
-            table, customer_name, reservation_date, guest_num)
+            table, customer_name, reservation_time, guest_num)
 
         # reference: https://blog.finxter.com/how-to-add-time-onto-a-datetime-object-in-python/
 
-        start_time = datetime.strptime(start_time, '%H:%M')
         duration = timedelta(hours=2)
-        end_time = start_time + duration
-        start_time = start_time.strftime("%X")
+        end_time = reservation_time + duration
         end_time = end_time.strftime("%X")
 
-        cursor = Database.execute("INSERT INTO public.reservations(customer_name, reservation_date, start_time, end_time, guest_num, table_id, branch_id)VALUES(%s, %s, %s, %s, %s, %s, %s) RETURNING id",
-                                  customer_name, reservation_date, start_time, end_time, guest_num, table_id, self._branch_id)
+        cursor = Database.execute("INSERT INTO public.reservations(customer_name, reservation_time, end_time, guest_num, table_id, branch_id)VALUES(%s, %s, %s, %s, %s, %s) RETURNING id",
+                                  customer_name, reservation_time, end_time, guest_num, table_id, self._branch_id)
         Database.commit()
         result = cursor.fetchone()
         id = result[0]
