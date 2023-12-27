@@ -198,6 +198,8 @@ class User:
 
         :raises PermissionError: If the current user does not have permission.
         """
+        ActiveUser.get().raise_without_permission("branch.update")
+
         role = self.get_role()
         role_id = role.get_id()
 
@@ -206,9 +208,10 @@ class User:
         check = Database.execute_and_fetchone(sql_check, self._user_id)
         branch_id = branch.get_id()
 
-        ActiveUser.get().raise_without_permission("branch.update")
+        IS_ALREADY_ASSIGNED = check is not None
+        IS_NOT_MANAGER = role_id != MANAGER_ROLE_ID
 
-        if check is not None and role_id != MANAGER_ROLE_ID:
+        if IS_ALREADY_ASSIGNED and role_id != IS_NOT_MANAGER:
             sql = "UPDATE public.branchstaff SET branch_id=%s WHERE user_id=%s"
         else:
             sql = "INSERT INTO public.branchstaff (branch_id, user_id)\
