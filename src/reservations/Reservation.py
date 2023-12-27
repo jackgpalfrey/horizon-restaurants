@@ -12,3 +12,9 @@ class Reservation:
             "SELECT table_id FROM public.reservations WHERE id = %s", self._reservation_id)
 
         return Table(result[0])
+
+    def get_customer_name(self) -> str:
+        customer_name = Database.execute_and_fetchone(
+            "SELECT customer_name FROM public.reservations WHERE id = %s", self._reservation_id)
+
+        return customer_name[0]

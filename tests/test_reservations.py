@@ -111,3 +111,15 @@ def test_get_table():
     got_table = reservation.get_table()
     assert isinstance(got_table, Table)
     assert got_table.get_table_number() == 1
+
+
+def test_get_customer_name():
+    branch = BranchService.get_by_name("Bristol")
+    branch_table = branch.tables()
+    table = branch_table.get_by_number(1)
+    branch_reservation = branch.reservations()
+    reservation = branch_reservation.create(
+        table, "Charlotte Chandler", reservation_date, start_time, 4)
+    customer_name = reservation.get_customer_name()
+    assert customer_name == "Charlotte Chandler"
+    assert isinstance(customer_name, str)
