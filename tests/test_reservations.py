@@ -1,6 +1,7 @@
 import pytest
 from src.branch.BranchService import BranchService
 from src.city.CityService import CityService
+from src.tables.Table import Table
 from src.reservations.Reservation import Reservation
 from src.reservations.utils import validate_customer_name
 from src.user.UserService import UserService
@@ -8,7 +9,7 @@ from src.utils.Database import Database
 from src.utils.errors import InputError
 
 customer_name = "Glenn Juarez"
-reservation_date = "2023-12-26"  # FORMAT YY/MM/DD
+reservation_date = "2023-12-27"  # FORMAT YY/MM/DD
 start_time = "21:50"  # FORMAT HH:MM
 guest_num = 4
 
@@ -78,7 +79,7 @@ def test_cant_create_reservation_with_invalid_customer_name():
     branch_reservation = branch.reservations()
     with pytest.raises(InputError):
         branch_reservation.create(
-            table, "abc", "2023-12-26", start_time, guest_num)
+            table, "abc", reservation_date, start_time, guest_num)
 
 
 def test_can_create_reservation_with_bigger_capacity():
@@ -87,7 +88,7 @@ def test_can_create_reservation_with_bigger_capacity():
     table = branch_table.get_by_number(1)
     branch_reservation = branch.reservations()
     branch_reservation.create(
-        table, "Rosales Dennis", "2023-12-26", start_time, 2)
+        table, "Rosales Dennis", reservation_date, start_time, 2)
 
 
 def test_cant_create_reservation_with_insufficient_capacity():
@@ -97,4 +98,16 @@ def test_cant_create_reservation_with_insufficient_capacity():
     branch_reservation = branch.reservations()
     with pytest.raises(InputError):
         branch_reservation.create(
-            table, "Dennis Mccullough", "2023-12-26", start_time, 5)
+            table, "Dennis Mccullough", reservation_date, start_time, 5)
+
+
+def test_get_table():
+    branch = BranchService.get_by_name("Bristol")
+    branch_table = branch.tables()
+    table = branch_table.get_by_number(1)
+    branch_reservation = branch.reservations()
+    reservation = branch_reservation.create(
+        table, "Rosales Mccullough", reservation_date, start_time, 4)
+    got_table = reservation.get_table()
+    assert isinstance(got_table, Table)
+    assert got_table.get_table_number() == 1
