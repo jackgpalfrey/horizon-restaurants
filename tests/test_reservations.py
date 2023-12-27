@@ -303,3 +303,15 @@ def test_get_reservation_by_customer_name():
     reservation = branch_reservation.get_by_customer_name(customer_name)
     assert isinstance(reservation, Reservation)
     assert reservation.get_customer_name() == customer_name
+
+
+def test_get_all_reservations():
+    branch = BranchService.get_by_name("Bristol")
+    assert branch is not None
+    branch_table = branch.tables()
+    table = branch_table.get_by_number(1)
+    assert table is not None
+    branch_reservation = branch.reservations()
+    reservations = branch_reservation.get_all()
+    assert isinstance(reservations, list)
+    assert len(reservations) == 15

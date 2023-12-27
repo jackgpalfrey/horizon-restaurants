@@ -67,3 +67,9 @@ class BranchReservations:
 
         if result is not None:
             return Reservation(result[0])
+
+    def get_all(self) -> list[Reservation]:
+        result = Database.execute_and_fetchall(
+            "SELECT id FROM public.reservations")
+
+        return [Table(record[0]) for record in result]
