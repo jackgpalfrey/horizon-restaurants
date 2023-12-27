@@ -279,7 +279,7 @@ def test_set_invalid_guest_num():
         reservation.set_num_people(8)
 
 
-def test_get_by_id():
+def test_get_reservation_by_id():
     branch = BranchService.get_by_name("Bristol")
     assert branch is not None
     branch_table = branch.tables()
@@ -291,3 +291,15 @@ def test_get_by_id():
     got_reservation = branch_reservation.get_by_id(reservation._reservation_id)
     assert isinstance(got_reservation, Reservation)
     assert got_reservation._reservation_id == reservation._reservation_id
+
+
+def test_get_reservation_by_customer_name():
+    branch = BranchService.get_by_name("Bristol")
+    assert branch is not None
+    branch_table = branch.tables()
+    table = branch_table.get_by_number(1)
+    assert table is not None
+    branch_reservation = branch.reservations()
+    reservation = branch_reservation.get_by_customer_name(customer_name)
+    assert isinstance(reservation, Reservation)
+    assert reservation.get_customer_name() == customer_name
