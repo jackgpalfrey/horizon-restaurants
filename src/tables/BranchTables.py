@@ -54,10 +54,10 @@ class BranchTables:
 
     def find_by_capacity(self, table_capacity: int) -> list[Table]:
         """
-        Get tables that have a capacity higher than the given party size.
+        Get tables that have a capacity equal or higher than the given size.
 
         :returns list of tables in ascending order of capacity. i.e the lowest
-        capacity above the minimum will be first.
+        capacity above or equal to the minimum will be first.
         """
         result = Database.execute_and_fetchall(
             "SELECT id FROM public.table WHERE capacity >= %s \
