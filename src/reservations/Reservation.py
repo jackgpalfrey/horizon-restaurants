@@ -1,7 +1,7 @@
 from ..tables.Table import Table
 from ..user.ActiveUser import ActiveUser
 from ..utils.Database import Database
-from .utils import validate_reservation_date
+from .utils import validate_reservation_date, validate_customer_name
 from src.utils.errors import InputError
 from datetime import datetime
 
@@ -44,6 +44,9 @@ class Reservation:
     def set_customer_name(self, customer_name: str) -> None:
 
         ActiveUser.get().raise_without_permission("reservation.update")
+
+        if not validate_customer_name(customer_name):
+            raise InputError("Invalid customer name.")
 
         Database.execute_and_commit(
             "UPDATE public.reservations SET customer_name = %s WHERE id = %s", customer_name, self._reservation_id)
