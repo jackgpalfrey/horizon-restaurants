@@ -14,6 +14,8 @@ reservation_time = datetime.strptime(
     "2023-12-27 14:30", '%Y-%m-%d %H:%M')  # FORMAT YY/MM/DD HH:MM
 guest_num = 4
 
+new_customer_name = "Ellis Mcintyre"
+
 
 @pytest.fixture(autouse=True, scope="module")
 def before_and_after_test():
@@ -180,13 +182,28 @@ def test_set_table():
     assert table is not None
     branch_reservation = branch.reservations()
     reservation = branch_reservation.create(
-        table, "Jenna Davila", reservation_time, 4)
+        table, "Ronald Robles", reservation_time, 4)
     new_table = branch_table.create(2, 6)
     assert new_table is not None
     reservation.set_table(new_table)
     got_table = reservation.get_table()
     assert isinstance(got_table, Table)
     assert got_table._table_id == new_table._table_id
+
+
+def test_set_customer_name():
+    branch = BranchService.get_by_name("Bristol")
+    assert branch is not None
+    branch_table = branch.tables()
+    table = branch_table.get_by_number(1)
+    assert table is not None
+    branch_reservation = branch.reservations()
+    reservation = branch_reservation.create(
+        table, "Sally Owens", reservation_time, 4)
+    reservation.set_customer_name(new_customer_name)
+    customer = reservation.get_customer_name()
+    assert isinstance(customer, str)
+    assert customer == new_customer_name
 
 
 def test_set_time():
