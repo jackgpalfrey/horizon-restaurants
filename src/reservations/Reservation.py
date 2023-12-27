@@ -1,7 +1,7 @@
 from ..tables.Table import Table
 from ..user.ActiveUser import ActiveUser
 from ..utils.Database import Database
-from .utils import validate_reservation_date, validate_customer_name
+from .utils import validate_reservation_date, validate_customer_name, validate_guest_num
 from src.utils.errors import InputError
 from datetime import datetime
 
@@ -61,3 +61,15 @@ class Reservation:
 
         Database.execute_and_commit(
             "UPDATE public.reservations SET reservation_time = %s WHERE id = %s", reservation_time, self._reservation_id)
+
+    def set_num_people(self, guest_num: int) -> None:
+
+        ActiveUser.get().raise_without_permission("reservation.update")
+
+        table = self.get_table()
+
+        if not validate_guest_num(table, guest_num):
+            raise InputError("Customer number exceeds table capacity.")
+
+        Database.execute_and_commit(
+            "UPDATE public.reservations SET guest_num = %s WHERE id = %s", guest_num, self._reservation_id)

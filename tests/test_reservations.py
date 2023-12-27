@@ -214,7 +214,7 @@ def test_cant_set_invalid_customer_name():
     assert table is not None
     branch_reservation = branch.reservations()
     reservation = branch_reservation.create(
-        table, "Sally Owens", reservation_time, 4)
+        table, "Michelle Ibarra", reservation_time, 4)
     with pytest.raises(InputError):
         reservation.set_customer_name("1Tyler ..7")
 
@@ -244,8 +244,36 @@ def test_cant_set_invalid_time():
     assert table is not None
     branch_reservation = branch.reservations()
     reservation = branch_reservation.create(
-        table, "Hannah Carter", reservation_time, 4)
+        table, "Aisha Howard", reservation_time, 4)
     time = datetime.strptime(
         "2023-12-22 11:30", '%Y-%m-%d %H:%M')
     with pytest.raises(InputError):
         reservation.set_time(time)
+
+
+def test_set_guest_num():
+    branch = BranchService.get_by_name("Bristol")
+    assert branch is not None
+    branch_table = branch.tables()
+    table = branch_table.get_by_number(1)
+    assert table is not None
+    branch_reservation = branch.reservations()
+    reservation = branch_reservation.create(
+        table, "Kyran Fuller", reservation_time, 4)
+    reservation.set_num_people(3)
+    customer_num = reservation.get_num_people()
+    assert customer_num == 3
+    assert isinstance(customer_num, int)
+
+
+def test_set_invalid_guest_num():
+    branch = BranchService.get_by_name("Bristol")
+    assert branch is not None
+    branch_table = branch.tables()
+    table = branch_table.get_by_number(1)
+    assert table is not None
+    branch_reservation = branch.reservations()
+    reservation = branch_reservation.create(
+        table, "Kyran Fuller", reservation_time, 4)
+    with pytest.raises(InputError):
+        reservation.set_num_people(8)
