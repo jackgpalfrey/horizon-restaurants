@@ -158,6 +158,37 @@ def test_get_time():
     assert time == reservation_time
 
 
+def test_get_num_people():
+    branch = BranchService.get_by_name("Bristol")
+    assert branch is not None
+    branch_table = branch.tables()
+    table = branch_table.get_by_number(1)
+    assert table is not None
+    branch_reservation = branch.reservations()
+    reservation = branch_reservation.create(
+        table, "Jenna Davila", reservation_time, 4)
+    guest_num = reservation.get_num_people()
+    assert guest_num is not None
+    assert guest_num == 4
+
+
+def test_set_table():
+    branch = BranchService.get_by_name("Bristol")
+    assert branch is not None
+    branch_table = branch.tables()
+    table = branch_table.get_by_number(1)
+    assert table is not None
+    branch_reservation = branch.reservations()
+    reservation = branch_reservation.create(
+        table, "Jenna Davila", reservation_time, 4)
+    new_table = branch_table.create(2, 6)
+    assert new_table is not None
+    reservation.set_table(new_table)
+    got_table = reservation.get_table()
+    assert isinstance(got_table, Table)
+    assert got_table._table_id == new_table._table_id
+
+
 def test_set_time():
     branch = BranchService.get_by_name("Bristol")
     assert branch is not None
@@ -173,17 +204,3 @@ def test_set_time():
     got_time = reservation.get_time()
     assert got_time is not None
     assert time == got_time
-
-
-def test_get_num_people():
-    branch = BranchService.get_by_name("Bristol")
-    assert branch is not None
-    branch_table = branch.tables()
-    table = branch_table.get_by_number(1)
-    assert table is not None
-    branch_reservation = branch.reservations()
-    reservation = branch_reservation.create(
-        table, "Jenna Davila", reservation_time, 4)
-    guest_num = reservation.get_num_people()
-    assert guest_num is not None
-    assert guest_num == 4

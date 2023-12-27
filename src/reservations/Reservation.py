@@ -34,6 +34,13 @@ class Reservation:
 
         return guest_num[0]
 
+    def set_table(self, table: Table) -> None:
+
+        ActiveUser.get().raise_without_permission("reservation.update")
+
+        Database.execute_and_commit(
+            "UPDATE public.reservations SET table_id = %s WHERE id = %s", table._table_id, self._reservation_id)
+
     def set_time(self, reservation_time: datetime) -> None:
 
         ActiveUser.get().raise_without_permission("reservation.update")
