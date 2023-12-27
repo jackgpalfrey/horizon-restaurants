@@ -206,6 +206,19 @@ def test_set_customer_name():
     assert customer == new_customer_name
 
 
+def test_cant_set_invalid_customer_name():
+    branch = BranchService.get_by_name("Bristol")
+    assert branch is not None
+    branch_table = branch.tables()
+    table = branch_table.get_by_number(1)
+    assert table is not None
+    branch_reservation = branch.reservations()
+    reservation = branch_reservation.create(
+        table, "Sally Owens", reservation_time, 4)
+    with pytest.raises(InputError):
+        reservation.set_customer_name("1Tyler ..7")
+
+
 def test_set_time():
     branch = BranchService.get_by_name("Bristol")
     assert branch is not None
@@ -221,3 +234,18 @@ def test_set_time():
     got_time = reservation.get_time()
     assert got_time is not None
     assert time == got_time
+
+
+def test_cant_set_invalid_time():
+    branch = BranchService.get_by_name("Bristol")
+    assert branch is not None
+    branch_table = branch.tables()
+    table = branch_table.get_by_number(1)
+    assert table is not None
+    branch_reservation = branch.reservations()
+    reservation = branch_reservation.create(
+        table, "Hannah Carter", reservation_time, 4)
+    time = datetime.strptime(
+        "2023-12-22 11:30", '%Y-%m-%d %H:%M')
+    with pytest.raises(InputError):
+        reservation.set_time(time)
