@@ -38,24 +38,6 @@ class BranchReservations:
 
         return Reservation(id)
 
-    def _validate_create_reservation(table: Table, customer_name: str, reservation_date: datetime, guest_num: int) -> None:
-        """
-        Validates given date, guest number, and customer name based on validation logic
-        in ./utils.py Called in the create() method for reservations.
-
-        :raises InputError: If reservation date, customer name, or guest number is invalid.
-        """
-
-        if not validate_reservation_date(reservation_date):
-            raise InputError(
-                "Invalid reservation date. The reservation must be booked today or at a future date.")
-
-        if not validate_customer_name(customer_name):
-            raise InputError("Invalid customer name.")
-
-        if not validate_guest_num(table, guest_num):
-            raise InputError("Customer number exceeds table capacity.")
-
     def get_by_id(self, reservation_id: str) -> Reservation:
         result = Database.execute_and_fetchone(
             "SELECT id FROM public.reservations WHERE id = %s", reservation_id)
@@ -74,4 +56,22 @@ class BranchReservations:
         result = Database.execute_and_fetchall(
             "SELECT id FROM public.reservations")
 
-        return [Table(record[0]) for record in result]
+        return [Reservation(record[0]) for record in result]
+
+    def _validate_create_reservation(table: Table, customer_name: str, reservation_date: datetime, guest_num: int) -> None:
+        """
+        Validates given date, guest number, and customer name based on validation logic
+        in ./utils.py Called in the create() method for reservations.
+
+        :raises InputError: If reservation date, customer name, or guest number is invalid.
+        """
+
+        if not validate_reservation_date(reservation_date):
+            raise InputError(
+                "Invalid reservation date. The reservation must be booked today or at a future date.")
+
+        if not validate_customer_name(customer_name):
+            raise InputError("Invalid customer name.")
+
+        if not validate_guest_num(table, guest_num):
+            raise InputError("Customer number exceeds table capacity.")

@@ -341,3 +341,5 @@ def test_get_all_reservations():
     reservations = branch_reservation.get_all()
     assert isinstance(reservations, list)
     assert len(reservations) == 16
+    for i in range(len(reservations)):
+        assert isinstance(reservations[i], Reservation)
