@@ -6,7 +6,7 @@ from src.reservations.Reservation import Reservation
 from src.reservations.utils import validate_customer_name
 from src.user.UserService import UserService
 from src.utils.Database import Database
-from src.utils.errors import InputError
+from src.utils.errors import InputError, AuthorizationError
 from datetime import datetime, timedelta
 
 customer_name = "Glenn Juarez"
@@ -369,3 +369,46 @@ def test_cancel_reservation():
     reservation.cancel()
     assert branch_reservation.get_by_customer_name("Tony Barrett") is None
     assert table.check_is_reserved(reservation_time) is False
+
+
+def test_create_reservation_at_different_branch():
+    # test if manager can create a reservation at a branch different from one they're assigned to
+
+    user = UserService.create(
+        "manager", "myPassword0!", "Test Manager", role_id=4)
+    user2 = UserService.create(
+        "frontend", "myPassword0!", "Test FrontEnd", role_id=1)
+    branch = BranchService.get_by_name("Bristol")
+    user.set_branch(branch)
+    user2.set_branch(branch)
+    city = CityService.create("Cardiff")
+    new_branch = BranchService.create(
+        "Cardiff Branch", "15-29 Union St, Cardiff BS1 2DF", city)
+    assert new_branch is not None
+    branch_table = new_branch.tables()
+    table = branch_table.create(1, 6)
+    branch_table.create(2, 4)
+    assert table is not None
+    user = UserService.logout()
+    assert user is None
+    user = UserService.login("manager", "myPassword0!")
+    branch_reservation = new_branch.reservations()
+    reservation = branch_reservation.create(
+        table, "Tony Barrett", reservation_time, 4)
+    assert isinstance(reservation, Reservation)
+    assert new_branch._branch_id != branch._branch_id
+
+
+def test_cant_create_reservation_at_different_branch_with_wrong_role():
+    user = UserService.logout()
+    assert user is None
+    user = UserService.login("frontend", "myPassword0!")
+    new_branch = BranchService.get_by_name("Cardiff Branch")
+    assert new_branch is not None
+    branch_table = new_branch.tables()
+    table = branch_table.get_by_number(2)
+    assert table is not None
+    branch_reservation = new_branch.reservations()
+    with pytest.raises(AuthorizationError):
+        branch_reservation.create(
+            table, "Zaara Carter", reservation_time, 4)

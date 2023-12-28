@@ -15,6 +15,16 @@ class BranchReservations:
 
         ActiveUser.get().raise_without_permission("reservation.create")
 
+        user = ActiveUser.get()
+
+        check_user_branch = Database.execute_and_fetchone(
+            "SELECT branch_id FROM public.branchstaff WHERE user_id=%s;", user._user_id)
+
+        if check_user_branch is not None:
+            if check_user_branch[0] != self._branch_id:
+
+                ActiveUser.get().raise_without_permission("allbranches.reservation.create")
+
         table_id = table._table_id
 
         if table.check_is_reserved(reservation_time) is True:
