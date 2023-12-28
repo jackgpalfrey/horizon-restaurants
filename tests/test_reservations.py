@@ -7,11 +7,12 @@ from src.reservations.utils import validate_customer_name
 from src.user.UserService import UserService
 from src.utils.Database import Database
 from src.utils.errors import InputError
-from datetime import datetime
+from datetime import datetime, timedelta
 
 customer_name = "Glenn Juarez"
-reservation_time = datetime.strptime(
-    "2023-12-27 14:30", '%Y-%m-%d %H:%M')  # FORMAT YY/MM/DD HH:MM
+# FORMAT YY-MM-DD HH:MM:SS e.g. | 2023-12-28 11:22:33
+reservation_time = datetime.now()
+duration = timedelta(days=1)
 guest_num = 4
 
 new_customer_name = "Ellis Mcintyre"
@@ -50,8 +51,7 @@ def test_can_create_reservation_with_future_date():
     table = branch_table.get_by_number(1)
     assert table is not None
     branch_reservation = branch.reservations()
-    time = datetime.strptime(
-        "2023-12-28 14:30", '%Y-%m-%d %H:%M')
+    time = reservation_time + duration
     reservation = branch_reservation.create(
         table, "Bianca Mcgrath", time, guest_num)
     assert isinstance(reservation, Reservation)
@@ -64,8 +64,7 @@ def test_cant_create_reservation_with_past_date():
     table = branch_table.get_by_number(1)
     assert table is not None
     branch_reservation = branch.reservations()
-    time = datetime.strptime(
-        "2023-12-25 14:30", '%Y-%m-%d %H:%M')
+    time = reservation_time - duration
     with pytest.raises(InputError):
         branch_reservation.create(
             table, "Mark Raymond", time, guest_num)
@@ -228,8 +227,7 @@ def test_set_time():
     branch_reservation = branch.reservations()
     reservation = branch_reservation.create(
         table, "Hannah Carter", reservation_time, 4)
-    time = datetime.strptime(
-        "2023-12-29 17:30", '%Y-%m-%d %H:%M')
+    time = reservation_time + timedelta(days=3)
     reservation.set_time(time)
     got_time = reservation.get_time()
     assert got_time is not None
@@ -245,8 +243,7 @@ def test_cant_set_invalid_time():
     branch_reservation = branch.reservations()
     reservation = branch_reservation.create(
         table, "Aisha Howard", reservation_time, 4)
-    time = datetime.strptime(
-        "2023-12-22 11:30", '%Y-%m-%d %H:%M')
+    time = reservation_time - timedelta(days=3)
     with pytest.raises(InputError):
         reservation.set_time(time)
 
