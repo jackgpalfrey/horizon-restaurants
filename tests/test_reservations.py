@@ -325,6 +325,21 @@ def test_get_reservation_by_id():
     assert got_reservation._reservation_id == reservation._reservation_id
 
 
+def test_get_by_table():
+    branch = BranchService.get_by_name("Bristol")
+    assert branch is not None
+    branch_table = branch.tables()
+    table = branch_table.get_by_number(1)
+    assert table is not None
+    branch_reservation = branch.reservations()
+    reservations = branch_reservation.get_by_table(table)
+    assert isinstance(reservations, list)
+    assert len(reservations) == 2
+    for i in range(len(reservations)):
+        assert isinstance(reservations[i], Reservation)
+        assert reservations[i].get_table()._table_id == table._table_id
+
+
 def test_get_reservation_by_customer_name():
     branch = BranchService.get_by_name("Bristol")
     assert branch is not None
