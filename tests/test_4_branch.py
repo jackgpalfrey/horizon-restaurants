@@ -168,6 +168,18 @@ def test_get_staff():
     assert len(users2) == 1
 
 
+def test_get_branch_by_user():
+    city = CityService.create("Derby")
+    branch = BranchService.create(
+        "Derby Branch", "4 Eastgate Rd, Bristol BS5 6XX", city)
+    user = UserService.create(
+        "front-end2", "myPassword0!", "Test User Four", role_id=4)
+    user.set_branch(branch)
+    got_branch = BranchService.get_branch_by_user(user)
+    assert isinstance(got_branch, Branch)
+    assert branch._branch_id == got_branch._branch_id
+
+
 def test_get_manager():
     branch = BranchService.get_by_name("Bristol Branch")
     assert branch is not None
@@ -210,7 +222,7 @@ def test_cant_set_manager_with_wrong_role():
     branch = BranchService.get_by_name("Bath Branch")
     assert branch is not None
     user = UserService.create(
-        "front-end2", "myPassword0!", "Test User Four", role_id=1)
+        "front-end3", "myPassword0!", "Test User Six", role_id=1)
     assert user is not None
     with pytest.raises(InputError):
         branch.set_manager(user)
