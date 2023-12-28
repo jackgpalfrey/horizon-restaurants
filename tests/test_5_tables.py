@@ -7,6 +7,7 @@ from src.user.UserService import UserService
 from src.utils.Database import Database
 from src.reservations.Reservation import Reservation
 from datetime import datetime, timedelta
+from src.utils.errors import AlreadyExistsError
 
 
 @pytest.fixture(autouse=True, scope="module")
@@ -31,6 +32,13 @@ def test_create_table():
     result = table.create(1, 4)
     assert isinstance(table, BranchTables)
     assert isinstance(result, Table)
+
+
+def test_cant_create_table_with_same_number():
+    branch = BranchService.get_by_name("Bristol")
+    table = branch.tables()
+    with pytest.raises(AlreadyExistsError):
+        table.create(1, 4)
 
 
 def test_get_table_by_id():

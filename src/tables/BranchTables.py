@@ -1,7 +1,9 @@
 """Module for managing a branches tables."""
 from ..user.ActiveUser import ActiveUser
 from ..utils.Database import Database
+from src.utils.errors import AlreadyExistsError
 from .Table import Table
+from .utils import validate_create_table
 
 
 class BranchTables:
@@ -19,6 +21,10 @@ class BranchTables:
         :raises AuthorizationError: If active user does not have permission.
         """
         ActiveUser.get().raise_without_permission("table.create")
+
+        if validate_create_table(table_number, self._branch_id) is True:
+            raise AlreadyExistsError(
+                "A table with this number already exists at this branch.")
 
         Database.execute_and_commit(
             "INSERT INTO public.table (table_number, capacity, branch_id) \
