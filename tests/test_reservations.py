@@ -358,3 +358,14 @@ def test_get_all_reservations():
     assert len(reservations) == 16
     for i in range(len(reservations)):
         assert isinstance(reservations[i], Reservation)
+
+
+def test_cancel_reservation():
+    branch = BranchService.get_by_name("Bristol")
+    assert branch is not None
+    branch_reservation = branch.reservations()
+    reservation = branch_reservation.get_by_customer_name("Tony Barrett")
+    table = reservation.get_table()
+    reservation.cancel()
+    assert branch_reservation.get_by_customer_name("Tony Barrett") is None
+    assert table.check_is_reserved(reservation_time) is False

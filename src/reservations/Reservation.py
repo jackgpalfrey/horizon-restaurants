@@ -83,3 +83,15 @@ class Reservation:
 
         Database.execute_and_commit(
             "UPDATE public.reservations SET guest_num = %s WHERE id = %s", guest_num, self._reservation_id)
+
+    def cancel(self):
+        """
+        Deletes the reservation record from the database.
+
+        :raises AuthorizationError: If active user does not have permission to delete reservations.
+        """
+
+        ActiveUser.get().raise_without_permission("reservation.delete")
+
+        Database.execute_and_commit(
+            "DELETE FROM public.reservations WHERE id = %s", self._reservation_id)
