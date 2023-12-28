@@ -44,7 +44,7 @@ class BranchTables:
         Note: This is not limited to this branch.
         """
         result = Database.execute_and_fetchone(
-            "SELECT id FROM public.table WHERE id = %s", table_id)
+            "SELECT id FROM public.table WHERE id = %s AND branch_id = %s;", table_id, self._branch_id)
 
         if result is not None:
             return Table(result[0])
@@ -52,8 +52,8 @@ class BranchTables:
     def get_by_number(self, table_number: int) -> Table | None:
         """Get a table by it's number."""
         result = Database.execute_and_fetchone(
-            "SELECT id FROM public.table WHERE table_number = %s",
-            table_number)
+            "SELECT id FROM public.table WHERE table_number = %s AND branch_id = %s;",
+            table_number, self._branch_id)
 
         if result is not None:
             return Table(result[0])
@@ -66,13 +66,14 @@ class BranchTables:
         capacity above or equal to the minimum will be first.
         """
         result = Database.execute_and_fetchall(
-            "SELECT id FROM public.table WHERE capacity >= %s \
-            ORDER BY capacity", table_capacity)
+            "SELECT id FROM public.table WHERE capacity >= %s AND branch_id = %s \
+            ORDER BY capacity", table_capacity, self._branch_id)
 
         return [Table(record[0]) for record in result]
 
     def get_all(self) -> list[Table]:
         """Get all tables at the branch."""
-        result = Database.execute_and_fetchall("SELECT id FROM public.table")
+        result = Database.execute_and_fetchall(
+            "SELECT id FROM public.table WHERE branch_id = %s;", self._branch_id)
 
         return [Table(record[0]) for record in result]
