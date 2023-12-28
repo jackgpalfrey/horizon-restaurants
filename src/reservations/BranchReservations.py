@@ -17,6 +17,9 @@ class BranchReservations:
 
         table_id = table._table_id
 
+        if table.check_is_reserved(reservation_time) is True:
+            raise InputError("This table is already reserved.")
+
         # reference: https://www.digitalocean.com/community/tutorials/python-string-to-datetime-strptime
 
         BranchReservations._validate_create_reservation(

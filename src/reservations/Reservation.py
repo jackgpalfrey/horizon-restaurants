@@ -38,6 +38,11 @@ class Reservation:
 
         ActiveUser.get().raise_without_permission("reservation.update")
 
+        reservation_time = self.get_time()
+
+        if table.check_is_reserved(reservation_time) is True:
+            raise InputError("This table is already reserved.")
+
         Database.execute_and_commit(
             "UPDATE public.reservations SET table_id = %s WHERE id = %s", table._table_id, self._reservation_id)
 
@@ -54,6 +59,11 @@ class Reservation:
     def set_time(self, reservation_time: datetime) -> None:
 
         ActiveUser.get().raise_without_permission("reservation.update")
+
+        table = self.get_table()
+
+        if table.check_is_reserved(reservation_time) is True:
+            raise InputError("This table is already reserved.")
 
         if not validate_reservation_date(reservation_time):
             raise InputError(

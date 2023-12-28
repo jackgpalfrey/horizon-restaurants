@@ -6,7 +6,9 @@ from src.tables.Table import Table
 from src.tables.BranchTables import BranchTables
 from src.user.UserService import UserService
 from src.utils.Database import Database
-from src.utils.errors import InputError, AlreadyExistsError
+from src.utils.errors import InputError
+from src.reservations.Reservation import Reservation
+from datetime import datetime, timedelta
 
 
 @pytest.fixture(autouse=True, scope="module")
@@ -107,3 +109,30 @@ def test_delete_table():
     table = branch_tables.get_by_number(1)
     table.delete()
     assert branch_tables.get_by_number(1) is None
+
+
+def check_table_is_reserved():
+    branch = BranchService.get_by_name("Bristol")
+    branch_tables = branch.tables()
+    table = branch_tables.get_by_number(2)
+    branch_reservations = branch.reservations()
+    time = datetime.now()
+    reservation = branch_reservations.create(table, "Hannah Carter", time, 2)
+    check = table.check_is_reserved(time)
+    assert isinstance(reservation, Reservation)
+    assert type(check) == bool
+    assert check == True
+
+
+def check_table_is_not_reserved():
+    branch = BranchService.get_by_name("Bristol")
+    branch_tables = branch.tables()
+    table = branch_tables.get_by_number(2)
+    branch_reservations = branch.reservations()
+    time = datetime.now()
+    reservation = branch_reservations.create(table, "Hannah Carter", time, 2)
+    check_time = time + timedelta(hours=4)
+    check = table.check_is_reserved(check_time)
+    assert isinstance(reservation, Reservation)
+    assert type(check) == bool
+    assert check == False

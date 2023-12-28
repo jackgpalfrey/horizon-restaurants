@@ -44,7 +44,7 @@ def test_create_reservation():
     assert isinstance(reservation, Reservation)
 
 
-def test_can_create_reservation_with_future_date():
+def test_can_create_reservation_with_future_date_on_currently_reserved_table():
     branch = BranchService.get_by_name("Bristol")
     assert branch is not None
     branch_table = branch.tables()
@@ -70,6 +70,16 @@ def test_cant_create_reservation_with_past_date():
             table, "Mark Raymond", time, guest_num)
 
 
+def test_cant_create_reservation_for_currently_reserved_table():
+    branch = BranchService.get_by_name("Bristol")
+    branch_table = branch.tables()
+    table = branch_table.get_by_number(1)
+    branch_reservations = branch.reservations()
+    with pytest.raises(InputError):
+        branch_reservations.create(
+            table, "Kyle Carter", reservation_time, 2)
+
+
 def test_customer_name_validation():
     assert validate_customer_name("Dennis Mccullough") == True
     assert validate_customer_name("Dennis Rosales Mccullough") == True
@@ -86,7 +96,7 @@ def test_cant_create_reservation_with_invalid_customer_name():
     branch = BranchService.get_by_name("Bristol")
     assert branch is not None
     branch_table = branch.tables()
-    table = branch_table.get_by_number(1)
+    table = branch_table.create(2, 4)
     assert table is not None
     branch_reservation = branch.reservations()
     with pytest.raises(InputError):
@@ -98,7 +108,7 @@ def test_can_create_reservation_with_bigger_capacity():
     branch = BranchService.get_by_name("Bristol")
     assert branch is not None
     branch_table = branch.tables()
-    table = branch_table.get_by_number(1)
+    table = branch_table.create(3, 4)
     assert table is not None
     branch_reservation = branch.reservations()
     branch_reservation.create(
@@ -109,7 +119,7 @@ def test_cant_create_reservation_with_insufficient_capacity():
     branch = BranchService.get_by_name("Bristol")
     assert branch is not None
     branch_table = branch.tables()
-    table = branch_table.get_by_number(1)
+    table = branch_table.create(4, 2)
     assert table is not None
     branch_reservation = branch.reservations()
     with pytest.raises(InputError):
@@ -121,21 +131,21 @@ def test_get_table():
     branch = BranchService.get_by_name("Bristol")
     assert branch is not None
     branch_table = branch.tables()
-    table = branch_table.get_by_number(1)
+    table = branch_table.create(5, 6)
     assert table is not None
     branch_reservation = branch.reservations()
     reservation = branch_reservation.create(
         table, "Rosales Mccullough", reservation_time, 4)
     got_table = reservation.get_table()
     assert isinstance(got_table, Table)
-    assert got_table.get_table_number() == 1
+    assert got_table.get_table_number() == 5
 
 
 def test_get_customer_name():
     branch = BranchService.get_by_name("Bristol")
     assert branch is not None
     branch_table = branch.tables()
-    table = branch_table.get_by_number(1)
+    table = branch_table.create(6, 4)
     assert table is not None
     branch_reservation = branch.reservations()
     reservation = branch_reservation.create(
@@ -149,7 +159,7 @@ def test_get_time():
     branch = BranchService.get_by_name("Bristol")
     assert branch is not None
     branch_table = branch.tables()
-    table = branch_table.get_by_number(1)
+    table = branch_table.create(7, 6)
     assert table is not None
     branch_reservation = branch.reservations()
     reservation = branch_reservation.create(
@@ -163,7 +173,7 @@ def test_get_num_people():
     branch = BranchService.get_by_name("Bristol")
     assert branch is not None
     branch_table = branch.tables()
-    table = branch_table.get_by_number(1)
+    table = branch_table.create(8, 6)
     assert table is not None
     branch_reservation = branch.reservations()
     reservation = branch_reservation.create(
@@ -177,12 +187,12 @@ def test_set_table():
     branch = BranchService.get_by_name("Bristol")
     assert branch is not None
     branch_table = branch.tables()
-    table = branch_table.get_by_number(1)
+    table = branch_table.create(9, 4)
     assert table is not None
     branch_reservation = branch.reservations()
     reservation = branch_reservation.create(
         table, "Ronald Robles", reservation_time, 4)
-    new_table = branch_table.create(2, 6)
+    new_table = branch_table.create(10, 6)
     assert new_table is not None
     reservation.set_table(new_table)
     got_table = reservation.get_table()
@@ -190,11 +200,22 @@ def test_set_table():
     assert got_table._table_id == new_table._table_id
 
 
+def test_cant_set_reserved_table():
+    branch = BranchService.get_by_name("Bristol")
+    branch_tables = branch.tables()
+    table = branch_tables.get_by_number(8)
+    branch_reservations = branch.reservations()
+    reservation = branch_reservations.get_by_customer_name("Ronald Robles")
+    assert isinstance(reservation, Reservation)
+    with pytest.raises(InputError):
+        reservation.set_table(table)
+
+
 def test_set_customer_name():
     branch = BranchService.get_by_name("Bristol")
     assert branch is not None
     branch_table = branch.tables()
-    table = branch_table.get_by_number(1)
+    table = branch_table.create(11, 6)
     assert table is not None
     branch_reservation = branch.reservations()
     reservation = branch_reservation.create(
@@ -209,11 +230,11 @@ def test_cant_set_invalid_customer_name():
     branch = BranchService.get_by_name("Bristol")
     assert branch is not None
     branch_table = branch.tables()
-    table = branch_table.get_by_number(1)
+    table = branch_table.create(12, 2)
     assert table is not None
     branch_reservation = branch.reservations()
     reservation = branch_reservation.create(
-        table, "Michelle Ibarra", reservation_time, 4)
+        table, "Michelle Ibarra", reservation_time, 2)
     with pytest.raises(InputError):
         reservation.set_customer_name("1Tyler ..7")
 
@@ -222,7 +243,7 @@ def test_set_time():
     branch = BranchService.get_by_name("Bristol")
     assert branch is not None
     branch_table = branch.tables()
-    table = branch_table.get_by_number(1)
+    table = branch_table.create(13, 4)
     assert table is not None
     branch_reservation = branch.reservations()
     reservation = branch_reservation.create(
@@ -238,7 +259,7 @@ def test_cant_set_invalid_time():
     branch = BranchService.get_by_name("Bristol")
     assert branch is not None
     branch_table = branch.tables()
-    table = branch_table.get_by_number(1)
+    table = branch_table.get_by_number(13)
     assert table is not None
     branch_reservation = branch.reservations()
     reservation = branch_reservation.create(
@@ -248,26 +269,40 @@ def test_cant_set_invalid_time():
         reservation.set_time(time)
 
 
+def test_cant_set_time_with_conflict_reservation():
+    branch = BranchService.get_by_name("Bristol")
+    assert branch is not None
+    branch_table = branch.tables()
+    table = branch_table.get_by_number(13)
+    assert table is not None
+    branch_reservation = branch.reservations()
+    time = reservation_time + timedelta(hours=2)
+    reservation = branch_reservation.create(
+        table, "Richard Romero", time, 4)
+    with pytest.raises(InputError):
+        reservation.set_time(reservation_time)
+
+
 def test_set_guest_num():
     branch = BranchService.get_by_name("Bristol")
     assert branch is not None
     branch_table = branch.tables()
-    table = branch_table.get_by_number(1)
+    table = branch_table.create(14, 5)
     assert table is not None
     branch_reservation = branch.reservations()
     reservation = branch_reservation.create(
-        table, "Kyran Fuller", reservation_time, 4)
+        table, "Kyran Fuller", reservation_time, 2)
     reservation.set_num_people(3)
     customer_num = reservation.get_num_people()
     assert customer_num == 3
     assert isinstance(customer_num, int)
 
 
-def test_set_invalid_guest_num():
+def test_cant_set_invalid_guest_num():
     branch = BranchService.get_by_name("Bristol")
     assert branch is not None
     branch_table = branch.tables()
-    table = branch_table.get_by_number(1)
+    table = branch_table.create(15, 6)
     assert table is not None
     branch_reservation = branch.reservations()
     reservation = branch_reservation.create(
@@ -280,11 +315,11 @@ def test_get_reservation_by_id():
     branch = BranchService.get_by_name("Bristol")
     assert branch is not None
     branch_table = branch.tables()
-    table = branch_table.get_by_number(1)
+    table = branch_table.create(16, 10)
     assert table is not None
     branch_reservation = branch.reservations()
     reservation = branch_reservation.create(
-        table, "Tony Barrett", reservation_time, 4)
+        table, "Tony Barrett", reservation_time, 9)
     got_reservation = branch_reservation.get_by_id(reservation._reservation_id)
     assert isinstance(got_reservation, Reservation)
     assert got_reservation._reservation_id == reservation._reservation_id
@@ -293,9 +328,6 @@ def test_get_reservation_by_id():
 def test_get_reservation_by_customer_name():
     branch = BranchService.get_by_name("Bristol")
     assert branch is not None
-    branch_table = branch.tables()
-    table = branch_table.get_by_number(1)
-    assert table is not None
     branch_reservation = branch.reservations()
     reservation = branch_reservation.get_by_customer_name(customer_name)
     assert isinstance(reservation, Reservation)
@@ -305,10 +337,7 @@ def test_get_reservation_by_customer_name():
 def test_get_all_reservations():
     branch = BranchService.get_by_name("Bristol")
     assert branch is not None
-    branch_table = branch.tables()
-    table = branch_table.get_by_number(1)
-    assert table is not None
     branch_reservation = branch.reservations()
     reservations = branch_reservation.get_all()
     assert isinstance(reservations, list)
-    assert len(reservations) == 15
+    assert len(reservations) == 16
