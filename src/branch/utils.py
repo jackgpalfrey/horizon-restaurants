@@ -1,3 +1,4 @@
+"""Module containing helpers and validation logic for branch"""
 import re
 
 BRANCH_NAME_MIN_LEN = 3  # INCLUSIVE
@@ -11,6 +12,7 @@ ADDRESS_REGEX = re.compile(
 
 
 def validate_branch_name(branch_name: str):
+    """Validate branch name."""
     branch_name = branch_name.replace("  ", "!")
 
     ABOVE_MIN = len(branch_name) >= BRANCH_NAME_MIN_LEN
@@ -21,6 +23,7 @@ def validate_branch_name(branch_name: str):
 
 
 def validate_branch_address(address: str):
+    """Validate branch address."""
     address = address.replace("  ", "!")
 
     ABOVE_MIN = len(address) >= ADDRESS_MIN_LEN

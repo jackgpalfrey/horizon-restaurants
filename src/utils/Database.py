@@ -1,5 +1,8 @@
-import time
+"""Module for managing Database connection."""
 import os
+import time
+from typing import Any, Tuple
+
 import psycopg2
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 
@@ -11,7 +14,8 @@ CONNECTION_RETRY_DELAY = 2
 
 class Database:
     """
-    Handles database connection and initialization
+    Handle database connection and initialization.
+
     All methods are static do not try to instantiate
     Must run both connect() and init() before usage
 
@@ -22,13 +26,12 @@ class Database:
 
     @classmethod
     def connect(cls) -> None:
-        """ 
-        Connect to database as defined in env
-        Should be run once and only once
+        """
+        Connect to database as defined in env.
 
+        Should be run once and only once
         NOTE: Database.init MUST be run after this to fully setup database
         """
-
         cls.host = "db"
         cls.port = get_env("DB_PORT")
         cls.dbname = get_env("DB_NAME")
@@ -42,44 +45,33 @@ class Database:
     @classmethod
     def init(cls) -> None:
         """
-        Initialize database ( runs init_sql)
+        Initialize database ( runs init_sql ).
+
         Should be run once and only once
         """
         cls._run_sql_in_dir("src/init_sql")
 
     @classmethod
-    def execute_and_commit(cls, query: str, *vars: tuple) -> None:
-        """
-        Execute given query
-        """
-
+    def execute_and_commit(cls, query: str, *vars: Any) -> None:
+        """Execute given query."""
         cls.execute(query, *vars)
         cls.commit()
 
     @classmethod
-    def execute_and_fetchone(cls, query: str, *vars: tuple) -> tuple | None:
-        """
-        Execute given query and return one row
-        """
-
+    def execute_and_fetchone(cls, query: str, *vars: Any) -> Tuple | None:
+        """Execute given query and return one row."""
         cur = cls.execute(query, *vars)
         return cur.fetchone()
 
     @classmethod
-    def execute_and_fetchall(cls, query: str, *vars: tuple) -> list[tuple]:
-        """
-        Execute given query and return all rows
-        """
-
+    def execute_and_fetchall(cls, query: str, *vars: Any) -> list[Tuple]:
+        """Execute given query and return all rows."""
         cur = cls.execute(query, *vars)
         return cur.fetchall()
 
     @classmethod
-    def execute(cls, query: str, *vars: tuple) -> psycopg2.extensions.cursor:
-        """
-        Execute given query and return cursor
-        """
-
+    def execute(cls, query: str, *vars: Any) -> psycopg2.extensions.cursor:
+        """Execute given query and return cursor."""
         cur = cls.cursor()
         try:
             cur.execute(query, vars)
@@ -91,35 +83,40 @@ class Database:
 
     @classmethod
     def cursor(cls) -> psycopg2.extensions.cursor:
+        """Get new cursor object."""
         return cls.connection.cursor()
 
     @classmethod
     def commit(cls) -> None:
+        """Commit to database."""
         cls.connection.commit()
 
     @classmethod
     def rollback(cls) -> None:
-        """ 
-        Rolls back transaction
+        """
+        Roll back transaction.
+
         Used when an error occurs
         """
         cls.connection.rollback()
 
     @classmethod
     def close(cls) -> None:
+        """Close connection."""
         cls.connection.close()
 
     @classmethod
     def DEBUG_delete_all_tables(cls, verify: str) -> None:
         """
-        Delete all tables in database
-        verify must be "DANGEROUSLY DELETE ALL TABLES"
-        """
+        Delete all tables in database.
 
+        :param verify: must be "DANGEROUSLY DELETE ALL TABLES"
+        """
         if verify != "DANGEROUSLY DELETE ALL TABLES":
-            raise Exception("You must verify that you want to delete all tables \
-                            in the database by passing the string 'DANGEROUSLY DELETE ALL TABLES'  \
-                            as the first argument to this function")
+            raise Exception("You must verify that you want to delete all \
+                            tables in the database by passing the string \
+                            'DANGEROUSLY DELETE ALL TABLES' as the first \
+                            argument to this function")
 
         cur = cls.cursor()
         cur.execute("DROP SCHEMA public CASCADE;")
@@ -131,10 +128,10 @@ class Database:
     @classmethod
     def _create_db_connection(cls, dbname: str) -> None:
         """
-        Create a database connection to given dbname
+        Create a database connection to given dbname.
+
         Sets that database to cls.connection
         """
-
         cls.connection_tries += 1
         try:
             cls.connection = psycopg2.connect(
@@ -149,16 +146,14 @@ class Database:
                 raise e
 
             print(
-                f"Failed to connect to database {dbname} on {cls.host}:{cls.port}. Retrying...")
+                f"Failed to connect to database \
+                {dbname} on {cls.host}:{cls.port}. Retrying...")
             time.sleep(CONNECTION_RETRY_DELAY)
             cls._create_db_connection(dbname)
 
     @classmethod
     def _verify_db_exists(cls) -> None:
-        """
-        Check if database defined by cls.dbname exists and create it if it doesn't
-        """
-
+        """Check if the database `cls.dbname` exists and create it if not."""
         dbname = cls.dbname
         database_exists = cls._check_database_exists(dbname)
 
@@ -172,7 +167,8 @@ class Database:
     @classmethod
     def _check_database_exists(cls, dbname: str) -> bool:
         """
-        Checks if given database exists
+        Check if given database exists.
+
         WARNING: This method will change cls.connection to the postgres db
         """
         cls._create_db_connection("postgres")
@@ -188,11 +184,8 @@ class Database:
         print("Database created successfully")
 
     @classmethod
-    def _run_sql_in_dir(cls, path: str) -> bool:
-        """
-        Runs all sql files in given directory
-        """
-
+    def _run_sql_in_dir(cls, path: str) -> None:
+        """Run all sql files in given directory."""
         dir = os.scandir(path)
         sorted_dir = sorted(dir, key=lambda file: file.name)
 
@@ -205,11 +198,8 @@ class Database:
         dir.close()
 
     @classmethod
-    def _run_sql_file(cls, path: str) -> bool:
-        """
-        Runs given sql file
-        """
-
+    def _run_sql_file(cls, path: str) -> None:
+        """Run given sql file."""
         print(f"Running sql file {path}")
         file = open(path, "r")
         sql = file.read()

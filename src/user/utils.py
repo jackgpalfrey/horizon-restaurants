@@ -1,3 +1,4 @@
+"""Module with helpers and validation logic for user stuff."""
 import bcrypt
 import re
 
@@ -16,6 +17,7 @@ FULL_NAME_REGEX = re.compile(r"^[a-zA-Z][a-zA-Z ]*[a-zA-Z]$")
 
 
 def hash_password(password: str) -> str:
+    """Hash password using bcrypt library."""
     bytes = password.encode("utf-8")
     salt = bcrypt.gensalt()
 
@@ -24,6 +26,7 @@ def hash_password(password: str) -> str:
 
 
 def check_password(password: str, hashed_password: str) -> bool:
+    """Check given password matches given hashed password."""
     bytes = password.encode("utf-8")
     hash_bytes = hashed_password.encode("utf-8")
 
@@ -31,6 +34,7 @@ def check_password(password: str, hashed_password: str) -> bool:
 
 
 def validate_username(username: str) -> bool:
+    """Validate username matches requirements."""
     ABOVE_MIN = len(username) >= USERNAME_MIN_LEN
     BELOW_MAX = len(username) <= USERNAME_MAX_LEN
     CORRECT_FORMAT = USERNAME_REGEX.match(username) is not None
@@ -39,6 +43,7 @@ def validate_username(username: str) -> bool:
 
 
 def validate_password(password: str):
+    """Validate password matches requirements."""
     ABOVE_MIN = len(password) >= PASSWORD_MIN_LEN
     BELOW_MAX = len(password) <= PASSWORD_MAX_LEN
     CORRECT_FORMAT = PASSWORD_REGEX.match(password) is not None
@@ -47,8 +52,9 @@ def validate_password(password: str):
 
 
 def validate_full_name(full_name: str):
-    # Hacky solution to block two or more spaces sequentially. If anyone's better at regex than me
-    # please fix
+    """Validate full name matches requirements."""
+    # Hacky solution to block two or more spaces sequentially. If anyone's
+    # better at regex than me please fix
     full_name = full_name.replace("  ", "!")
 
     ABOVE_MIN = len(full_name) >= FULL_NAME_MIN_LEN
