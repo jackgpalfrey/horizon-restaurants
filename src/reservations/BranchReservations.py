@@ -44,7 +44,6 @@ class BranchReservations:
         in ./utils.py Called in the create() method for reservations.
 
         :raises InputError: If reservation date, customer name, or guest number is invalid.
-        :raises AlreadyExistsError: If customer name provided already has a reservation booked.
         """
 
         if not validate_reservation_date(reservation_date):
