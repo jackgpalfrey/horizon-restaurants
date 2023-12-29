@@ -50,27 +50,27 @@ class BranchReservations:
 
     def get_by_id(self, reservation_id: str) -> Reservation:
         result = Database.execute_and_fetchone(
-            "SELECT id FROM public.reservations WHERE id = %s", reservation_id)
+            "SELECT id FROM public.reservations WHERE id = %s AND branch_id = %s;", reservation_id, self._branch_id)
 
         if result is not None:
             return Reservation(result[0])
 
     def get_by_table(self, table: Table) -> list[Reservation]:
         result = Database.execute_and_fetchall(
-            "SELECT id FROM public.reservations WHERE table_id = %s", table._table_id)
+            "SELECT id FROM public.reservations WHERE table_id = %s  AND branch_id = %s;", table._table_id, self._branch_id)
 
         return [Reservation(record[0]) for record in result]
 
     def get_by_customer_name(self, customer_name: str) -> Reservation:
         result = Database.execute_and_fetchone(
-            "SELECT id FROM public.reservations WHERE customer_name = %s", customer_name)
+            "SELECT id FROM public.reservations WHERE customer_name = %s  AND branch_id = %s;", customer_name, self._branch_id)
 
         if result is not None:
             return Reservation(result[0])
 
     def get_all(self) -> list[Reservation]:
         result = Database.execute_and_fetchall(
-            "SELECT id FROM public.reservations")
+            "SELECT id FROM public.reservations WHERE branch_id = %s;", self._branch_id)
 
         return [Reservation(record[0]) for record in result]
 
