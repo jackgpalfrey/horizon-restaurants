@@ -89,7 +89,7 @@ class MenuItem:
         Database.execute_and_commit(sql, desc, self._item_id)
 
     def set_price(self, price: float) -> None:
-        """Set price of item in pounds of item."""
+        """Set price of item in £."""
         ActiveUser.get().raise_without_permission("menu.item.update.price")
         sql = "UPDATE public.menuitem SET price = %s WHERE id = %s"
         Database.execute_and_commit(sql, price, self._item_id)

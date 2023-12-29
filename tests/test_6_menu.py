@@ -56,6 +56,7 @@ def test_can_set_category_name():
     new_category = menu.get_category_by_name("New Category")
     assert isinstance(new_category, MenuCategory)
     assert category.get_id() == new_category.get_id()
+    assert new_category.get_name() == "New Category"
 
 
 def test_can_delete_category():
@@ -175,6 +176,7 @@ def test_item_category():
     got_category = item.get_category()
     assert isinstance(got_category, MenuCategory)
     assert got_category.get_id() == new_category.get_id()
+    assert got_category.get_name() == "Spanish Food"
 
 
 def test_item_availability():

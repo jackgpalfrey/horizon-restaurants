@@ -97,7 +97,6 @@ class BranchMenu:
 
         for item in result:
             item_id, category_id = item
-            print(item_id)
             category_name = MenuCategory(category_id).get_name()
             assert category_name is not None
             add_item(category_name, MenuItem(item_id))
