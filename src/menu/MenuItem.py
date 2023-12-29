@@ -72,7 +72,7 @@ class MenuItem:
         """Set name of item."""
         ActiveUser.get().raise_without_permission("menu.item.update.name")
 
-        if validate_menu_name(name):
+        if not validate_menu_name(name):
             raise InputError("Invalid item name")
 
         sql = "UPDATE public.menuitem SET name = %s WHERE id = %s"
@@ -82,7 +82,7 @@ class MenuItem:
         """Set description of item."""
         ActiveUser.get().raise_without_permission("menu.item.update.desc")
 
-        if validate_menu_description(desc):
+        if not validate_menu_description(desc):
             raise InputError("Invalid item description")
 
         sql = "UPDATE public.menuitem SET description = %s WHERE id = %s"

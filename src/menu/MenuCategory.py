@@ -28,7 +28,7 @@ class MenuCategory:
         """Set the categories name."""
         ActiveUser.get().raise_without_permission("menu.category.update.name")
 
-        if validate_menu_name(name):
+        if not validate_menu_name(name):
             raise InputError("Inavlid category name")
 
         sql = "UPDATE public.menucategory SET name = %s WHERE id = %s"

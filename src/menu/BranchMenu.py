@@ -18,7 +18,7 @@ class BranchMenu:
         """Create a new category."""
         ActiveUser.get().raise_without_permission("menu.category.create")
 
-        if validate_menu_name(name):
+        if not validate_menu_name(name):
             raise InputError("Inavlid category name")
 
         sql = "INSERT INTO public.menucategory (name, branch_id) \
@@ -52,7 +52,7 @@ class BranchMenu:
         """Create a new item."""
         ActiveUser.get().raise_without_permission("menu.item.create")
 
-        if validate_menu_name(name):
+        if not validate_menu_name(name):
             raise InputError("Inavlid item name")
 
         sql = "INSERT INTO public.menuitem \
