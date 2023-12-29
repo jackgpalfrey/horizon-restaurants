@@ -1,5 +1,7 @@
 """Module for managing menu categories."""
+from src.menu.utils import validate_menu_name
 from src.user.ActiveUser import ActiveUser
+from src.utils.errors import InputError
 from ..utils.Database import Database
 
 
@@ -25,6 +27,10 @@ class MenuCategory:
     def set_name(self, name: str) -> None:
         """Set the categories name."""
         ActiveUser.get().raise_without_permission("menu.category.update.name")
+
+        if validate_menu_name(name):
+            raise InputError("Inavlid category name")
+
         sql = "UPDATE public.menucategory SET name = %s WHERE id = %s"
         Database.execute(sql, name, self._category_id)
 

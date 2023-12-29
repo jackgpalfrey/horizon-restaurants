@@ -1,7 +1,10 @@
 """Module for managing a specific branches menu."""
 from src.menu.MenuItem import MenuItem
+from .utils import validate_menu_name
+from src.user.ActiveUser import ActiveUser
 from .MenuCategory import MenuCategory
 from ..utils.Database import Database
+from ..utils.errors import InputError
 
 
 class BranchMenu:
@@ -13,6 +16,11 @@ class BranchMenu:
 
     def create_category(self, name: str) -> MenuCategory:
         """Create a new category."""
+        ActiveUser.get().raise_without_permission("menu.category.create")
+
+        if validate_menu_name(name):
+            raise InputError("Inavlid category name")
+
         sql = "INSERT INTO public.menucategory (name, branch_id) \
         VALUES (%s,%s) RETURNING id;"
 
@@ -42,6 +50,11 @@ class BranchMenu:
     def create_item(self, name: str, desc: str, price: float,
                     img_url: str | None, category: MenuCategory) -> MenuItem:
         """Create a new item."""
+        ActiveUser.get().raise_without_permission("menu.item.create")
+
+        if validate_menu_name(name):
+            raise InputError("Inavlid item name")
+
         sql = "INSERT INTO public.menuitem \
         (name, description, price, image_url, category_id, branch_id) \
         VALUES (%s,%s,%s,%s,%s,%s) RETURNING id;"
