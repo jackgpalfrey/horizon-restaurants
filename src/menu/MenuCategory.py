@@ -1,4 +1,5 @@
 """Module for managing menu categories."""
+from src.user.ActiveUser import ActiveUser
 from ..utils.Database import Database
 
 
@@ -23,10 +24,12 @@ class MenuCategory:
 
     def set_name(self, name: str) -> None:
         """Set the categories name."""
+        ActiveUser.get().raise_without_permission("menu.category.update.name")
         sql = "UPDATE public.menucategory SET name = %s WHERE id = %s"
         Database.execute(sql, name, self._category_id)
 
     def delete(self) -> None:
         """Delete the category, does not delete items."""
+        ActiveUser.get().raise_without_permission("menu.category.delete")
         sql = "DELETE FROM public.menucategory WHERE id=%s;"
         Database.execute(sql, self._category_id)
