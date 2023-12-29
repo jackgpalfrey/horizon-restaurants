@@ -9,8 +9,7 @@ CUSTOMER_NAME_REGEX = re.compile(r"^[a-zA-Z][a-zA-Z ]*[a-zA-Z]$")
 
 
 def validate_reservation_date(reservation_date: datetime):
-    current_date = datetime.today().date()
-    reservation_date = datetime.date(reservation_date)
+    current_date = datetime.now()
 
     VALID_DATE = reservation_date >= current_date
 

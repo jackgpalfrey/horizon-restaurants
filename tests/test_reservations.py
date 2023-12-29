@@ -15,12 +15,12 @@ from src.utils.errors import (
 )
 
 customer_name = "Glenn Juarez"
+new_customer_name = "Ellis Mcintyre"
+
 # FORMAT YY-MM-DD HH:MM:SS e.g. | 2023-12-28 11:22:33
-reservation_time = datetime.now()
+reservation_time = datetime.now() + timedelta(seconds=40)
 duration = timedelta(days=1)
 guest_num = 4
-
-new_customer_name = "Ellis Mcintyre"
 
 
 @pytest.fixture(autouse=True, scope="module")
