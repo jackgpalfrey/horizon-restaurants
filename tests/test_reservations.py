@@ -1,4 +1,6 @@
 import pytest
+from datetime import datetime, timedelta
+
 from src.branch.BranchService import BranchService
 from src.city.CityService import CityService
 from src.tables.Table import Table
@@ -6,8 +8,11 @@ from src.reservations.Reservation import Reservation
 from src.reservations.utils import validate_customer_name
 from src.user.UserService import UserService
 from src.utils.Database import Database
-from src.utils.errors import InputError, AuthorizationError
-from datetime import datetime, timedelta
+from src.utils.errors import (
+    InputError,
+    AuthorizationError,
+    AlreadyExistsError
+)
 
 customer_name = "Glenn Juarez"
 # FORMAT YY-MM-DD HH:MM:SS e.g. | 2023-12-28 11:22:33
@@ -72,24 +77,26 @@ def test_cant_create_reservation_with_past_date():
 
 def test_cant_create_reservation_for_currently_reserved_table():
     branch = BranchService.get_by_name("Bristol")
+    assert branch is not None
     branch_table = branch.tables()
     table = branch_table.get_by_number(1)
+    assert table is not None
     branch_reservations = branch.reservations()
-    with pytest.raises(InputError):
+    with pytest.raises(AlreadyExistsError):
         branch_reservations.create(
             table, "Kyle Carter", reservation_time, 2)
 
 
 def test_customer_name_validation():
-    assert validate_customer_name("Dennis Mccullough") == True
-    assert validate_customer_name("Dennis Rosales Mccullough") == True
-    assert validate_customer_name("Dennis Rosales Mccullough ") == False
-    assert validate_customer_name(" Dennis Rosales Mccullough") == False
-    assert validate_customer_name("Dennis Rosales  Mccullough") == False
-    assert validate_customer_name("1234") == False
-    assert validate_customer_name("1 1 1!") == False
-    assert validate_customer_name("Dennis1 Rosales2 Mccullough3") == False
-    assert validate_customer_name("1Dennis 2Rosales 3Mccullough") == False
+    assert validate_customer_name("Dennis Mccullough") is True
+    assert validate_customer_name("Dennis Rosales Mccullough") is True
+    assert validate_customer_name("Dennis Rosales Mccullough ") is False
+    assert validate_customer_name(" Dennis Rosales Mccullough") is False
+    assert validate_customer_name("Dennis Rosales  Mccullough") is False
+    assert validate_customer_name("1234") is False
+    assert validate_customer_name("1 1 1!") is False
+    assert validate_customer_name("Dennis1 Rosales2 Mccullough3") is False
+    assert validate_customer_name("1Dennis 2Rosales 3Mccullough") is False
 
 
 def test_cant_create_reservation_with_invalid_customer_name():
@@ -202,12 +209,15 @@ def test_set_table():
 
 def test_cant_set_reserved_table():
     branch = BranchService.get_by_name("Bristol")
+    assert branch is not None
     branch_tables = branch.tables()
     table = branch_tables.get_by_number(8)
+    assert table is not None
     branch_reservations = branch.reservations()
     reservation = branch_reservations.get_by_customer_name("Ronald Robles")
+    assert reservation is not None
     assert isinstance(reservation, Reservation)
-    with pytest.raises(InputError):
+    with pytest.raises(AlreadyExistsError):
         reservation.set_table(table)
 
 
@@ -360,25 +370,27 @@ def test_get_all_reservations():
         assert isinstance(reservations[i], Reservation)
 
 
-def test_cancel_reservation():
+def test_delete_reservation():
     branch = BranchService.get_by_name("Bristol")
     assert branch is not None
     branch_reservation = branch.reservations()
     reservation = branch_reservation.get_by_customer_name("Tony Barrett")
     table = reservation.get_table()
-    reservation.cancel()
+    reservation.delete()
     assert branch_reservation.get_by_customer_name("Tony Barrett") is None
     assert table.check_is_reserved(reservation_time) is False
 
 
 def test_create_reservation_at_different_branch():
-    # test if manager can create a reservation at a branch different from one they're assigned to
+    # test if manager can create a reservation at a
+    # branch different from one they're assigned to
 
     user = UserService.create(
         "manager", "myPassword0!", "Test Manager", role_id=4)
     user2 = UserService.create(
         "frontend", "myPassword0!", "Test FrontEnd", role_id=1)
     branch = BranchService.get_by_name("Bristol")
+    assert branch is not None
     user.set_branch(branch)
     user2.set_branch(branch)
     city = CityService.create("Cardiff")

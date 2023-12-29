@@ -44,7 +44,8 @@ class BranchTables:
         Note: This is not limited to this branch.
         """
         result = Database.execute_and_fetchone(
-            "SELECT id FROM public.table WHERE id = %s AND branch_id = %s;", table_id, self._branch_id)
+            "SELECT id FROM public.table WHERE id = %s AND branch_id = %s;",
+            table_id, self._branch_id)
 
         if result is not None:
             return Table(result[0])

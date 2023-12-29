@@ -1,3 +1,4 @@
+"""Module with helpers and validation logic for reservations."""
 import re
 from datetime import datetime
 from ..tables.Table import Table

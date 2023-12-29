@@ -62,10 +62,13 @@ class BranchService:
 
     @staticmethod
     def get_branch_by_user(user: User) -> Branch | None:
+        """Get a branch a user is assigned to by the user ID."""
         result = Database.execute_and_fetchone(
-            "SELECT branch_id FROM public.branchstaff WHERE user_id=%s;", user._user_id)
+            "SELECT branch_id FROM public.branchstaff WHERE user_id=%s;",
+            user._user_id)
 
-        return Branch(result[0])
+        if result is not None:
+            return Branch(result[0])
 
     @staticmethod
     def get_by_city(city: City) -> list[Branch]:

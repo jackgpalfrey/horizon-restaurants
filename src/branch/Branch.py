@@ -26,6 +26,7 @@ class Branch:
         return BranchTables(self._branch_id)
 
     def reservations(self):
+        """Access reservation managment methods."""
         return BranchReservations(self._branch_id)
 
     def get_id(self) -> str:

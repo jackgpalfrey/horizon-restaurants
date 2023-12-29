@@ -52,13 +52,13 @@ class Table:
             "DELETE FROM public.table WHERE id = %s", self._table_id)
 
     def check_is_reserved(self, reservation_time: datetime) -> bool:
-
+        """Checks if the table is reserved during the range of time given."""
         duration = timedelta(hours=2)
         end_time = reservation_time + duration
 
         check = Database.execute_and_fetchone(
-            "SELECT id FROM public.reservations WHERE table_id = %s AND end_time > %s AND reservation_time < %s;", self._table_id, reservation_time, end_time)
+            "SELECT id FROM public.reservations WHERE table_id = %s \
+            AND end_time > %s AND reservation_time < %s;",
+            self._table_id, reservation_time, end_time)
 
-        if check is not None:
-            return True
-        return False
+        return check is not None
