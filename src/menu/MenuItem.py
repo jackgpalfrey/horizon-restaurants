@@ -1,7 +1,8 @@
 """Module for managing individual menu items."""
 
-
 from src.utils.Database import Database
+from src.menu.MenuCategory import MenuCategory
+from decimal import Decimal
 
 
 class MenuItem:
@@ -22,3 +23,78 @@ class MenuItem:
 
         if result is not None:
             return result[0]
+
+    def get_description(self) -> str | None:
+        """Get item description."""
+        sql = "SELECT description FROM public.menuitem WHERE id=%s;"
+        result = Database.execute_and_fetchone(sql, self._item_id)
+
+        if result is not None:
+            return result[0]
+
+    def get_price(self) -> float | None:
+        """Get item price."""
+        sql = "SELECT price FROM public.menuitem WHERE id=%s;"
+        result = Database.execute_and_fetchone(sql, self._item_id)
+
+        if result is not None:
+            decimal: Decimal = result[0]
+            return float(decimal)
+
+    def get_image_url(self) -> str | None:
+        """Get item image url."""
+        sql = "SELECT image_url FROM public.menuitem WHERE id=%s;"
+        result = Database.execute_and_fetchone(sql, self._item_id)
+
+        if result is not None:
+            return result[0]
+
+    def get_category(self) -> MenuCategory | None:
+        """Get menu items category."""
+        sql = "SELECT category_id FROM public.menuitem WHERE id=%s;"
+        result = Database.execute_and_fetchone(sql, self._item_id)
+
+        if result is not None:
+            return MenuCategory(result[0])
+
+    def get_is_available(self) -> bool:
+        """Get if the item is available or not."""
+        sql = "SELECT is_available FROM public.menuitem WHERE id=%s;"
+        result = Database.execute_and_fetchone(sql, self._item_id)
+
+        return result is not None and result[0]
+
+    def set_name(self, name: str) -> None:
+        """Set name of item."""
+        sql = "UPDATE public.menuitem SET name = %s WHERE id = %s"
+        Database.execute_and_commit(sql, name, self._item_id)
+
+    def set_description(self, desc: str) -> None:
+        """Set description of item."""
+        sql = "UPDATE public.menuitem SET description = %s WHERE id = %s"
+        Database.execute_and_commit(sql, desc, self._item_id)
+
+    def set_price(self, price: float) -> None:
+        """Set price of item in pounds of item."""
+        sql = "UPDATE public.menuitem SET price = %s WHERE id = %s"
+        Database.execute_and_commit(sql, price, self._item_id)
+
+    def set_image_url(self, url: str) -> None:
+        """Set url of items cover image."""
+        sql = "UPDATE public.menuitem SET image_url = %s WHERE id = %s"
+        Database.execute_and_commit(sql, url, self._item_id)
+
+    def set_category(self, category: MenuCategory) -> None:
+        """Set category of item."""
+        sql = "UPDATE public.menuitem SET category_id = %s WHERE id = %s"
+        Database.execute_and_commit(sql, category.get_id(), self._item_id)
+
+    def set_availability(self, is_available: bool) -> None:
+        """Set availability of item."""
+        sql = "UPDATE public.menuitem SET is_available = %s WHERE id = %s"
+        Database.execute_and_commit(sql, is_available, self._item_id)
+
+    def delete(self):
+        """Delete item."""
+        sql = "DELETE FROM public.menuitem WHERE id=%s"
+        Database.execute_and_commit(sql, self._item_id)

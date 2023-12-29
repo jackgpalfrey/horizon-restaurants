@@ -125,3 +125,70 @@ def test_can_get_by_category():
     assert len(items) == 1
     assert isinstance(items[0], MenuItem)
     assert items[0].get_name() == "Third Item"
+
+
+item: MenuItem | None = None
+
+
+def test_item_name():
+    global item
+    assert menu is not None
+    category = menu.create_category("Burgers")
+    item = menu.create_item("Burger", "A big, expensive burger",
+                            10.56, None, category)
+
+    assert item.get_name() == "Burger"
+    item.set_name("Hamburguesa")
+    assert item.get_name() == "Hamburguesa"
+
+
+def test_item_description():
+    assert item is not None
+    assert item.get_description() == "A big, expensive burger"
+    item.set_description("A spanish burger")
+    assert item.get_description() == "A spanish burger"
+
+
+def test_item_price():
+    assert item is not None
+    assert item.get_price() == 10.56
+    item.set_price(3.29)
+    assert item.get_price() == 3.29
+
+
+def test_item_image_url():
+    assert item is not None
+    assert item.get_image_url() is None
+    url = "https://www.thestreet.com/.image/t_share/MTg5NTQ2MzM0NDk0MTQwMDAx/bk-ice-cream-burger-.jpg"
+    item.set_image_url(url)
+    assert item.get_image_url() == url
+
+
+def test_item_category():
+    assert menu is not None
+    assert item is not None
+    new_category = menu.create_category("Spanish Food")
+    old_category = item.get_category()
+    assert old_category is not None
+    assert old_category.get_name() == "Burgers"
+    item.set_category(new_category)
+    got_category = item.get_category()
+    assert isinstance(got_category, MenuCategory)
+    assert got_category.get_id() == new_category.get_id()
+
+
+def test_item_availability():
+    assert item is not None
+    assert item.get_is_available() is True
+    item.set_availability(False)
+    assert item.get_is_available() is False
+
+
+def test_can_delete_item():
+    global item
+    assert menu is not None
+    assert item is not None
+    id = item.get_id()
+    item.delete()
+    item = None
+    assert menu.get_item_by_id(id) is None
