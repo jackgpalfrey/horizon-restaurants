@@ -1,13 +1,15 @@
 """Module for handling specific reservations."""
+from datetime import datetime
+
+from src.utils.errors import AlreadyExistsError, InputError
+
 from ..tables.Table import Table
 from ..user.ActiveUser import ActiveUser
 from ..utils.Database import Database
-from src.utils.errors import InputError, AlreadyExistsError
-from datetime import datetime
 from .utils import (
-    validate_reservation_date,
     validate_customer_name,
-    validate_guest_num
+    validate_guest_num,
+    validate_reservation_date
 )
 
 
@@ -24,6 +26,7 @@ class Reservation:
             "SELECT table_id FROM public.reservations WHERE id = %s",
             self._reservation_id)
 
+        assert result is not None
         return Table(result[0])
 
     def get_customer_name(self) -> str:
@@ -32,8 +35,8 @@ class Reservation:
             "SELECT customer_name FROM public.reservations WHERE id = %s",
             self._reservation_id)
 
-        if customer_name is not None:
-            return customer_name[0]
+        assert customer_name is not None
+        return customer_name[0]
 
     def get_time(self) -> datetime:
         """Get reservations time."""
@@ -41,8 +44,8 @@ class Reservation:
             "SELECT reservation_time FROM public.reservations WHERE id = %s",
             self._reservation_id)
 
-        if time is not None:
-            return time[0]
+        assert time is not None
+        return time[0]
 
     def get_num_people(self) -> int:
         """Get reservations customer number."""
@@ -50,15 +53,15 @@ class Reservation:
             "SELECT guest_num FROM public.reservations WHERE id = %s",
             self._reservation_id)
 
-        if guest_num is not None:
-            return guest_num[0]
+        assert guest_num is not None
+        return guest_num[0]
 
     def set_table(self, table: Table) -> None:
         """
         Update the reservation's table.
 
         :raises AuthorizationError: If active user does not have permission.
-        :raises AlreadyExistsError: If table given already has a reservation booked.
+        :raises AlreadyExistsError: If table given already has a reservation.
         """
         ActiveUser.get().raise_without_permission("reservation.update")
 
@@ -107,8 +110,8 @@ class Reservation:
                 "The reservation must be booked today or at a future date.")
 
         Database.execute_and_commit(
-            "UPDATE public.reservations SET reservation_time = %s WHERE id = %s",
-            reservation_time, self._reservation_id)
+            "UPDATE public.reservations SET reservation_time = %s \
+            WHERE id = %s", reservation_time, self._reservation_id)
 
     def set_num_people(self, guest_num: int) -> None:
         """
@@ -130,11 +133,10 @@ class Reservation:
 
     def delete(self):
         """
-        Deletes the reservation record from the database.
+        Delete the reservation record from the database.
 
         :raises AuthorizationError: If active user does not have permission.
         """
-
         ActiveUser.get().raise_without_permission("reservation.delete")
 
         Database.execute_and_commit(

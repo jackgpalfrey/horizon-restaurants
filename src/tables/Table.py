@@ -1,6 +1,7 @@
 """Module for handling specific tables."""
-from ..user.ActiveUser import ActiveUser
 from datetime import datetime, timedelta
+
+from ..user.ActiveUser import ActiveUser
 from ..utils.Database import Database
 
 
@@ -52,7 +53,7 @@ class Table:
             "DELETE FROM public.table WHERE id = %s", self._table_id)
 
     def check_is_reserved(self, reservation_time: datetime) -> bool:
-        """Checks if the table is reserved during the range of time given."""
+        """Check if the table is reserved during the range of time given."""
         duration = timedelta(hours=2)
         end_time = reservation_time + duration
 

@@ -140,8 +140,8 @@ def check_table_is_reserved():
     assert reservation is not None
     check = table.check_is_reserved(time)
     assert isinstance(reservation, Reservation)
-    assert type(check) == bool
-    assert check == True
+    assert type(check) is bool
+    assert check is True
 
 
 def check_table_is_not_reserved():
@@ -157,5 +157,5 @@ def check_table_is_not_reserved():
     check_time = time + timedelta(hours=4)
     check = table.check_is_reserved(check_time)
     assert isinstance(reservation, Reservation)
-    assert type(check) == bool
-    assert check == False
+    assert type(check) is bool
+    assert check is False

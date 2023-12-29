@@ -1,7 +1,8 @@
 """Module for managing a branches tables."""
+from src.utils.errors import AlreadyExistsError
+
 from ..user.ActiveUser import ActiveUser
 from ..utils.Database import Database
-from src.utils.errors import AlreadyExistsError
 from .Table import Table
 from .utils import validate_create_table
 
@@ -53,8 +54,8 @@ class BranchTables:
     def get_by_number(self, table_number: int) -> Table | None:
         """Get a table by it's number."""
         result = Database.execute_and_fetchone(
-            "SELECT id FROM public.table WHERE table_number = %s AND branch_id = %s;",
-            table_number, self._branch_id)
+            "SELECT id FROM public.table WHERE table_number = %s \
+            AND branch_id = %s;", table_number, self._branch_id)
 
         if result is not None:
             return Table(result[0])
@@ -67,14 +68,16 @@ class BranchTables:
         capacity above or equal to the minimum will be first.
         """
         result = Database.execute_and_fetchall(
-            "SELECT id FROM public.table WHERE capacity >= %s AND branch_id = %s \
-            ORDER BY capacity", table_capacity, self._branch_id)
+            "SELECT id FROM public.table WHERE capacity >= %s \
+            AND branch_id = %s ORDER BY capacity",
+            table_capacity, self._branch_id)
 
         return [Table(record[0]) for record in result]
 
     def get_all(self) -> list[Table]:
         """Get all tables at the branch."""
         result = Database.execute_and_fetchall(
-            "SELECT id FROM public.table WHERE branch_id = %s;", self._branch_id)
+            "SELECT id FROM public.table WHERE branch_id = %s;",
+            self._branch_id)
 
         return [Table(record[0]) for record in result]

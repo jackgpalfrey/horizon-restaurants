@@ -1,4 +1,4 @@
-"""Module containing helpers and validation logic for branch"""
+"""Module containing helpers and validation logic for branch."""
 import re
 
 BRANCH_NAME_MIN_LEN = 3  # INCLUSIVE

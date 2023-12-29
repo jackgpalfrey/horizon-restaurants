@@ -375,6 +375,7 @@ def test_delete_reservation():
     assert branch is not None
     branch_reservation = branch.reservations()
     reservation = branch_reservation.get_by_customer_name("Tony Barrett")
+    assert reservation is not None
     table = reservation.get_table()
     reservation.delete()
     assert branch_reservation.get_by_customer_name("Tony Barrett") is None
