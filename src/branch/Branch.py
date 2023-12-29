@@ -1,5 +1,6 @@
 """Module for Branch Managment."""
 from typing import Any
+from src.menu.BranchMenu import BranchMenu
 
 from src.utils.errors import AlreadyExistsError, InputError
 
@@ -24,6 +25,10 @@ class Branch:
     def tables(self):
         """Access table managment methods."""
         return BranchTables(self._branch_id)
+
+    def menu(self):
+        """Access menu management methods."""
+        return BranchMenu(self._branch_id)
 
     def reservations(self):
         """Access reservation managment methods."""
