@@ -5,9 +5,11 @@ from src.utils.errors import AlreadyExistsError, InputError
 
 from ..city.City import City
 from ..tables.BranchTables import BranchTables
+from ..reservations.BranchReservations import BranchReservations
 from ..user.User import User
 from ..utils.Database import Database
 from .utils import validate_branch_address, validate_branch_name
+
 
 MANAGER_ROLE_ID = 4
 
@@ -22,6 +24,10 @@ class Branch:
     def tables(self):
         """Access table managment methods."""
         return BranchTables(self._branch_id)
+
+    def reservations(self):
+        """Access reservation managment methods."""
+        return BranchReservations(self._branch_id)
 
     def get_id(self) -> str:
         """Get ID of branch."""

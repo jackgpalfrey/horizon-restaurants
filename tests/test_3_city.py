@@ -73,7 +73,7 @@ def test_creating_cities_for_branches():
     assert isinstance(city, City)
 
 
-def test_branch_name_validation():
+def test_city_name_validation():
     assert validate_city_name("Test City") is True
     assert validate_city_name("Bristol") is True
     assert validate_city_name("Bristol City ") is False
