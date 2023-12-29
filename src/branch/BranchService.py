@@ -4,6 +4,7 @@ from psycopg2.errors import UniqueViolation
 from src.utils.errors import InputError
 from src.utils.errors import AlreadyExistsError
 
+from ..user.User import User
 from ..city.City import City
 from ..utils.Database import Database
 from .Branch import Branch
@@ -55,6 +56,16 @@ class BranchService:
         """Get a branch by ID."""
         result = Database.execute_and_fetchone(
             "SELECT id FROM public.branch WHERE id = %s", branch_id)
+
+        if result is not None:
+            return Branch(result[0])
+
+    @staticmethod
+    def get_branch_by_user(user: User) -> Branch | None:
+        """Get a branch a user is assigned to by the user ID."""
+        result = Database.execute_and_fetchone(
+            "SELECT branch_id FROM public.branchstaff WHERE user_id=%s;",
+            user._user_id)
 
         if result is not None:
             return Branch(result[0])
