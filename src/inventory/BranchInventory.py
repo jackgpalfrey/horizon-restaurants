@@ -13,14 +13,15 @@ class BranchInventory:
         """Don't call outside of Branch."""
         self._branch_id = branch_id
 
-    def create_new_item(self, name: str, quantity: int, threshold: int) -> InventoryItem:
+    def create(self, name: str, quantity: int,
+               threshold: int) -> InventoryItem:
         """
         Create a new inventory item using the given parameters.
+
         A record of the created item is added to the database.
 
         :raises AuthorizationError: If active user does not have permission.
         """
-
         ActiveUser.get().raise_without_permission("inventory.create")
 
         if not validate_item_name(name):
@@ -31,8 +32,8 @@ class BranchInventory:
         if check is not None:
             raise AlreadyExistsError("An item with this name already exists.")
 
-        sql = "INSERT INTO public.inventory (name, quantity, threshold, branch_id) \
-            VALUES(%s, %s, %s, %s) RETURNING id"
+        sql = "INSERT INTO public.inventory (name, quantity, threshold,\
+              branch_id) VALUES(%s, %s, %s, %s) RETURNING id"
 
         cursor = Database.execute(
             sql, name, quantity, threshold, self._branch_id)

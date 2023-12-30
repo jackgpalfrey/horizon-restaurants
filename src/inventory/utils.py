@@ -1,8 +1,6 @@
 """Module with helpers and validation logic for reservations."""
 import re
 
-from ..tables.Table import Table
-
 ITEM_NAME_MIN_LEN = 3  # INCLUSIVE
 ITEM_NAME_MAX_LEN = 50  # INCLUSIVE
 ITEM_NAME_REGEX = re.compile(r"^[a-zA-Z][a-zA-Z ]*[a-zA-Z]$")

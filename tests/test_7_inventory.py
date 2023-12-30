@@ -48,7 +48,7 @@ def test_create_item():
     assert isinstance(branch, Branch)
     branch_inventory = branch.inventory()
     assert isinstance(branch_inventory, BranchInventory)
-    item = branch_inventory.create_new_item(name, quantity, threshold)
+    item = branch_inventory.create(name, quantity, threshold)
     assert isinstance(item, InventoryItem)
     assert item is not None
 
@@ -57,13 +57,13 @@ def test_cant_create_item_with_duplicate_name():
     assert branch is not None
     branch_inventory = branch.inventory()
     with pytest.raises(AlreadyExistsError):
-        branch_inventory.create_new_item("Tomatoe", 12, 8)
+        branch_inventory.create("Tomatoe", 12, 8)
 
 
 def test_get_item_name():
     assert branch is not None
     branch_inventory = branch.inventory()
-    item = branch_inventory.create_new_item("Potatoe", 60, 35)
+    item = branch_inventory.create("Potatoe", 60, 35)
     assert item is not None
     item_name = item.get_name()
     assert item_name == "Potatoe"
@@ -73,7 +73,7 @@ def test_get_item_name():
 def test_get_item_quantity():
     assert branch is not None
     branch_inventory = branch.inventory()
-    item = branch_inventory.create_new_item("Onion", 40, 10)
+    item = branch_inventory.create("Onion", 40, 10)
     assert item is not None
     item_quantity = item.get_quantity()
     assert item_quantity == 40
@@ -83,7 +83,7 @@ def test_get_item_quantity():
 def test_get_item_threshold():
     assert branch is not None
     branch_inventory = branch.inventory()
-    item = branch_inventory.create_new_item("Pasta", 30, 7)
+    item = branch_inventory.create("Pasta", 30, 7)
     assert item is not None
     item_threshold = item.get_threshold()
     assert item_threshold == 7
@@ -106,7 +106,7 @@ def test_get_all_items():
 def test_get_item_by_name():
     assert branch is not None
     branch_inventory = branch.inventory()
-    item = branch_inventory.create_new_item("Meat", 50, 10)
+    item = branch_inventory.create("Meat", 50, 10)
     got_item = branch_inventory.get_by_name("Meat")
     assert isinstance(got_item, InventoryItem)
     assert got_item.get_name() == "Meat"
@@ -200,12 +200,12 @@ def test_cant_subtract_quantity_over_current_quantity():
 def test_check_quantity_above_threshold():
     assert branch is not None
     branch_inventory = branch.inventory()
-    item1 = branch_inventory.create_new_item("Chicken", 25, 10)
+    item1 = branch_inventory.create("Chicken", 25, 10)
     assert item1 is not None
-    item2 = branch_inventory.create_new_item("Fish", 15, 20)
+    item2 = branch_inventory.create("Fish", 15, 20)
     assert item2 is not None
-    assert item1.check_quantity_above_threshold() == True
-    assert item2.check_quantity_above_threshold() == False
+    assert item1.check_quantity_above_threshold() is True
+    assert item2.check_quantity_above_threshold() is False
 
 
 def test_delete():
@@ -214,7 +214,7 @@ def test_delete():
     item = branch_inventory.get_by_name("Meat")
     assert item is not None
     item.delete()
-    assert branch_inventory.get_by_name("Meat") == None
+    assert branch_inventory.get_by_name("Meat") is None
 
 
 def test_cant_update_item_with_wrong_role():
