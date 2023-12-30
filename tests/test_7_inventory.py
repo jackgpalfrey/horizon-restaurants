@@ -7,7 +7,7 @@ from src.user.UserService import UserService
 from src.inventory.BranchInventory import BranchInventory
 from src.inventory.InventoryItem import InventoryItem
 from src.utils.Database import Database
-from src.utils.errors import AuthorizationError
+from src.utils.errors import AuthorizationError, InputError
 
 
 @pytest.fixture(autouse=True, scope="module")
@@ -30,6 +30,12 @@ threshold = 20
 
 
 def test_create_item():
+    UserService.create("kitchen-staff1", "myPassword0!",
+                       "Kitchen Staff", role_id=2)
+    UserService.create("frontend-staff1", "myPassword0!",
+                       "Frontend Staff", role_id=1)
+    UserService.logout()
+    UserService.login("kitchen-staff1", "myPassword0!")
     global branch
     city = CityService.create("Bristol")
     assert isinstance(city, City)
@@ -94,3 +100,33 @@ def test_get_item_by_name():
     assert isinstance(got_item, InventoryItem)
     assert got_item.get_name() == "Meat"
     assert got_item._item_id == item._item_id
+
+
+def test_set_item_name():
+    assert branch is not None
+    branch_inventory = branch.inventory()
+    item = branch_inventory.get_by_name("Potatoe")
+    assert item is not None
+    item.set_name("Sweet Potatoe")
+    got_name = item.get_name()
+    assert got_name == "Sweet Potatoe"
+
+
+def test_cant_set_invalid_item_name():
+    assert branch is not None
+    branch_inventory = branch.inventory()
+    item = branch_inventory.get_by_name("Sweet Potatoe")
+    assert item is not None
+    with pytest.raises(InputError):
+        item.set_name("12239Invalid123")
+
+
+def test_cant_set_item_name_with_wrong_role():
+    UserService.logout()
+    UserService.login("frontend-staff1", "myPassword0!")
+    assert branch is not None
+    branch_inventory = branch.inventory()
+    item = branch_inventory.get_by_name("Sweet Potatoe")
+    assert item is not None
+    with pytest.raises(AuthorizationError):
+        item.set_name("Potatoe")
