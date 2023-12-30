@@ -197,6 +197,17 @@ def test_cant_subtract_quantity_over_current_quantity():
         item.subtract_quantity(15)
 
 
+def test_check_quantity_above_threshold():
+    assert branch is not None
+    branch_inventory = branch.inventory()
+    item1 = branch_inventory.create_new_item("Chicken", 25, 10)
+    assert item1 is not None
+    item2 = branch_inventory.create_new_item("Fish", 15, 20)
+    assert item2 is not None
+    assert item1.check_quantity_above_threshold() == True
+    assert item2.check_quantity_above_threshold() == False
+
+
 def test_delete():
     assert branch is not None
     branch_inventory = branch.inventory()

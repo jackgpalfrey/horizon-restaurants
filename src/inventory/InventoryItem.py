@@ -118,6 +118,12 @@ class InventoryItem:
             "UPDATE public.inventory SET quantity = %s WHERE id = %s",
             new_quantity, self._item_id)
 
+    def check_quantity_above_threshold(self) -> bool:
+        """Check if the given inventory item's quantity is above the item's threshold."""
+        item_quantity = self.get_quantity()
+        item_threshold = self.get_threshold()
+        return item_quantity > item_threshold
+
     def delete(self):
         """
         Delete the inventory item record from the database.
