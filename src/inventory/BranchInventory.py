@@ -1,4 +1,5 @@
 """Module for creating and accessing inventories."""
+from .InventoryItem import InventoryItem
 
 
 class BranchInventory:
