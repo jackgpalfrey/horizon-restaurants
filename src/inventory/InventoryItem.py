@@ -93,7 +93,8 @@ class InventoryItem:
         ActiveUser.get().raise_without_permission("inventory.update")
 
         Database.execute_and_commit(
-            "UPDATE public.inventory SET quantity = quantity + %s WHERE id = %s",
+            "UPDATE public.inventory SET quantity = quantity + %s \
+            WHERE id = %s",
             quantity, self._item_id)
 
     def subtract_quantity(self, quantity: int) -> None:
@@ -112,7 +113,8 @@ class InventoryItem:
                 quantity (negative result)")
 
         Database.execute_and_commit(
-            "UPDATE public.inventory SET quantity = quantity - %s WHERE id = %s",
+            "UPDATE public.inventory SET quantity = quantity - %s \
+            WHERE id = %s",
             quantity, self._item_id)
 
     def check_quantity_above_threshold(self) -> bool:
