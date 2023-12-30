@@ -2,6 +2,8 @@
 from .InventoryItem import InventoryItem
 from ..utils.Database import Database
 from ..user.ActiveUser import ActiveUser
+from src.utils.errors import AlreadyExistsError, InputError
+from .utils import validate_item_name
 
 
 class BranchInventory:
@@ -20,6 +22,9 @@ class BranchInventory:
         """
 
         ActiveUser.get().raise_without_permission("inventory.create")
+
+        if not validate_item_name(name):
+            raise InputError("Invalid item name.")
 
         sql = "INSERT INTO public.inventory (name, quantity, threshold, branch_id) \
             VALUES(%s, %s, %s, %s) RETURNING id"
