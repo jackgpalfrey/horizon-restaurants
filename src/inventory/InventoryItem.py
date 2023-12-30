@@ -26,3 +26,12 @@ class InventoryItem:
 
         assert result is not None
         return result[0]
+
+    def get_threshold(self) -> int:
+        """Get inventory item's threshold."""
+        result = Database.execute_and_fetchone(
+            "SELECT threshold FROM public.inventory WHERE id = %s",
+            self._item_id)
+
+        assert result is not None
+        return result[0]

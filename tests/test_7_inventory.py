@@ -61,3 +61,13 @@ def test_get_item_quantity():
     item_quantity = item.get_quantity()
     assert item_quantity == 40
     assert isinstance(item_quantity, int)
+
+
+def test_get_item_threshold():
+    assert branch is not None
+    branch_inventory = branch.inventory()
+    item = branch_inventory.create_new_item("Pasta", 30, 7)
+    assert item is not None
+    item_threshold = item.get_threshold()
+    assert item_threshold == 7
+    assert isinstance(item_threshold, int)
