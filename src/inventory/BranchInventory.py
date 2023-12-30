@@ -1,5 +1,7 @@
 """Module for creating and accessing inventories."""
 from .InventoryItem import InventoryItem
+from ..utils.Database import Database
+from ..user.ActiveUser import ActiveUser
 
 
 class BranchInventory:
@@ -8,3 +10,25 @@ class BranchInventory:
     def __init__(self, branch_id: str):
         """Don't call outside of Branch."""
         self._branch_id = branch_id
+
+    def create_new_item(self, name: str, quantity: int, threshold: int) -> InventoryItem:
+        """
+        Create a new inventory item using the given parameters.
+        A record of the created item is added to the database.
+
+        :raises AuthorizationError: If active user does not have permission.
+        """
+
+        ActiveUser.get().raise_without_permission("inventory.create")
+
+        sql = "INSERT INTO public.inventory (name, quantity, threshold, branch_id) \
+            VALUES(%s, %s, %s, %s) RETURNING id"
+
+        cursor = Database.execute(
+            sql, name, quantity, threshold, self._branch_id)
+        Database.commit()
+        result = cursor.fetchone()
+        assert result is not None
+        id = result[0]
+
+        return InventoryItem(id)
