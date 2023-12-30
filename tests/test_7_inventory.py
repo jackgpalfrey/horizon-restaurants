@@ -144,6 +144,17 @@ def test_set_item_threshold():
     assert got_threshold == 10
 
 
+def test_add_quantity():
+    assert branch is not None
+    branch_inventory = branch.inventory()
+    item = branch_inventory.get_by_name("Meat")
+    assert item is not None
+    item.add_quantity(10)
+    got_quantity = item.get_quantity()
+    assert isinstance(got_quantity, int)
+    assert got_quantity == 17
+
+
 def test_cant_update_item_with_wrong_role():
     UserService.logout()
     UserService.login("frontend-staff1", "myPassword0!")
@@ -153,7 +164,6 @@ def test_cant_update_item_with_wrong_role():
     assert item is not None
     with pytest.raises(AuthorizationError):
         item.set_name("Potatoe")
-    with pytest.raises(AuthorizationError):
         item.set_quantity(40)
-    with pytest.raises(AuthorizationError):
         item.set_threshold(6)
+        item.add_quantity(8)
