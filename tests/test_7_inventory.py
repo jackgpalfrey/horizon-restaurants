@@ -197,6 +197,15 @@ def test_cant_subtract_quantity_over_current_quantity():
         item.subtract_quantity(15)
 
 
+def test_delete():
+    assert branch is not None
+    branch_inventory = branch.inventory()
+    item = branch_inventory.get_by_name("Meat")
+    assert item is not None
+    item.delete()
+    assert branch_inventory.get_by_name("Meat") == None
+
+
 def test_cant_update_item_with_wrong_role():
     UserService.logout()
     UserService.login("frontend-staff1", "myPassword0!")
@@ -210,3 +219,4 @@ def test_cant_update_item_with_wrong_role():
         item.set_threshold(6)
         item.add_quantity(8)
         item.subtract_quantity(2)
+        item.delete()

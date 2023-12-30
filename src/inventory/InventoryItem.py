@@ -117,3 +117,15 @@ class InventoryItem:
         Database.execute_and_commit(
             "UPDATE public.inventory SET quantity = %s WHERE id = %s",
             new_quantity, self._item_id)
+
+    def delete(self):
+        """
+        Delete the inventory item record from the database.
+
+        :raises AuthorizationError: If active user does not have permission.
+        """
+        ActiveUser.get().raise_without_permission("inventory.delete")
+
+        Database.execute_and_commit(
+            "DELETE FROM public.inventory WHERE id = %s",
+            self._item_id)
