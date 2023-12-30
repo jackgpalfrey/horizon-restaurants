@@ -93,3 +93,22 @@ class InventoryItem:
         Database.execute_and_commit(
             "UPDATE public.inventory SET quantity = %s WHERE id = %s",
             new_quantity, self._item_id)
+
+    def subtract_quantity(self, quantity: int) -> None:
+        """
+        Decrease the given quantity from the inventory items's quantity.
+
+        :raises AuthorizationError: If active user does not have permission.
+        :raises InputError: If given quantity is more than current item quantity.
+        """
+        ActiveUser.get().raise_without_permission("inventory.update")
+
+        item_quantity = self.get_quantity()
+        if item_quantity < quantity:
+            raise InputError(
+                "Can't remove quantity more than current item quantity (negative result)")
+        new_quantity = item_quantity - quantity
+
+        Database.execute_and_commit(
+            "UPDATE public.inventory SET quantity = %s WHERE id = %s",
+            new_quantity, self._item_id)

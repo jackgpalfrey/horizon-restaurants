@@ -155,6 +155,28 @@ def test_add_quantity():
     assert got_quantity == 17
 
 
+def test_subtract_quantity():
+    assert branch is not None
+    branch_inventory = branch.inventory()
+    item = branch_inventory.get_by_name("Meat")
+    assert item is not None
+    assert item.get_quantity() == 17
+    item.subtract_quantity(10)
+    got_quantity = item.get_quantity()
+    assert isinstance(got_quantity, int)
+    assert got_quantity == 7
+
+
+def test_cant_subtract_quantity_over_current_quantity():
+    assert branch is not None
+    branch_inventory = branch.inventory()
+    item = branch_inventory.get_by_name("Meat")
+    assert item is not None
+    assert item.get_quantity() == 7
+    with pytest.raises(InputError):
+        item.subtract_quantity(15)
+
+
 def test_cant_update_item_with_wrong_role():
     UserService.logout()
     UserService.login("frontend-staff1", "myPassword0!")
@@ -167,3 +189,4 @@ def test_cant_update_item_with_wrong_role():
         item.set_quantity(40)
         item.set_threshold(6)
         item.add_quantity(8)
+        item.subtract_quantity(2)
