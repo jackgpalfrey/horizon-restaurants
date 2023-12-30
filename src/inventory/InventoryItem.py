@@ -54,3 +54,15 @@ class InventoryItem:
         Database.execute_and_commit(
             "UPDATE public.inventory SET name = %s WHERE id = %s",
             name, self._item_id)
+
+    def set_quantity(self, quantity: int) -> None:
+        """
+        Update the inventory items's quantity.
+
+        :raises AuthorizationError: If active user does not have permission.
+        """
+        ActiveUser.get().raise_without_permission("inventory.update")
+
+        Database.execute_and_commit(
+            "UPDATE public.inventory SET quantity = %s WHERE id = %s",
+            quantity, self._item_id)
