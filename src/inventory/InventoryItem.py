@@ -51,6 +51,11 @@ class InventoryItem:
         if not validate_item_name(name):
             raise InputError("Invalid item name.")
 
+        check = Database.execute_and_fetchone("SELECT id from public.inventory\
+                                               WHERE name = %s", name)
+        if check is not None:
+            raise AlreadyExistsError("An item with this name already exists.")
+
         Database.execute_and_commit(
             "UPDATE public.inventory SET name = %s WHERE id = %s",
             name, self._item_id)

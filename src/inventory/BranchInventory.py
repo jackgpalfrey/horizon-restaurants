@@ -26,6 +26,11 @@ class BranchInventory:
         if not validate_item_name(name):
             raise InputError("Invalid item name.")
 
+        check = Database.execute_and_fetchone("SELECT id from public.inventory\
+                                               WHERE name = %s", name)
+        if check is not None:
+            raise AlreadyExistsError("An item with this name already exists.")
+
         sql = "INSERT INTO public.inventory (name, quantity, threshold, branch_id) \
             VALUES(%s, %s, %s, %s) RETURNING id"
 

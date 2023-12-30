@@ -7,7 +7,11 @@ from src.user.UserService import UserService
 from src.inventory.BranchInventory import BranchInventory
 from src.inventory.InventoryItem import InventoryItem
 from src.utils.Database import Database
-from src.utils.errors import AuthorizationError, InputError
+from src.utils.errors import (
+    AuthorizationError,
+    AlreadyExistsError,
+    InputError,
+)
 
 
 @pytest.fixture(autouse=True, scope="module")
@@ -47,6 +51,13 @@ def test_create_item():
     item = branch_inventory.create_new_item(name, quantity, threshold)
     assert isinstance(item, InventoryItem)
     assert item is not None
+
+
+def test_cant_create_item_with_duplicate_name():
+    assert branch is not None
+    branch_inventory = branch.inventory()
+    with pytest.raises(AlreadyExistsError):
+        branch_inventory.create_new_item("Tomatoe", 12, 8)
 
 
 def test_get_item_name():
@@ -120,6 +131,15 @@ def test_cant_set_invalid_item_name():
     assert item is not None
     with pytest.raises(InputError):
         item.set_name("12239Invalid123")
+
+
+def test_cant_set_duplicate_item_name():
+    assert branch is not None
+    branch_inventory = branch.inventory()
+    item = branch_inventory.get_by_name("Sweet Potatoe")
+    assert item is not None
+    with pytest.raises(AlreadyExistsError):
+        item.set_name("Meat")
 
 
 def test_set_item_quantity():
