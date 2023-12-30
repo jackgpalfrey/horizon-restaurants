@@ -84,3 +84,13 @@ def test_get_all_items():
     assert items[1].get_name() == "Potatoe"
     assert items[2].get_name() == "Onion"
     assert items[3].get_name() == "Pasta"
+
+
+def test_get_item_by_name():
+    assert branch is not None
+    branch_inventory = branch.inventory()
+    item = branch_inventory.create_new_item("Meat", 50, 10)
+    got_item = branch_inventory.get_by_name("Meat")
+    assert isinstance(got_item, InventoryItem)
+    assert got_item.get_name() == "Meat"
+    assert got_item._item_id == item._item_id
