@@ -122,7 +122,7 @@ def test_cant_set_invalid_item_name():
         item.set_name("12239Invalid123")
 
 
-def test_set_item_quantiy():
+def test_set_item_quantity():
     assert branch is not None
     branch_inventory = branch.inventory()
     item = branch_inventory.get_by_name("Meat")
@@ -131,6 +131,17 @@ def test_set_item_quantiy():
     got_quantity = item.get_quantity()
     assert isinstance(got_quantity, int)
     assert got_quantity == 7
+
+
+def test_set_item_threshold():
+    assert branch is not None
+    branch_inventory = branch.inventory()
+    item = branch_inventory.get_by_name("Meat")
+    assert item is not None
+    item.set_threshold(10)
+    got_threshold = item.get_threshold()
+    assert isinstance(got_threshold, int)
+    assert got_threshold == 10
 
 
 def test_cant_update_item_with_wrong_role():
@@ -144,5 +155,5 @@ def test_cant_update_item_with_wrong_role():
         item.set_name("Potatoe")
     with pytest.raises(AuthorizationError):
         item.set_quantity(40)
-    # with pytest.raises(AuthorizationError):
-    #     item.set_threshold(6)
+    with pytest.raises(AuthorizationError):
+        item.set_threshold(6)
