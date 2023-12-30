@@ -71,3 +71,16 @@ def test_get_item_threshold():
     item_threshold = item.get_threshold()
     assert item_threshold == 7
     assert isinstance(item_threshold, int)
+
+
+def test_get_all_items():
+    assert branch is not None
+    branch_inventory = branch.inventory()
+    items = branch_inventory.get_all()
+    assert isinstance(items, list)
+    assert len(items) == 4
+
+    assert items[0].get_name() == name
+    assert items[1].get_name() == "Potatoe"
+    assert items[2].get_name() == "Onion"
+    assert items[3].get_name() == "Pasta"
