@@ -41,3 +41,13 @@ def test_create_item():
     item = branch_inventory.create_new_item(name, quantity, threshold)
     assert isinstance(item, InventoryItem)
     assert item is not None
+
+
+def test_get_item_name():
+    assert branch is not None
+    branch_inventory = branch.inventory()
+    item = branch_inventory.create_new_item("Potatoe", 60, 35)
+    assert item is not None
+    got_item = item.get_name()
+    assert got_item == "Potatoe"
+    assert isinstance(got_item, str)
