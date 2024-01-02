@@ -3,6 +3,7 @@ from src.branch.BranchService import BranchService
 from src.city.CityService import CityService
 from src.order.Order import Order
 from src.order.OrderService import OrderService
+from src.order.OrderStatus import OrderStatus
 from src.utils.Database import Database
 from src.user.UserService import UserService
 
@@ -21,9 +22,23 @@ def before_and_after_test():
     Database.close()
 
 
+order: Order | None = None
+
+
 def test_can_create_order():
+    global order
     city = CityService.create("Swagstol")
     branch = BranchService.create(
         "Swag Branch", "42 Swag Street, Swagstol SW49 9GY", city)
     order = OrderService.create(branch)
     assert isinstance(order, Order)
+
+
+def test_order_number():
+    assert order is not None
+    assert order.get_number() == 0
+
+
+def test_status():
+    assert order is not None
+    assert order.get_status() == OrderStatus.NOT_PLACED

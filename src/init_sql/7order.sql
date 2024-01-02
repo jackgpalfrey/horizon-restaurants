@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS public.order (
 id uuid NOT NULL DEFAULT gen_random_uuid() UNIQUE,
-status int NOT NULL DEFAULT 0,
+status int NOT NULL DEFAULT 1,
 number int NOT NULL,
 branch_id uuid NOT NULL,
 PRIMARY KEY (id),
