@@ -5,6 +5,7 @@ from src.city.CityService import CityService
 from src.order.Order import Order
 from src.order.OrderService import OrderService
 from src.order.OrderStatus import OrderStatus
+from src.tables.Table import Table
 from src.user.Role import Role
 from src.user.User import User
 from src.utils.Database import Database
@@ -47,6 +48,16 @@ def test_order_number():
 def test_status():
     assert order is not None
     assert order.get_status() == OrderStatus.NOT_PLACED
+    order.set_status(OrderStatus.PLACED)
+    assert order.get_status() == OrderStatus.PLACED
+    order.set_status(OrderStatus.NOT_PLACED)
+    assert order.get_status() == OrderStatus.NOT_PLACED
+    order.place()
+    assert order.get_status() == OrderStatus.PLACED
+    order.complete()
+    assert order.get_status() == OrderStatus.COMPLETED
+    order.cancel()
+    assert order.get_status() == OrderStatus.CANCELLED
 
 
 def test_assign_staff():
@@ -58,3 +69,31 @@ def test_assign_staff():
     assignee = order.get_assigned_staff()
     assert isinstance(assignee, User)
     assert assignee.get_id() == user.get_id()
+    order.assign_staff(None)
+    assert order.get_assigned_staff() is None
+
+
+def test_priority():
+    assert order is not None
+    assert order.get_priority() == 0
+    order.set_priority(5)
+    assert order.get_priority() == 5
+
+
+def test_customer_name():
+    assert order is not None
+    assert order.get_customer_name() is None
+    order.set_customer_name("Joe Mama")
+    assert order.get_customer_name() == "Joe Mama"
+
+
+def test_table():
+    assert order is not None
+    assert branch is not None
+    assert order.get_table() is None
+
+    table = branch.tables().create(5, 5)
+    order.set_table(table)
+    got_table = order.get_table()
+    assert isinstance(got_table, Table)
+    assert got_table.get_id() == table.get_id()
