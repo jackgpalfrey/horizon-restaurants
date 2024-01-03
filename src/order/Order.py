@@ -126,7 +126,7 @@ class Order:
         self.update_item_quanity(item, 1)
 
     def remove_item(self, item: MenuItem) -> None:
-        """Remove an item to the menu."""
+        """Remove an item from the menu."""
         self.update_item_quanity(item, -1)
 
     def update_item_quanity(self, item: MenuItem, delta: int) -> None:

@@ -11,7 +11,7 @@ class OrderService:
 
     @staticmethod
     def create(branch: Branch) -> Order:
-        """Create a new branch."""
+        """Create a new order."""
         ActiveUser.get().raise_without_permission("order.create")
 
         branch_id = branch.get_id()
@@ -27,7 +27,7 @@ class OrderService:
         return Order(result[0])
 
     def get_by_id(self, order_id: int) -> Order | None:
-        """Get a order by it's id."""
+        """Get an order by it's id."""
         sql = "SELECT id FROM public.order WHERE id=%s"
         result = Database.execute_and_fetchone(sql, order_id)
 
