@@ -52,8 +52,6 @@ def test_status():
     assert order.get_status() == OrderStatus.PLACED
     order.set_status(OrderStatus.NOT_PLACED)
     assert order.get_status() == OrderStatus.NOT_PLACED
-    order.place()
-    assert order.get_status() == OrderStatus.PLACED
     order.complete()
     assert order.get_status() == OrderStatus.COMPLETED
     order.cancel()
@@ -137,3 +135,9 @@ def test_items():
     assert isinstance(record[0], MenuItem)
     assert record[0].get_id() == other_item.get_id()
     assert record[1] == 1
+
+
+def test_place():
+    assert order is not None
+    order.place()
+    assert order.get_status() == OrderStatus.PLACED
