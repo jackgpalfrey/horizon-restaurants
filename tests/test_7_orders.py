@@ -2,11 +2,11 @@ import pytest
 from src.branch.Branch import Branch
 from src.branch.BranchService import BranchService
 from src.city.CityService import CityService
+from src.menu.MenuItem import MenuItem
 from src.order.Order import Order
 from src.order.OrderService import OrderService
 from src.order.OrderStatus import OrderStatus
 from src.tables.Table import Table
-from src.user.Role import Role
 from src.user.User import User
 from src.utils.Database import Database
 from src.user.UserService import UserService
@@ -97,3 +97,43 @@ def test_table():
     got_table = order.get_table()
     assert isinstance(got_table, Table)
     assert got_table.get_id() == table.get_id()
+
+
+def test_items():
+    assert order is not None
+    assert branch is not None
+
+    all = order.get_all_items()
+    assert type(all) is list
+    assert len(all) == 0
+
+    menu = branch.menu()
+    category = menu.create_category("Category")
+    item = menu.create_item("item", "my description", 3.56, None, category)
+
+    order.add_item(item)
+    all = order.get_all_items()
+    assert len(all) == 1
+    record = all[0]
+    assert type(record) is tuple
+    assert isinstance(record[0], MenuItem)
+    assert type(record[1]) is int
+    assert record[0].get_id() == item.get_id()
+    assert record[1] == 1
+
+    order.add_item(item)
+    all = order.get_all_items()
+    assert len(all) == 1
+    assert all[0][1] == 2
+
+    other_item = menu.create_item("other item", "my description", 3.55,
+                                  None, category)
+
+    order.add_item(other_item)
+    all = order.get_all_items()
+    assert len(all) == 2
+    assert all[0][1] == 2
+    record = all[1]
+    assert isinstance(record[0], MenuItem)
+    assert record[0].get_id() == other_item.get_id()
+    assert record[1] == 1

@@ -2,11 +2,11 @@
 
 
 from src.branch.Branch import Branch
+from src.menu.MenuItem import MenuItem
 from src.order.OrderStatus import OrderStatus
 from src.tables.Table import Table
 from src.user.User import User
 from src.utils.Database import Database
-from src.utils.errors import InputError
 
 
 class Order:
@@ -111,3 +111,54 @@ class Order:
         """Set table."""
         sql = "UPDATE public.order SET table_id = %s WHERE id=%s"
         Database.execute_and_commit(sql, table.get_id(), self._order_id)
+
+    def get_all_items(self) -> list[tuple[MenuItem, int]]:
+        """Get all items along with their corresponding quantities."""
+        sql = "SELECT item_id, quantity FROM public.orderitem \
+               WHERE order_id=%s"
+
+        result = Database.execute_and_fetchall(sql, self._order_id)
+
+        return [(MenuItem(record[0]), record[1]) for record in result]
+
+    def add_item(self, item: MenuItem) -> None:
+        """Add an item to the menu."""
+        self.update_item_quanity(item, 1)
+
+    def remove_item(self, item: MenuItem) -> None:
+        """Remove an item to the menu."""
+        self.update_item_quanity(item, -1)
+
+    def update_item_quanity(self, item: MenuItem, delta: int) -> None:
+        """Change item quantity by delta inserting and deleting when needed."""
+        result = Database.execute_and_fetchone(
+            "SELECT quantity FROM public.orderitem \
+            WHERE order_id=%s AND item_id=%s", self._order_id, item.get_id())
+
+        if result is None:
+            return self._create_new_item(item)
+
+        new_quantity = result[0] + delta
+
+        if new_quantity < 1:
+            return self._delete_item(item)
+
+        self._change_item(item, result[0] + 1)
+
+    def _create_new_item(self, item: MenuItem) -> None:
+        Database.execute_and_commit("INSERT INTO public.orderitem \
+                                    (order_id, item_id, quantity) \
+                                    VALUES (%s, %s, %s)",
+                                    self._order_id, item.get_id(), 1)
+
+    def _delete_item(self, item: MenuItem) -> None:
+        Database.execute_and_commit("DELETE FROM public.orderitem \
+                                    WHERE order_id=%s AND item_id=%s",
+                                    self._order_id, item.get_id())
+
+    def _change_item(self, item: MenuItem, new_quantity: int) -> None:
+        Database.execute_and_commit("UPDATE public.orderitem SET quantity=%s \
+                                     WHERE order_id=%s AND item_id=%s",
+                                    new_quantity,
+                                    self._order_id,
+                                    item.get_id())
