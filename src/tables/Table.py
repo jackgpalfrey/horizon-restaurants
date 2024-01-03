@@ -12,6 +12,10 @@ class Table:
         """Don't call outside of BranchTables."""
         self._table_id = table_id
 
+    def get_id(self):
+        """Get table id."""
+        return self._table_id
+
     def get_table_number(self) -> str:
         """Get tables number."""
         table_number = Database.execute_and_fetchone(
