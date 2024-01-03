@@ -1,3 +1,4 @@
+"""Module for managing events"""
 from .Event import Event
 from ..utils.Database import Database
 
@@ -16,6 +17,9 @@ class BranchEvents:
     def get_by_id(self,id: str) -> Event:
         sql = "SELECT id from public.event where id = %s"
         Database.execute_and_fetchone(sql, id)
+
+
+
 
 
 
