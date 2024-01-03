@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS public.events
 (
-    id uuid NOT NULL DEFAULT gen_random_uuid() UNIQUE,
+    event_id uuid NOT NULL DEFAULT gen_random_uuid() UNIQUE,
     branch_id uuid,
     start_time timestamp,
     end_time timestamp,

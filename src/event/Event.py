@@ -1,21 +1,27 @@
 from ..utils.Database import Database
 from src.user.ActiveUser import ActiveUser
+from datetime import datetime
 
 
 class Event:
     def __init__(self, event_id: str):
         self._event_id = event_id
 
-    def get_id(self) -> str:
-        return self._event_id
+    def get_id(self) -> str | None:
+        """Gets event ID"""
+        event_id = Database.execute_and_fetchone(
+            "SELECT event_id FROM public.events WHERE id = %d", self._event_id)
+        assert event_id is not None
+
+        return type[0]
 
     def get_event_type(self) -> str | None:
         """Gets event type"""
-        event_type = Database.execute_and_fetchone(
-            "SELECT event_type FROM public.events WHERE id = %d", self._event_id)
-        assert event_type is not None
+        type = Database.execute_and_fetchone(
+            "SELECT type FROM public.events WHERE id = %d", self._event_id)
+        assert type is not None
 
-        return event_type[0]
+        return type[0]
 
     def get_phone_number(self) -> str | None:
         """Gets the phone number of whoever booked event"""
@@ -32,6 +38,22 @@ class Event:
         assert email is not None
 
         return email[0]
+
+    def get_start_time(self) -> datetime | None:
+        """Gets the time for the event"""
+        start_time = Database.execute_and_fetchone(
+            "SELECT start_time FROM public.events WHERE id = %s", self._event_id)
+        assert start_time is not None
+
+        return start_time[0]
+
+    def get_end_time(self) -> datetime | None:
+        """Gets the time for the event"""
+        end_time = Database.execute_and_fetchone(
+            "SELECT end_time FROM public.events WHERE id = %s", self._event_id)
+        assert end_time is not None
+
+        return end_time[0]
 
     def set_type(self, type: str) -> None:
         """Set type of event"""
