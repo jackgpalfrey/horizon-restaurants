@@ -46,7 +46,7 @@ class Event:
         Database.execute_and_commit(sql, email, self._event_id)
 
     def set_phone(self, phone: str) -> None:
-        """Set user email for event"""
-        ActiveUser.get().raise_without_permission("events.item.update.email")
+        """Set user phone number for event"""
+        ActiveUser.get().raise_without_permission("events.item.update.phone_number")
         sql = "UPDATE public.events SET phone_number = %s WHERE id = %s"
         Database.execute_and_commit(sql, phone, self._event_id)
