@@ -12,6 +12,8 @@ services:
             - DB_NAME=horizon
         depends_on:
             - db
+        ports:
+            - 5000:5000
 
     db:
         container_name: 'horizon-db'

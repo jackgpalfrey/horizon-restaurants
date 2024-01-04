@@ -3,7 +3,8 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 COPY ./src ./src
-CMD ["python", "./src/main.py"]
+COPY api-entry.py api-entry.py
+CMD ["python", "./api-entry.py"]
 
 
 FROM prod AS test

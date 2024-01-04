@@ -47,7 +47,7 @@ class Database:
         """
         Initialize database ( runs init_sql ).
 
-        Should be run once and only once
+        Should be run once and only once. After connect()
         """
         cls._run_sql_in_dir("src/init_sql")
 
