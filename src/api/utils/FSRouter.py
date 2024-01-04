@@ -60,7 +60,13 @@ class FSRouter():
             if not issubclass(schema, Schema):
                 raise Exception("Invalid Schema")
 
+        guard_func = module.guard if "guard" in members else lambda: None
+
         def route_handler():
+            guard_result = guard_func()
+            if guard_result is not None:
+                return guard_result
+
             match(request.method):
                 case "GET":
                     return module.get()

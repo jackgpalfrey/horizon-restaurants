@@ -6,7 +6,6 @@ from src.user.ActiveUser import ActiveUser
 from src.user.UserService import UserService
 from src.utils.errors import AuthenticationError
 
-
 class PostSchema(Schema):
     username = fields.String(required=True)
     password = fields.String(required=True)
