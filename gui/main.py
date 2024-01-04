@@ -1,5 +1,5 @@
 import tkinter as tk
-from lib import Page, PageManager
+from gui_lib import Page, PageManager
 
 from Login import LoginPage
 

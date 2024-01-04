@@ -1,4 +1,4 @@
-from lib import Page
+from gui_lib import Page
 import tkinter as tk
 
 
