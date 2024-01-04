@@ -37,7 +37,7 @@ class FSRouter():
 
     def _load_route_file(self, path: str):
         typeless = path.replace(".py", "")
-        endpoint = typeless.replace(self._parent_dir, "").replace("index", "")
+        endpoint = typeless.replace(self._parent_dir, "").replace("index", "").replace("[", "<").replace("]", ">")
 
         print(f"Loading endpoint '{endpoint}' from {path}", flush=True)
 
