@@ -37,7 +37,8 @@ class FSRouter():
 
     def _load_route_file(self, path: str):
         typeless = path.replace(".py", "")
-        endpoint = typeless.replace(self._parent_dir, "")
+        endpoint = typeless.replace(self._parent_dir, "").replace("index", "")
+
         print(f"Loading endpoint '{endpoint}' from {path}", flush=True)
 
         module = importlib.import_module(typeless.replace("/", "."))
@@ -62,14 +63,14 @@ class FSRouter():
         guard_func = module.guard if "guard" in members else lambda: None
         cleanup_func = module.cleanup if "cleanup" in members else lambda: None
 
-        def route_handler():
+        def route_handler(*args, **kwargs):
             guard_result = guard_func()
             if guard_result is not None:
                 return guard_result
 
             match(request.method):
                 case "GET":
-                    return module.get()
+                    return module.get(*args, **kwargs)
 
                 case "POST":
                     if "POST" in schemas:
@@ -81,17 +82,17 @@ class FSRouter():
                             assert type(body) is dict
                         except ValidationError as e:
                             assert type(e.messages) is dict
-                            return Error(Status.SERVER_ERROR,
+                            return Error(Status.BAD_REQUEST,
                                          "Invalid Body", e.messages)
 
-                        return module.post(body)
+                        return module.post(body, *args, **kwargs)
 
-                    return module.post()
+                    return module.post(*args, **kwargs)
 
             raise Exception("Unrecognised Method")
 
-        def route_wrapper():
-            result = route_handler()
+        def route_wrapper(*args, **kwargs):
+            result = route_handler(*args, **kwargs)
             cleanup_func()
             return result
 

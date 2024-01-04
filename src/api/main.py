@@ -16,8 +16,4 @@ def main():
     router = FSRouter(app)
     router.load_dir("src/api/routes")
 
-    @app.route("/")
-    def index():
-        return "<p>Horizon Restaurants</p>"
-
     app.run(host="0.0.0.0", port=5000, debug=True)

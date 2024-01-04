@@ -9,8 +9,11 @@ class Status(Enum):
     """Enum with http status code."""
 
     OK = 200
-    SERVER_ERROR = 400
+    BAD_REQUEST = 400
     UNAUTHORIZED = 401
+    FORBIDDEN = 403
+    NOT_FOUND = 404
+    CONFLICT = 409
 
 
 def OK(data: dict[str, Any], success: bool = True, code: Status = Status.OK):
