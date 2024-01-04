@@ -42,7 +42,6 @@ class FSRouter():
 
         module = importlib.import_module(typeless.replace("/", "."))
         members = dir(module)
-        print(members)
 
         methods = []
         if "get" in members:
@@ -61,6 +60,7 @@ class FSRouter():
                 raise Exception("Invalid Schema")
 
         guard_func = module.guard if "guard" in members else lambda: None
+        cleanup_func = module.cleanup if "cleanup" in members else lambda: None
 
         def route_handler():
             guard_result = guard_func()
@@ -80,9 +80,9 @@ class FSRouter():
                             body = schema.load(json)
                             assert type(body) is dict
                         except ValidationError as e:
+                            assert type(e.messages) is dict
                             return Error(Status.SERVER_ERROR,
-                                         "Invalid Body",
-                                         e.messages)
+                                         "Invalid Body", e.messages)
 
                         return module.post(body)
 
@@ -90,4 +90,10 @@ class FSRouter():
 
             raise Exception("Unrecognised Method")
 
-        self.app.add_url_rule(endpoint, methods=methods, endpoint=endpoint, view_func=route_handler)
+        def route_wrapper():
+            result = route_handler()
+            cleanup_func()
+            return result
+
+        self.app.add_url_rule(endpoint, methods=methods,
+                              endpoint=endpoint, view_func=route_wrapper)

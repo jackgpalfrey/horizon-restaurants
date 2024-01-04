@@ -1,10 +1,13 @@
 from flask import session
 from marshmallow import Schema, fields
+from src.api.middleware.auth import auth_cleanup
 
 from src.api.utils.Result import Error, OK, Status
 from src.user.ActiveUser import ActiveUser
 from src.user.UserService import UserService
 from src.utils.errors import AuthenticationError
+
+cleanup = auth_cleanup
 
 class PostSchema(Schema):
     username = fields.String(required=True)
@@ -28,7 +31,6 @@ def post(body: dict):
     role_id = user.get_role().get_id()
 
     session["user_id"] = user_id
-    ActiveUser.clear()
 
     return OK({
         "user_id": user_id,
