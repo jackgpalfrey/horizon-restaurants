@@ -21,7 +21,7 @@ class Page(tk.Frame):
 
     def show(self) -> None:
         """Show page, should rarely be used outside of PageManager."""
-        self.pack()
+        self.pack(fill=tk.X)
 
     def hide(self):
         """Hide page, should rarely be used outside of PageManager."""

@@ -1,7 +1,7 @@
 import tkinter as tk
 from gui_lib import Page, PageManager
 
-from Login import LoginPage
+from Login import LoginPage, ChooseBranch
 
 
 class App(Page):
@@ -26,7 +26,8 @@ if __name__ == "__main__":
     main = PageManager(root)
     main.pack(side="top", fill="both", expand=True)
 
-    main.add_page("loggedout", LoginPage)
+    main.add_page("loggedout", ChooseBranch)
+    main.add_page("login", LoginPage)
     main.add_page("loggedin", App)
 
     main.goto("loggedout")
