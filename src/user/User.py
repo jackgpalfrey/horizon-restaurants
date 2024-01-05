@@ -196,7 +196,7 @@ class User:
         If user already assigned, branch_id associated with user is updated.
         Otherwise, a new entry is made to assign the user to a branch.
 
-        :raises PermissionError: If the current user does not have permission.
+        :raises AuthorizaionError: If the current user does not have permission.
         """
         ActiveUser.get().raise_without_permission("branch.update")
 

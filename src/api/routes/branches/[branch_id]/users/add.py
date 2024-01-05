@@ -1,6 +1,7 @@
 from marshmallow import Schema, fields
 from src.api.middleware.auth import auth_cleanup, auth_guard
 from src.api.utils.Result import OK, Error, Status
+from src.api.utils.dictify import dictify_user
 from src.branch.BranchService import BranchService
 from src.user.UserService import UserService
 from src.utils.errors import AuthorizationError
@@ -34,4 +35,7 @@ def post(body, branch_id: str = ""):
     except AuthorizationError as e:
         return Error(Status.FORBIDDEN, e.message)
 
-    return OK({})
+    users = UserService.get_all_at_branch(branch)
+    users_data = [dictify_user(u) for u in users]
+
+    return OK({"users": users_data})

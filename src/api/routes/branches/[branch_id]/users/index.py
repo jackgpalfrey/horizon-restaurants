@@ -1,4 +1,5 @@
 from src.api.utils.Result import OK, Error, Status
+from src.api.utils.dictify import dictify_user
 from src.branch.BranchService import BranchService
 from src.user.UserService import UserService
 
@@ -13,8 +14,6 @@ def post(branch_id: str = ""):
 
     users = UserService.get_all_at_branch(branch, dont_auth=True)
 
-    users_data = [{"username": u.get_username(),
-                   "full_name": u.get_full_name(),
-                   "role": u.get_role().get_name()} for u in users]
+    users_data = [dictify_user(u) for u in users]
 
     return OK({"users": users_data})

@@ -1,12 +1,11 @@
 from src.api.utils.Result import OK
+from src.api.utils.dictify import dictify_simple_branch
 from src.branch.BranchService import BranchService
 
 
 def post():
     branches = BranchService.get_all()
 
-    branch_data = [{"branch_id": b.get_id(),
-                    "name": b.get_name(),
-                    "city": b.get_city().get_name()} for b in branches]
+    branches_data = [dictify_simple_branch(b) for b in branches]
 
-    return OK({"branches": branch_data})
+    return OK({"branches": branches_data})

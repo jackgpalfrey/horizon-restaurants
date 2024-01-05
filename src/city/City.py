@@ -1,5 +1,6 @@
 """Module for managing individual cities."""
-from src.utils.errors import InputError
+from psycopg2.errors import UniqueViolation
+from src.utils.errors import AlreadyExistsError, InputError
 
 from ..utils.Database import Database
 from .utils import validate_city_name
@@ -36,6 +37,9 @@ class City:
             raise InputError("Invalid name.")
 
         city_id = self.get_id()
-        Database.execute_and_commit(
-            "UPDATE public.city SET name = %s WHERE id = %s",
-            city_name, city_id)
+        try:
+            Database.execute_and_commit(
+                "UPDATE public.city SET name = %s WHERE id = %s",
+                city_name, city_id)
+        except UniqueViolation:
+            raise AlreadyExistsError(f"City '{city_name}' already exists")
