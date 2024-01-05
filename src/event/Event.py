@@ -1,6 +1,7 @@
 from ..utils.Database import Database
 from src.user.ActiveUser import ActiveUser
 from datetime import datetime
+from src.user.Order import Order
 
 
 class Event:
@@ -54,6 +55,13 @@ class Event:
         assert end_time is not None
 
         return end_time[0]
+
+    def get_number(self) -> Order:
+        """Get order's number."""
+        sql = "SELECT number FROM public.order WHERE id=%s"
+        result = Database.execute_and_fetchone(sql, self._order_id)
+        assert result is not None
+        return result[0]
 
     def set_type(self, type: str) -> None:
         """Set type of event"""

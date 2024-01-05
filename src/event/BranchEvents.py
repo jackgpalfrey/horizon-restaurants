@@ -1,7 +1,6 @@
 """Module for managing events"""
 from .Event import Event
 from ..utils.Database import Database
-from datetime import datetime, timedelta
 
 
 class BranchEvents:
@@ -29,8 +28,10 @@ class BranchEvents:
 
         return [Event(record[0]) for record in result]
 
-    def get_by_time(self) -> list[Event]:
-        """Get all event bookings"""
-        result = Database.execute_and_fetchall("SELECT id FROM public.events")
+    def get_by_time(self, start_time: str) -> Event | None:
+        result = Database.execute_and_fetchone(
+            "SELECT start_time FROM public.events WHERE id = %s \
+             AND branch_id = %s;", start_time, self._branch_id)
 
-        return [Event(record[0]) for record in result]
+        if result is not None:
+            return [Event(record[0]) for record in result]
