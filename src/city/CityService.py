@@ -1,28 +1,38 @@
+"""Module for managing all cities."""
+from src.utils.errors import InputError
+
 from ..utils.Database import Database
 from .City import City
 from .utils import validate_city_name
 
 
 class CityService:
+    """Static class for managing cities."""
+
     @staticmethod
     def create(city_name: str) -> City:
         """
-        Creates a new city using the given parameter.
+        Create a new city using the given parameter.
+
         A record of the created city is added to the database.
 
-        :raises Exception: If city name input is invalid the city is not created.
+        :raises InputError: If city name input is invalid.
         """
-
         CityService._validate_create_city(city_name)
 
-        Database.execute_and_commit(
-            "INSERT INTO public.city (name) VALUES(%s)", city_name)
-        result = Database.execute_and_fetchone(
-            "SELECT id FROM public.city WHERE name = %s", city_name)
+        cursor = Database.execute(
+            "INSERT INTO public.city (name) VALUES(%s) RETURNING id",
+            city_name)
+
+        Database.commit()
+        result = cursor.fetchone()
+
+        assert result is not None  # TODO: See City.py todo
         return City(result[0])
 
     @staticmethod
     def get_by_name(city_name: str) -> City | None:
+        """Get city by name."""
         result = Database.execute_and_fetchone(
             "SELECT id FROM public.city WHERE name = %s", city_name)
 
@@ -30,7 +40,8 @@ class CityService:
             return City(result[0])
 
     @staticmethod
-    def get_by_id(city_id: str) -> City:
+    def get_by_id(city_id: str) -> City | None:
+        """Get city by ID."""
         result = Database.execute_and_fetchone(
             "SELECT id FROM public.city WHERE id = %s", city_id)
 
@@ -39,19 +50,20 @@ class CityService:
 
     @staticmethod
     def get_all() -> list[City]:
+        """Get all cities."""
         result = Database.execute_and_fetchall("SELECT id FROM public.city")
 
-        if result is not None:
-            return [City(record[0]) for record in result]
+        return [City(record[0]) for record in result]
 
     @staticmethod
     def _validate_create_city(city_name: str):
         """
-        Validates given name on validation logic in ./utils.py through length and
-        character checking. Called in the create() method for city.
+        Validate given name based on validation logic in ./utils.py.
 
-        :raises Exception: If city name input is invalid.
+        Uses length and character checking.
+        Called in the create() method for city.
+
+        :raises InputError: If city name input is invalid.
         """
         if not validate_city_name(city_name):
-            # FIXME: Replace with correct error
-            raise Exception("Invalid name.")
+            raise InputError("Invalid name.")
