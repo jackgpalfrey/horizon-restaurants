@@ -26,3 +26,19 @@ class Page(tk.Frame):
     def hide(self):
         """Hide page, should rarely be used outside of PageManager."""
         self.pack_forget()
+
+
+class GridPage(Page):
+
+    @property
+    def pages(self) -> "PageManager":
+        """Get access to parent PageManager class."""
+        return self._manager
+
+    def show(self) -> None:
+        """Show page, should rarely be used outside of PageManager."""
+        self.grid()
+
+    def hide(self):
+        """Hide page, should rarely be used outside of PageManager."""
+        self.grid_forget()
