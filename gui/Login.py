@@ -74,6 +74,9 @@ class LoginPage(Page):
         match login.status_code:
             case 200:
                 self.label["text"] = ""
+                State.username = login_data["username"]
+                self.username.set("")
+                self.password.set("")
                 self.pages.goto("loggedin")
             case 401:
                 self.label["text"] = "Invalid Credentials"
