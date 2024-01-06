@@ -142,3 +142,35 @@ def test_place():
     assert order is not None
     order.place()
     assert order.get_status() == OrderStatus.PLACED
+
+
+def test_custom_discounts():
+    global order
+    assert branch is not None
+    order = OrderService.create(branch)
+    category = branch.menu().create_category("Drinks")
+    coke = branch.menu().create_item("Coke", "Sus", 4, None, category)
+    sprite = branch.menu().create_item("Sprite", "Fizzin", 2, None, category)
+
+    order.add_item(coke)
+    order.add_item(coke)
+    order.add_item(sprite)
+
+    order.set_custom_discount(0.5)
+
+    assert order.get_price() == 5.0
+
+
+def test_discounts():
+    assert branch is not None
+    assert order is not None
+    discount = branch.discounts().create(0.2, "4/5 Off")
+
+    order.set_discount(discount)
+
+    assert order.get_price() == 1.0
+
+
+def test_discounted_place():
+    assert order is not None
+    assert order.place() == 1.0

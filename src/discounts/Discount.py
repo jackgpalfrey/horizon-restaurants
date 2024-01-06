@@ -6,12 +6,16 @@ from ..utils.Database import Database
 from .utils import validate_description
 
 
-class Discounts:
+class Discount:
     """Class for mananging specfic discounts."""
 
     def __init__(self, discount_id: str) -> None:
         """Don't call outside of BranchDiscounts."""
         self._discount_id = discount_id
+
+    def get_id(self):
+        """Get ID."""
+        return self._discount_id
 
     def get_description(self) -> str:
         """Get description."""
