@@ -1,4 +1,5 @@
 """Module for managing orders."""
+from src.events.Event import Event
 from ..branch.Branch import Branch
 from ..user.ActiveUser import ActiveUser
 from ..utils.Database import Database
@@ -32,6 +33,14 @@ class OrderService:
         result = Database.execute_and_fetchone(sql, order_id)
 
         if result is not None:
+            return Order(result[0])
+
+    def get_by_event(self, event: Event) -> Order | None:
+        """Get associated order."""
+        sql = "SELECT order_id FROM public.events WHERE id=%s"
+        result = Database.execute_and_fetchone(sql, event.get_id())
+
+        if result is not None and result[0] is not None:
             return Order(result[0])
 
     def get_all_from_branch(self, branch: Branch) -> list[Order]:

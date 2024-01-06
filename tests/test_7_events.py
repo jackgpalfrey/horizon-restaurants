@@ -2,14 +2,14 @@ import pytest
 from src.utils.Database import Database
 from src.branch.BranchService import BranchService
 from src.city.CityService import CityService
-from src.event.BranchEvents import BranchEvents
-from src.event.Event import Event
-from src.user.UserService import UserService
+from src.events.BranchEvents import BranchEvents
+from src.events.Event import Event
 
 
 @pytest.fixture(autouse=True, scope="module")
 def before_and_after_test():
     Database.connect()
+    Database.DEBUG_delete_all_tables("DANGEROUSLY DELETE ALL TABLES")
     Database.init()
 
     yield

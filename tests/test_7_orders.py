@@ -1,4 +1,5 @@
 import pytest
+
 from src.branch.Branch import Branch
 from src.branch.BranchService import BranchService
 from src.city.CityService import CityService
@@ -8,8 +9,8 @@ from src.order.OrderService import OrderService
 from src.order.OrderStatus import OrderStatus
 from src.tables.Table import Table
 from src.user.User import User
-from src.utils.Database import Database
 from src.user.UserService import UserService
+from src.utils.Database import Database
 
 
 @pytest.fixture(autouse=True, scope="module")

@@ -1,21 +1,21 @@
 """Module for Branch Managment."""
 from typing import Any
-from src.menu.BranchMenu import BranchMenu
 
+from src.menu.BranchMenu import BranchMenu
 from src.utils.errors import AlreadyExistsError, InputError
 
 from ..city.City import City
-from ..city.CityService import CityService
-from ..event.BranchEvents import BranchEvents
-from ..tables.BranchTables import BranchTables
-from ..reservations.BranchReservations import BranchReservations
+from ..events.BranchEvents import BranchEvents
 from ..inventory.BranchInventory import BranchInventory
+from ..reservations.BranchReservations import BranchReservations
+from ..tables.BranchTables import BranchTables
 from ..user.User import User
 from ..utils.Database import Database
 from .utils import validate_branch_address, validate_branch_name
 
 
 MANAGER_ROLE_ID = 4
+
 
 class Branch:
     """Manage Branch."""
@@ -25,6 +25,7 @@ class Branch:
         self._branch_id = branch_id
 
     def events(self) -> BranchEvents:
+        """Access event managment methods."""
         return BranchEvents(self._branch_id)
 
     def tables(self):
