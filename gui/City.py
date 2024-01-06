@@ -19,25 +19,76 @@ class CitiesPage(ttk.Frame):
         notebook.pack(fill='both', expand=True)
 
         # create frames
-        frame1 = ViewCities(notebook)
+        self.frame1 = ViewCities(notebook)
+        self.frame2 = CreateCity(notebook)
 
-        notebook.add(frame1, text='View All Cities')
+        notebook.bind("<<NotebookTabChanged>>", self.on_tab_selected)
+        notebook.add(self.frame1, text='View All Cities')
+        notebook.add(self.frame2, text='Create City')
+
+    def on_tab_selected(self, event):
+        # ref:
+        # https://www.homeandlearn.uk/python-database-form-tabs3.html#:~:text=
+        # You%20do%20the%20binding%20on,that%20you%20want%20to%20implement.&text=Between%
+        # 20double%20quotes%20and%20double,deal%20with%20this%20event%3A%20on_tab_selected
+        selected_tab = event.widget.select()
+        tab_text = event.widget.tab(selected_tab, "text")
+
+        if tab_text == "View All Cities":
+            self.frame1.load_records()
+        if tab_text == "Create City":
+            self.frame2.fields['message']['text'] = ""
 
 
 class ViewCities(ttk.Frame):
     def __init__(self, *args, **kwargs):
         Page.__init__(self, *args, **kwargs)
         self.create_widgets()
+        self.load_records()
 
     def create_widgets(self):
         columns = ('city_name')
 
-        tree = ttk.Treeview(self, columns=columns, show='headings')
-        tree.heading('city_name', text='Cities')
+        self.tree = ttk.Treeview(self, columns=columns, show='headings')
+        self.tree.heading('city_name', text='Cities')
 
+    def load_records(self):
+        self.tree.pack_forget()
         all_cities_res = API.post(f"{URL}/cities")
         all_cities = all_cities_res.json()
         for city in all_cities["data"]["cities"]:
-            tree.insert('', 'end', values=(f"{city["name"]}"))
+            self.tree.insert('', 'end', values=(f"{city["name"]}"))
 
-        tree.pack(fill='x', expand=True)
+        self.tree.pack(fill='x', expand=True)
+
+
+class CreateCity(ttk.Frame):
+    def __init__(self, *args, **kwargs):
+        Page.__init__(self, *args, **kwargs)
+        self.create_widgets()
+
+    def create_widgets(self):
+        self.city_name = tk.StringVar()
+
+        self.fields = {}
+        self.fields['city_name_label'] = ttk.Label(self, text='City Name:')
+        self.fields['city_name'] = ttk.Entry(self, textvariable=self.city_name)
+        self.fields['message'] = ttk.Label(self, text="")
+
+        for field in self.fields.values():
+            field.pack(anchor=tk.W, padx=10, pady=5, fill=tk.X, expand=True)
+
+        create_button = ttk.Button(
+            self, text='Create City ', command=self.add_record)
+        create_button.pack(anchor=tk.E, padx=5, pady=5)
+
+    def add_record(self):
+        city = (self.city_name.get())
+        city_data = {"name": city}
+        create = API.post(f"{URL}/cities/create", json=city_data)
+        match create.status_code:
+            case 200:
+                self.fields['message']["text"] = "City Created Successfully"
+                self.city_name.set("")
+            case 400:
+                self.fields['message']["text"] = "Invalid City Name"
