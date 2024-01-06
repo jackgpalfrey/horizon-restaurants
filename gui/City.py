@@ -13,7 +13,7 @@ class CitiesPage(ttk.Frame):
     def create_notebook_widget(self):
 
         style = ttk.Style(self)
-        style.configure('lefttab.TNotebook', tabposition='wn', )
+        style.configure('lefttab.TNotebook', tabposition='wn')
 
         notebook = ttk.Notebook(self)
         notebook.pack(fill='both', expand=True)
@@ -21,10 +21,12 @@ class CitiesPage(ttk.Frame):
         # create frames
         self.frame1 = ViewCities(notebook)
         self.frame2 = CreateCity(notebook)
+        self.frame3 = UpdateCity(notebook)
 
         notebook.bind("<<NotebookTabChanged>>", self.on_tab_selected)
         notebook.add(self.frame1, text='View All Cities')
         notebook.add(self.frame2, text='Create City')
+        notebook.add(self.frame3, text='Update City')
 
     def on_tab_selected(self, event):
         # ref:
@@ -38,6 +40,9 @@ class CitiesPage(ttk.Frame):
             self.frame1.load_records()
         if tab_text == "Create City":
             self.frame2.fields['message']['text'] = ""
+        if tab_text == "Update City":
+            self.frame1.load_records()
+            self.frame3.fields['message']['text'] = ""
 
 
 class ViewCities(ttk.Frame):
@@ -108,3 +113,45 @@ class CreateCity(ttk.Frame):
                 self.city_name.set("")
             case 400:
                 self.fields['message']["text"] = "Invalid City Name"
+
+
+class UpdateCity(ttk.Frame):
+    def __init__(self, *args, **kwargs):
+        Page.__init__(self, *args, **kwargs)
+        self.create_widgets()
+
+    def create_widgets(self):
+        self.city_name = tk.StringVar()
+        self.new_name = tk.StringVar()
+
+        self.fields = {}
+        self.fields['tab_title'] = ttk.Label(
+            self, text="Update City Information")
+        self.fields['find_city'] = ttk.Label(self, text='Find City:')
+        self.fields['city_name'] = ttk.Entry(self, textvariable=self.city_name)
+        self.fields['new_name_label'] = ttk.Label(
+            self, text='Enter New City Name:')
+        self.fields['new_city_name'] = ttk.Entry(
+            self, textvariable=self.new_name)
+        self.fields['message'] = ttk.Label(self, text="")
+
+        for field in self.fields.values():
+            field.pack(anchor=tk.W, padx=10, pady=5, fill=tk.X, expand=True)
+
+        update_button = ttk.Button(
+            self, text='Update City ', command=self.update_record)
+        update_button.pack(anchor=tk.E, padx=5, pady=5)
+
+    def update_record(self):
+        city = (self.city_name.get())
+        city_id = city_data[city]
+        name_data = self.new_name.get()
+        set_name = API.post(
+            f"{URL}/cities/{city_id}/set/name", json={"name": name_data})
+        match set_name.status_code:
+            case 200:
+                self.fields['message']["text"] = "City Name Set Successfully"
+            case 400:
+                self.fields['message']["text"] = "Invalid City Name"
+            case 409:
+                self.fields['message']["text"] = "City Already Exists"
