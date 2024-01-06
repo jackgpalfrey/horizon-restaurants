@@ -1,7 +1,10 @@
 import tkinter as tk
+from tkinter import ttk
 from gui_lib import Page, PageManager
 
 from Login import LoginPage, ChooseBranch
+from City import CitiesPage
+from api import API, URL, State
 
 
 class App(Page):
@@ -12,9 +15,21 @@ class App(Page):
         root.resizable(0, 0)
         root.columnconfigure(0, weight=1)
         root.columnconfigure(1, weight=3)
+        self.create_notebook_widget()
 
-        label = tk.Label(self, text="This is the main page")
-        label.pack()
+    def create_notebook_widget(self):
+
+        style = ttk.Style(self)
+        style.configure('lefttab.TNotebook', tabposition='wn', )
+
+        notebook = ttk.Notebook(self, style='lefttab.TNotebook')
+        notebook.pack(fill='both', expand=True)
+
+        # create frames
+
+        frame1 = CitiesPage(notebook)
+
+        notebook.add(frame1, text='Cities')
 
         btn = tk.Button(self, text="Logout",
                         command=lambda: self.pages.goto("loggedout"))

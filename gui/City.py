@@ -5,11 +5,9 @@ from tkinter import ttk
 from api import API, URL, State
 
 
-class CitiesPage(Page):
+class CitiesPage(ttk.Frame):
     def __init__(self, *args, **kwargs):
         Page.__init__(self, *args, **kwargs)
-        label = tk.Label(self, text="This is the city page")
-        label.pack()
         self.notebook = self.create_notebook_widget()
 
     def create_notebook_widget(self):
