@@ -21,7 +21,7 @@ class BranchEvents:
                address: str) -> Event:
         """Create a new event."""
         cursor = Database.execute(
-            "INSERT INTO public.branch \
+            "INSERT INTO public.events \
             (branch_id, start_time, end_time, type, \
             phone_number, email, address) \
             VALUES(%s, %s, %s, %s, %s, %s, %s) RETURNING id",
@@ -55,7 +55,7 @@ class BranchEvents:
         result = Database.execute_and_fetchone(
             "SELECT start_time FROM public.events WHERE id = %s \
             AND branch_id = %s \
-            AND end_time > %s AND reservation_time < %s",
+            AND end_time > %s AND start_time < %s",
             self._branch_id, time, time)
 
         if result is not None:
