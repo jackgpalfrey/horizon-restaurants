@@ -29,23 +29,23 @@ class Branch:
         """Access event managment methods."""
         return BranchEvents(self._branch_id)
 
-    def tables(self):
+    def tables(self) -> BranchTables:
         """Access table managment methods."""
         return BranchTables(self._branch_id)
 
-    def menu(self):
+    def menu(self) -> BranchMenu:
         """Access menu management methods."""
         return BranchMenu(self._branch_id)
 
-    def reservations(self):
+    def reservations(self) -> BranchReservations:
         """Access reservation managment methods."""
         return BranchReservations(self._branch_id)
 
-    def inventory(self):
+    def inventory(self) -> BranchInventory:
         """Access inventory managment methods."""
         return BranchInventory(self._branch_id)
 
-    def discounts(self):
+    def discounts(self) -> BranchDiscounts:
         """Access discount managment methods."""
         return BranchDiscounts(self._branch_id)
 

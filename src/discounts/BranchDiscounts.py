@@ -3,7 +3,7 @@ from src.discounts.utils import validate_description
 from src.utils.errors import InputError
 from ..user.ActiveUser import ActiveUser
 from ..utils.Database import Database
-from .Discount import Discounts
+from .Discount import Discount
 
 
 class BranchDiscounts:
@@ -13,7 +13,7 @@ class BranchDiscounts:
         """Don't call outside of Branch."""
         self._branch_id = branch_id
 
-    def create(self, multiplier: float, description: str) -> Discounts:
+    def create(self, multiplier: float, description: str) -> Discount:
         """Create a new discount."""
         ActiveUser.get().raise_without_permission("discounts.create")
         if not validate_description(description):
@@ -29,20 +29,20 @@ class BranchDiscounts:
         result = cursor.fetchone()
 
         assert result is not None
-        return Discounts(result[0])
+        return Discount(result[0])
 
-    def get_by_id(self, discount_id: str) -> Discounts | None:
+    def get_by_id(self, discount_id: str) -> Discount | None:
         """Get a discount by its id."""
         result = Database.execute_and_fetchone(
             "SELECT id FROM public.discounts WHERE id=%s AND branch_id=%s",
             discount_id, self._branch_id)
 
         if result is not None:
-            return Discounts(result[0])
+            return Discount(result[0])
 
-    def get_all(self) -> list[Discounts]:
+    def get_all(self) -> list[Discount]:
         """Get all discounts."""
         result = Database.execute_and_fetchall(
             "SELECT id FROM public.discounts")
 
-        return [Discounts(record[0]) for record in result]
+        return [Discount(record[0]) for record in result]
