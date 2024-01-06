@@ -1,8 +1,9 @@
 """Module for Branch Managment."""
 from typing import Any
-from src.discounts.BranchDiscounts import BranchDiscounts
 
+from src.discounts.BranchDiscounts import BranchDiscounts
 from src.menu.BranchMenu import BranchMenu
+from src.user.ActiveUser import ActiveUser
 from src.utils.errors import AlreadyExistsError, InputError
 
 from ..city.City import City
@@ -164,3 +165,21 @@ class Branch:
         Database.execute_and_commit(
             "INSERT INTO public.branchstaff (user_id, branch_id)\
             VALUES (%s, %s);", manager_id, self._branch_id)
+
+
+    def delete(self) -> None:
+        """
+        Delete the branch from the database.
+
+        After calling you should immediately discard this object. Not doing so
+        will cause errors.
+
+        :raises PermissionError: If the current user does not have permission
+        """
+        # Could cause issues with references, might be best to switch to soft
+        # deletion and a cron job
+        sql = "DELETE FROM public.branch WHERE id=%s;"
+
+        ActiveUser.get().raise_without_permission("branch.delete")
+
+        Database.execute_and_commit(sql, self._branch_id)

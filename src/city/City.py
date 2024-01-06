@@ -1,5 +1,6 @@
 """Module for managing individual cities."""
 from psycopg2.errors import UniqueViolation
+from src.user.ActiveUser import ActiveUser
 from src.utils.errors import AlreadyExistsError, InputError
 
 from ..utils.Database import Database
@@ -43,3 +44,20 @@ class City:
                 city_name, city_id)
         except UniqueViolation:
             raise AlreadyExistsError(f"City '{city_name}' already exists")
+
+    def delete(self) -> None:
+        """
+        Delete the city from the database.
+
+        After calling you should immediately discard this object. Not doing so
+        will cause errors.
+
+        :raises PermissionError: If the current user does not have permission
+        """
+        # Could cause issues with references, might be best to switch to soft
+        # deletion and a cron job
+        sql = "DELETE FROM public.city WHERE id=%s;"
+
+        ActiveUser.get().raise_without_permission("city.delete")
+
+        Database.execute_and_commit(sql, self._city_id)
