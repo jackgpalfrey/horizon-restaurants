@@ -1,5 +1,6 @@
 """Module for Branch Managment."""
 from typing import Any
+from src.discounts.BranchDiscounts import BranchDiscounts
 
 from src.menu.BranchMenu import BranchMenu
 from src.utils.errors import AlreadyExistsError, InputError
@@ -43,6 +44,10 @@ class Branch:
     def inventory(self):
         """Access inventory managment methods."""
         return BranchInventory(self._branch_id)
+
+    def discounts(self):
+        """Access discount managment methods."""
+        return BranchDiscounts(self._branch_id)
 
     def get_id(self) -> str:
         """Get ID of branch."""
