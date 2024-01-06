@@ -1,15 +1,12 @@
-import re
-
+"""Module with validation logic for discounts."""
 DESCRIPTION_MIN_LEN = 15  # INCLUSIVE
 DESCRIPTION_MAX_LEN = 200  # INCLUSIVE
 
 
-
 def validate_description(description: str):
     """Validate discount description."""
-    description = description.replace("  ", "!")
-
     ABOVE_MIN = len(description) >= DESCRIPTION_MIN_LEN
     BELOW_MAX = len(description) <= DESCRIPTION_MAX_LEN
 
     return ABOVE_MIN and BELOW_MAX
+

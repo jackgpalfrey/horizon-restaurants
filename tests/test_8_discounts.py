@@ -1,7 +1,7 @@
 import pytest
+
 from src.branch.BranchService import BranchService
 from src.city.CityService import CityService
-from src.tables.Table import Table
 from src.discounts.BranchDiscounts import BranchDiscounts
 from src.discounts.Discount import Discounts
 from src.user.UserService import UserService
@@ -27,7 +27,7 @@ def test_create_discount():
     branch = BranchService.create(
         "Bristol", "15-29 Union St, Bristol BS1 2DF", city)
     branch_discounts = branch.discounts()
-    discount = branch_discounts.create(2.0,"this is the discount description")
+    discount = branch_discounts.create(2.0, "this is the discount description")
     assert isinstance(branch_discounts, BranchDiscounts)
     assert isinstance(discount, Discounts)
 
@@ -61,7 +61,8 @@ def test_set_multiplier():
     assert discount is not None
     discount.set_multiplier(4.0)
     assert isinstance(discount, Discounts)
-    assert discount.get_multiplier() == 4.0 
+    assert discount.get_multiplier() == 4.0
+
 
 def test_get_description():
     branch = BranchService.get_by_name("Bristol")
@@ -72,6 +73,7 @@ def test_get_description():
     description = discount.get_description()
     assert description == "This is Discount A or somehting"
 
+
 def test_set_description():
     branch = BranchService.get_by_name("Bristol")
     assert branch is not None
@@ -81,6 +83,7 @@ def test_set_description():
     discount.set_description("New Description")
     assert isinstance(discount, Discounts)
     assert discount.get_description() == "New Description"
+
 
 def test_get_all():
     branch = BranchService.get_by_name("Bristol")
