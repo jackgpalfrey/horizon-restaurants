@@ -44,22 +44,38 @@ class ViewCities(ttk.Frame):
     def __init__(self, *args, **kwargs):
         Page.__init__(self, *args, **kwargs)
         self.create_widgets()
-        self.load_records()
 
     def create_widgets(self):
         columns = ('city_name')
 
         self.tree = ttk.Treeview(self, columns=columns, show='headings')
         self.tree.heading('city_name', text='Cities')
+        self.load_records()
+        delete_button = ttk.Button(
+            self, text='Delete All Records', command=self.delete_all_records)
+        delete_button.pack(anchor=tk.E, padx=5, pady=5)
 
     def load_records(self):
-        self.tree.pack_forget()
+        for item in self.tree.get_children():
+            self.tree.delete(item)
         all_cities_res = API.post(f"{URL}/cities")
         all_cities = all_cities_res.json()
+        global city_data
+        city_data = {}
         for city in all_cities["data"]["cities"]:
             self.tree.insert('', 'end', values=(f"{city["name"]}"))
+            data = {city["name"]: city["id"]}
+            city_data.update(data)
 
         self.tree.pack(fill='x', expand=True)
+
+    def delete_all_records(self):
+        cities_ids = []
+        for record in city_data:
+            cities_ids.append(city_data[f"{record}"])
+        for id in cities_ids:
+            API.post(f"{URL}/cities/{id}/delete", json=id)
+        self.load_records()
 
 
 class CreateCity(ttk.Frame):
