@@ -1,5 +1,5 @@
 """Module with validation logic for discounts."""
-DESCRIPTION_MIN_LEN = 15  # INCLUSIVE
+DESCRIPTION_MIN_LEN = 5 # INCLUSIVE
 DESCRIPTION_MAX_LEN = 200  # INCLUSIVE
 
 

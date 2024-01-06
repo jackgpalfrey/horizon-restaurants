@@ -1,4 +1,6 @@
 """Module for managing specifc discounts."""
+from collections.abc import MutableSet
+from decimal import Decimal
 from src.utils.errors import InputError
 from ..utils.Database import Database
 from .utils import validate_description
@@ -29,7 +31,9 @@ class Discounts:
             self._discount_id)
 
         assert multiplier is not None
-        return multiplier[0]
+
+        multiplier_dec: Decimal = multiplier[0]
+        return float(multiplier_dec)
 
     def set_description(self, description: str) -> None:
         """Set description."""

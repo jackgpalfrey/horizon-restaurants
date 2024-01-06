@@ -1,4 +1,6 @@
 """Module for managing discounts in a branch."""
+from src.discounts.utils import validate_description
+from src.utils.errors import InputError
 from ..user.ActiveUser import ActiveUser
 from ..utils.Database import Database
 from .Discount import Discounts
@@ -14,6 +16,8 @@ class BranchDiscounts:
     def create(self, multiplier: float, description: str) -> Discounts:
         """Create a new discount."""
         ActiveUser.get().raise_without_permission("discounts.create")
+        if not validate_description(description):
+            raise InputError("Invalid Description")
 
         cursor = Database.execute(
             "INSERT INTO public.discounts \

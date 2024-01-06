@@ -27,7 +27,7 @@ def test_create_discount():
     branch = BranchService.create(
         "Bristol", "15-29 Union St, Bristol BS1 2DF", city)
     branch_discounts = branch.discounts()
-    discount = branch_discounts.create(2.0, "this is the discount description")
+    discount = branch_discounts.create(0.8, "20% Off")
     assert isinstance(branch_discounts, BranchDiscounts)
     assert isinstance(discount, Discounts)
 
@@ -36,7 +36,7 @@ def test_get_discount_by_id():
     branch = BranchService.get_by_name("Bristol")
     assert branch is not None
     branch_discounts = branch.discounts()
-    discount = branch_discounts.create(2.0, "this is the discount description")
+    discount = branch_discounts.create(0.7, "30% Off")
     got_discount = branch_discounts.get_by_id(discount._discount_id)
     assert isinstance(got_discount, Discounts)
     assert type(got_discount._discount_id) is str
@@ -47,42 +47,42 @@ def test_get_multiplier():
     branch = BranchService.get_by_name("Bristol")
     assert branch is not None
     branch_discounts = branch.discounts()
-    discount = branch_discounts.create(2.0, "this is the discount description")
+    discount = branch_discounts.create(0.9, "10% Off")
     assert isinstance(discount, Discounts)
     multiplier = discount.get_multiplier()
-    assert multiplier == 2.0
+    assert multiplier == 0.9
 
 
 def test_set_multiplier():
     branch = BranchService.get_by_name("Bristol")
     assert branch is not None
     branch_discounts = branch.discounts()
-    discount = branch_discounts.create(2.0, "this is the discount description")
+    discount = branch_discounts.create(0.5, "Half Price")
     assert discount is not None
-    discount.set_multiplier(4.0)
+    discount.set_multiplier(0.05)
     assert isinstance(discount, Discounts)
-    assert discount.get_multiplier() == 4.0
+    assert discount.get_multiplier() == 0.05
 
 
 def test_get_description():
     branch = BranchService.get_by_name("Bristol")
     assert branch is not None
     branch_discounts = branch.discounts()
-    discount = branch_discounts.create(3.0, "This is Discount A or somehting")
+    discount = branch_discounts.create(0.4, "60% Off")
     assert isinstance(discount, Discounts)
     description = discount.get_description()
-    assert description == "This is Discount A or somehting"
+    assert description == "60% Off"
 
 
 def test_set_description():
     branch = BranchService.get_by_name("Bristol")
     assert branch is not None
     branch_discounts = branch.discounts()
-    discount = branch_discounts.create(3.0, "This is Discount A or somehting")
+    discount = branch_discounts.create(0.95, "5% Off")
     assert discount is not None
-    discount.set_description("New Description")
+    discount.set_description("1/20 Off")
     assert isinstance(discount, Discounts)
-    assert discount.get_description() == "New Description"
+    assert discount.get_description() == "1/20 Off"
 
 
 def test_get_all():
