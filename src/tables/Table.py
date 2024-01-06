@@ -1,4 +1,6 @@
 """Module for handling specific tables."""
+from datetime import datetime, timedelta
+
 from ..user.ActiveUser import ActiveUser
 from ..utils.Database import Database
 
@@ -9,6 +11,10 @@ class Table:
     def __init__(self, table_id: str):
         """Don't call outside of BranchTables."""
         self._table_id = table_id
+
+    def get_id(self):
+        """Get table id."""
+        return self._table_id
 
     def get_table_number(self) -> str:
         """Get tables number."""
@@ -49,3 +55,15 @@ class Table:
 
         Database.execute_and_commit(
             "DELETE FROM public.table WHERE id = %s", self._table_id)
+
+    def check_is_reserved(self, reservation_time: datetime) -> bool:
+        """Check if the table is reserved during the range of time given."""
+        duration = timedelta(hours=2)
+        end_time = reservation_time + duration
+
+        check = Database.execute_and_fetchone(
+            "SELECT id FROM public.reservations WHERE table_id = %s \
+            AND end_time > %s AND reservation_time < %s;",
+            self._table_id, reservation_time, end_time)
+
+        return check is not None

@@ -1,13 +1,18 @@
 """Module for Branch Managment."""
 from typing import Any
 
+from src.menu.BranchMenu import BranchMenu
 from src.utils.errors import AlreadyExistsError, InputError
 
 from ..city.City import City
+from ..events.BranchEvents import BranchEvents
+from ..inventory.BranchInventory import BranchInventory
+from ..reservations.BranchReservations import BranchReservations
 from ..tables.BranchTables import BranchTables
 from ..user.User import User
 from ..utils.Database import Database
 from .utils import validate_branch_address, validate_branch_name
+
 
 MANAGER_ROLE_ID = 4
 
@@ -19,9 +24,25 @@ class Branch:
         """Do not call outside of BranchService."""
         self._branch_id = branch_id
 
+    def events(self) -> BranchEvents:
+        """Access event managment methods."""
+        return BranchEvents(self._branch_id)
+
     def tables(self):
         """Access table managment methods."""
         return BranchTables(self._branch_id)
+
+    def menu(self):
+        """Access menu management methods."""
+        return BranchMenu(self._branch_id)
+
+    def reservations(self):
+        """Access reservation managment methods."""
+        return BranchReservations(self._branch_id)
+
+    def inventory(self):
+        """Access inventory managment methods."""
+        return BranchInventory(self._branch_id)
 
     def get_id(self) -> str:
         """Get ID of branch."""
