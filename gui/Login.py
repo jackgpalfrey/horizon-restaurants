@@ -30,8 +30,13 @@ class ChooseBranch(Page):
         clicked.set(display_text)
         drop = OptionMenu(self, clicked, *dropdown)
         drop.grid()
+
+        def on_select():
+            State.branch = branch_data
+            self.pages.goto("login")
+
         btn = tk.Button(self, text="Choose Branch",
-                        command=lambda: self.pages.goto("login"))
+                        command=on_select)
         btn.grid()
 
 
@@ -64,10 +69,12 @@ class LoginPage(Page):
 
         if self.username.get() != "admin":
             for user in branch_users["data"]["users"]:
-                if user["username"] == self.username.get():
+                did_find = user["username"] == self.username.get()
+                if did_find:
                     break
-                print("This user doesn't work at this branch.")
-
+            if not did_find:
+                self.label["text"] = "This user doesn't work at this branch."
+                return
         login_data = {"username": self.username.get(
         ), "password": self.password.get()}
         login = API.post(f"{URL}/login", json=login_data)
