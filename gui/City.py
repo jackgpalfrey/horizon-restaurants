@@ -141,6 +141,9 @@ class UpdateCity(ttk.Frame):
         update_button = ttk.Button(
             self, text='Update City ', command=self.update_record)
         update_button.pack(anchor=tk.E, padx=5, pady=5)
+        delete_button = ttk.Button(
+            self, text='Delete City ', command=self.delete_record)
+        delete_button.pack(anchor=tk.E, padx=5, pady=5)
 
     def update_record(self):
         city = (self.city_name.get())
@@ -155,3 +158,12 @@ class UpdateCity(ttk.Frame):
                 self.fields['message']["text"] = "Invalid City Name"
             case 409:
                 self.fields['message']["text"] = "City Already Exists"
+
+    def delete_record(self):
+        city = (self.city_name.get())
+        city_id = city_data[city]
+        delete_city = API.post(
+            f"{URL}/cities/{city_id}/delete", json=city_id)
+        match delete_city.status_code:
+            case 200:
+                self.fields['message']["text"] = "City Deleted Successfully"
