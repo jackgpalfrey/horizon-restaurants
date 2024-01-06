@@ -44,12 +44,17 @@ class BranchInventory:
 
         return InventoryItem(id)
 
-    def get_by_name(self, name: str) -> InventoryItem | None:
-        """
-        Get an inventory item by its name.
+    def get_by_id(self, id: str) -> InventoryItem | None:
+        """Get an inventory item by its ID."""
+        result = Database.execute_and_fetchone(
+            "SELECT id FROM public.inventory WHERE id = %s \
+            AND branch_id = %s;", id, self._branch_id)
 
-        Note: This is not limited to this branch.
-        """
+        if result is not None:
+            return InventoryItem(result[0])
+
+    def get_by_name(self, name: str) -> InventoryItem | None:
+        """Get an inventory item by its name."""
         result = Database.execute_and_fetchone(
             "SELECT id FROM public.inventory WHERE name = %s \
             AND branch_id = %s;", name, self._branch_id)

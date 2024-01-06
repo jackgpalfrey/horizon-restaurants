@@ -12,6 +12,10 @@ class InventoryItem:
         """Don't call outside of BranchInventory."""
         self._item_id = item_id
 
+    def get_id(self) -> str:
+        """Get inventory item id."""
+        return self._item_id
+
     def get_name(self) -> str:
         """Get inventory item's name."""
         result = Database.execute_and_fetchone(
