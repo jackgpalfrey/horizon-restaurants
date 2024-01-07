@@ -4,10 +4,13 @@ from .utils.FSRouter import FSRouter
 
 SESSION_KEY = "joe"
 
+
 def main():
     """Run main entry point for api."""
     print("Starting API...")
-    app: Flask = Flask("Horizon Restaurants")
+    app: Flask = Flask("Horizon Restaurants",
+                       static_folder="src/api/static",
+                       template_folder="src/api/templates")
     app.secret_key = SESSION_KEY
 
     # If you want sessions to last longer than a browser sessions
