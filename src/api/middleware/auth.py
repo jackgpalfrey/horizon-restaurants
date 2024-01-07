@@ -14,5 +14,13 @@ def auth_guard():
     ActiveUser.set(User(user_id))
 
 
+def perm_guard(permission: str):
+    def internal_perm_guard():
+        auth_guard()
+        ActiveUser.get().raise_without_permission(permission)
+
+    return internal_perm_guard
+
+
 def auth_cleanup():
     ActiveUser.clear()

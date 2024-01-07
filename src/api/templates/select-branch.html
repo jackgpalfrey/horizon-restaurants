@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% include 'commonhead.html' %}
+    <link rel="stylesheet" href="/static/css/branches.css" />
+    <title>Select A Branch</title>
+</head>
+
+<body>
+    <main>
+        <p id="error"></p>
+    </main>
+    <script>
+        error = document.querySelector("#error")
+        main = document.querySelector("main")
+        async function load() {
+            const response = await fetch("", {
+                method: "POST",
+            });
+
+            const body = await response.json()
+            console.log(body)
+            if (body.success === false) return error.textContent = body.message
+            if (body.data.branches.length < 1) {
+                return error.textContent = "No branches found. Use the native GUI to manage branches."
+            }
+
+            for (const {id, name} of body.data.branches) {
+                console.log(name)
+                btn = document.createElement("button")
+                btn.className = "branch"
+                btn.textContent = name
+                btn.addEventListener("click", () => {
+                    console.log("TEST")
+                    window.location.href = id
+                })
+                main.appendChild(btn)
+            }
+        }
+        load()
+    </script>
+</body>
+
+</html>

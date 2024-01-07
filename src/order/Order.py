@@ -19,6 +19,10 @@ class Order:
         """Don't call outside of OrderService."""
         self._order_id = order_id
 
+    def get_id(self):
+        """Get orders id."""
+        return self._order_id
+
     def get_branch(self) -> Branch:
         """Get branch that order is in."""
         sql = "SELECT branch_id FROM public.order WHERE id=%s"

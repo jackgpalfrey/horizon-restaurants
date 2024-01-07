@@ -1,11 +1,11 @@
 from marshmallow import Schema, fields
-from src.api.middleware.auth import auth_cleanup, auth_guard
+from src.api.middleware.auth import auth_cleanup, perm_guard
 from src.api.utils.Result import OK, Error, Status
 from src.api.utils.dictify import dictify_inventory_item
 from src.branch.BranchService import BranchService
 from src.utils.errors import AuthorizationError, InputError
 
-guard = auth_guard
+guard = perm_guard("inventory.update.threshold")
 cleanup = auth_cleanup
 
 

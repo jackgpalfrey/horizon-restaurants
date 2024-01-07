@@ -1,9 +1,9 @@
-from src.api.middleware.auth import auth_cleanup, auth_guard
+from src.api.middleware.auth import auth_cleanup, auth_guard, perm_guard
 from src.api.utils.Result import OK, Error, Status
 from src.branch.BranchService import BranchService
 from src.utils.errors import AuthorizationError, InputError
 
-guard = auth_guard
+guard = perm_guard("inventory.delete")
 cleanup = auth_cleanup
 
 def post(branch_id: str, inventory_item_id: str):

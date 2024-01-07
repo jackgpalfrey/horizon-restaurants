@@ -2,6 +2,7 @@ from src.branch.Branch import Branch
 from src.branch.BranchService import BranchService
 from src.city.City import City
 from src.inventory.InventoryItem import InventoryItem
+from src.order.Order import Order
 from src.reservations.Reservation import Reservation
 from src.tables.Table import Table
 from src.user.User import User
@@ -52,6 +53,7 @@ def dictify_user(obj: User):
         }
     }
 
+
 def dictify_table(obj: Table):
     return {
         "number": obj.get_table_number(),
@@ -66,7 +68,7 @@ def dictify_inventory_item(obj: InventoryItem):
     return {
         "id": obj.get_id(),
         "name": obj.get_name(),
-        "quanity": quantity,
+        "quantity": quantity,
         "threshold": threshold,
         "is_too_low": too_low
     }
@@ -78,4 +80,13 @@ def dictify_reservation(obj: Reservation):
         "num_people": obj.get_num_people(),
         "customer_name": obj.get_customer_name(),
         "time": obj.get_time().__str__()
+    }
+
+
+def dictify_simple_order(obj: Order):
+    return {
+        "order_number": obj.get_number(),
+        "customer_name": obj.get_customer_name(),
+        "num_items": len(obj.get_all_items()),
+
     }

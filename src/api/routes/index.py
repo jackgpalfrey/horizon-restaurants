@@ -1,2 +1,5 @@
+from flask import redirect, render_template
+
+
 def get():
-    return "<p>Horizon Restaurants</p>"
+    return redirect("/login")

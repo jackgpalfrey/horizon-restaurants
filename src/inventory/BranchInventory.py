@@ -65,7 +65,8 @@ class BranchInventory:
     def get_all(self) -> list[InventoryItem]:
         """Get all inventory items at the branch."""
         result = Database.execute_and_fetchall(
-            "SELECT id FROM public.inventory WHERE branch_id = %s;",
+            "SELECT id FROM public.inventory WHERE branch_id = %s \
+            ORDER BY name",
             self._branch_id)
 
         return [InventoryItem(record[0]) for record in result]
