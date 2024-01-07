@@ -4,6 +4,8 @@ from tkinter import *
 from tkinter import ttk
 from api import URL, API, State
 
+branch_data = None
+
 
 class ChooseBranch(Page):
     def __init__(self, *args, **kwargs):
@@ -12,17 +14,21 @@ class ChooseBranch(Page):
         label = tk.Label(self, text="Please choose a branch")
         label.grid()
 
-        dropdown = []
+        self.all_branches_res = API.post(f"{URL}/branches")
+        self.all_branches = self.all_branches_res.json()
 
-        all_branches_res = API.post(f"{URL}/branches")
-        all_branches = all_branches_res.json()
+    def on_show(self):
+        if len(self.all_branches["data"]["branches"]) == 0:
+            self.pages.goto("login")
+            return
+
+        dropdown = []
 
         global branch_data
         branch_data = {}
-        for branch in all_branches["data"]["branches"]:
+        for branch in self.all_branches["data"]["branches"]:
             dropdown.append(branch["name"])
-            data = {branch["name"]: branch["id"]}
-            branch_data.update(data)
+            branch_data[branch["name"]] = branch["id"]
 
         global clicked
         clicked = StringVar()
@@ -32,7 +38,8 @@ class ChooseBranch(Page):
         drop.grid()
 
         def on_select():
-            State.branch = branch_data
+            print(branch_data)
+            State.branch_id = branch_data[clicked.get()]
             self.pages.goto("login")
 
         btn = tk.Button(self, text="Choose Branch",
@@ -63,11 +70,10 @@ class LoginPage(Page):
         self.label.grid(column=1, row=2)
 
     def handle_input(self):
-        branch_id = branch_data[clicked.get()]
-        branch_users_res = API.post(f"{URL}/branches/{branch_id}/users")
-        branch_users = branch_users_res.json()
-
         if self.username.get() != "admin":
+            branch_id = branch_data[clicked.get()]
+            branch_users_res = API.post(f"{URL}/branches/{branch_id}/users")
+            branch_users = branch_users_res.json()
             for user in branch_users["data"]["users"]:
                 did_find = user["username"] == self.username.get()
                 if did_find:

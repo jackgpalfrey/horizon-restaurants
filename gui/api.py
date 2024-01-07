@@ -5,5 +5,5 @@ API = requests.Session()
 
 
 class State:
-    branch = None
+    branch_id = None
     username = None

@@ -22,10 +22,14 @@ class Page(tk.Frame):
     def show(self) -> None:
         """Show page, should rarely be used outside of PageManager."""
         self.pack(fill=tk.X)
+        self.on_show()
 
     def hide(self):
         """Hide page, should rarely be used outside of PageManager."""
         self.pack_forget()
+
+    def on_show(self):
+        pass
 
 
 class GridPage(Page):

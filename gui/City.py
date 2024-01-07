@@ -29,10 +29,7 @@ class CitiesPage(ttk.Frame):
         notebook.add(self.frame3, text='Update City')
 
     def on_tab_selected(self, event):
-        # ref:
-        # https://www.homeandlearn.uk/python-database-form-tabs3.html#:~:text=
-        # You%20do%20the%20binding%20on,that%20you%20want%20to%20implement.&text=Between%
-        # 20double%20quotes%20and%20double,deal%20with%20this%20event%3A%20on_tab_selected
+        # ref: https://www.homeandlearn.uk/python-database-form-tabs3.html
         selected_tab = event.widget.select()
         tab_text = event.widget.tab(selected_tab, "text")
 
