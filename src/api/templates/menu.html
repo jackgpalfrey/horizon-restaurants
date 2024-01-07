@@ -35,7 +35,7 @@
             console.log(body)
             if (body.success === false) return error.textContent = body.message
 
-            for (const {id, name, price, is_available} of body.data.inventory) {
+            for (const {id, name, price, is_available} of body.data.menu) {
                 tr = document.createElement("tr")
                 tr.className = "table-item "
 

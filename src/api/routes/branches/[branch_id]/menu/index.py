@@ -21,7 +21,7 @@ def post(branch_id: str = ""):
 
     inventory_data = [dictify_menu_item(i) for i in menu]
 
-    return OK({"inventory": inventory_data})
+    return OK({"menu": inventory_data})
 
 
 def get(branch_id: str = ""):
