@@ -14,11 +14,13 @@ cleanup = auth_cleanup
 class PostSchema(Schema):
     name = fields.String(required=True)
     threshold = fields.Int(required=True)
+    quantity = fields.Int()
 
 
 def post(body: dict, branch_id: str):
     name = body["name"]
     threshold = body["threshold"]
+    quantity = body.get("quantity", 0)
 
     if branch_id is None:
         Error(Status.BAD_REQUEST, "SHOULDNT BE POSSIBLE")
@@ -28,7 +30,7 @@ def post(body: dict, branch_id: str):
         return Error(Status.NOT_FOUND, "Branch not found.")
 
     try:
-        item = branch.inventory().create(name, 0, threshold)
+        item = branch.inventory().create(name, quantity, threshold)
     except AuthorizationError as e:
         return Error(Status.FORBIDDEN, e.message)
     except AlreadyExistsError as e:
