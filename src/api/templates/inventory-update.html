@@ -22,7 +22,8 @@
                         Threshold
                         <input name="threshold" id="threshold" type="number" step="1" />
                     </label>
-                    <button>Save</button>
+                    <button type="submit">Save</button>
+                    <button id="delete">Delete</button>
                 </form>
             </div>
         </div>
@@ -33,6 +34,7 @@
         const quantity = document.querySelector("#quantity")
         const threshold = document.querySelector("#threshold")
         const form = document.querySelector("form")
+        const delete_btn = document.querySelector("#delete")
 
         async function load() {
             let response = await fetch("", {
@@ -80,6 +82,15 @@
         }
 
         form.addEventListener("submit", save)
+        delete_btn.addEventListener("click", async (e) => {
+            e.preventDefault()
+
+            await fetch(`delete`, {
+                method: "POST"
+            });
+
+            window.location.href = "../"
+        })
 
     </script>
 </body>

@@ -1,12 +1,13 @@
+from flask import render_template
 from marshmallow import Schema, fields
 
-from src.api.middleware.auth import auth_cleanup, auth_guard
+from src.api.middleware.auth import auth_cleanup, auth_guard, perm_guard
 from src.api.utils.Result import Error, OK, Status
 from src.api.utils.dictify import dictify_table
 from src.branch.BranchService import BranchService
 from src.utils.errors import AlreadyExistsError, InputError
 
-guard = auth_guard
+guard = perm_guard("table.create")
 cleanup = auth_cleanup
 
 
@@ -34,3 +35,7 @@ def post(body: dict, branch_id: str):
         return Error(Status.BAD_REQUEST, e.message)
 
     return OK(dictify_table(table))
+
+
+def get(branch_id: str):
+    return render_template("table-create.html")

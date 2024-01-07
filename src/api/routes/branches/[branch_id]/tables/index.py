@@ -1,3 +1,4 @@
+from flask import render_template
 from src.api.utils.Result import OK, Error, Status
 from src.api.utils.dictify import dictify_table
 from src.branch.BranchService import BranchService
@@ -16,3 +17,7 @@ def post(branch_id: str = ""):
     users_data = [dictify_table(t) for t in tables]
 
     return OK({"tables": users_data})
+
+
+def get(branch_id: str = ""):
+    return render_template("tables.html", branch_id=branch_id)
