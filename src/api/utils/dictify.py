@@ -1,6 +1,7 @@
 from src.branch.Branch import Branch
 from src.branch.BranchService import BranchService
 from src.city.City import City
+from src.discounts.Discount import Discount
 from src.inventory.InventoryItem import InventoryItem
 from src.menu.MenuCategory import MenuCategory
 from src.menu.MenuItem import MenuItem
@@ -112,4 +113,12 @@ def dictify_menu_item(obj: MenuItem):
         "image_url": obj.get_image_url(),
         "is_available": obj.get_is_available(),
         "category": category,
+    }
+
+
+def dictify_discount(obj: Discount):
+    return {
+        "id": obj.get_id(),
+        "description": obj.get_description(),
+        "multiplier": obj.get_multiplier()
     }

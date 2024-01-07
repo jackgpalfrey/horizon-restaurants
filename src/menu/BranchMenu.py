@@ -47,6 +47,13 @@ class BranchMenu:
         if result is not None:
             return MenuCategory(result[0])
 
+    def get_all_categories(self) -> list[MenuCategory]:
+        """Get all categories."""
+        sql = "SELECT id FROM public.menucategory WHERE branch_id=%s"
+        result = Database.execute_and_fetchall(sql, self._branch_id)
+
+        return [MenuCategory(record[0]) for record in result]
+
     def create_item(self, name: str, desc: str, price: float,
                     img_url: str | None, category: MenuCategory) -> MenuItem:
         """Create a new item."""
