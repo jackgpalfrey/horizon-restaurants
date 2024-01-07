@@ -50,6 +50,7 @@ main {
     display: flex;
 }
 
+textarea,
 input,
 select {
     background-color: #131313;

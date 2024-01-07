@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% include 'commonhead.html' %}
+    <link rel="stylesheet" href="/static/css/inventory.css" />
+    <title>Inventory - Update</title>
+</head>
+
+<body>
+    {% include 'navbar.html' %}
+    <main>
+        <div id="inventory-modal-wrapper" class="modal-wrapper">
+            <div id="inventory-modal" class="modal">
+                <h1>Edit Inventory Item</h1>
+                <form>
+                    <label>
+                        Name
+                        <input name="name" id="name" />
+                    </label>
+                    <label>
+                        Price
+                        <input name="price" id="price" type="number" step="0.01" />
+                    </label>
+                    <label>
+                        Description
+                        <textarea name="desc" id="desc"></textarea>
+                    </label>
+                    <button>Save</button>
+                </form>
+            </div>
+        </div>
+    </main>
+    <script>
+        const wrapper = document.querySelector("#inventory-modal-wrapper")
+        const h1 = document.querySelector("h1")
+        const form = document.querySelector("form")
+        const name = document.querySelector("#name")
+        const price = document.querySelector("#price")
+        const desc = document.querySelector("#desc")
+
+        async function load() {
+            let response = await fetch("", {
+                method: "POST",
+            });
+
+            let body = await response.json()
+            if (!body.success) return alert("ERROR: " + body.message)
+
+            h1.textContent = `Edit '${body.data.name}' Details`
+            name.value = body.data.name
+            price.value = body.data.price
+            desc.value = body.data.description
+
+        }
+
+        load()
+
+        async function save(e) {
+            e.preventDefault()
+            let data = {name: name.value}
+            let response = await fetch(`set/name`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+            });
+
+            let body = await response.json()
+            console.log(body)
+            if (!body.success) return alert("ERROR: " + body.message)
+
+            data = {price: price.value}
+            response = await fetch(`set/price`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+            });
+
+            body = await response.json()
+            if (!body.success) return alert("ERROR: " + body.message)
+
+            data = {description: desc.value}
+            response = await fetch(`set/description`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+            });
+
+            body = await response.json()
+            if (!body.success) return alert("ERROR: " + body.message)
+
+            window.location.href = "../"
+        }
+
+        form.addEventListener("submit", save)
+
+    </script>
+</body>
+
+</html>

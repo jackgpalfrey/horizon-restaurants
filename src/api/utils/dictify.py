@@ -2,6 +2,8 @@ from src.branch.Branch import Branch
 from src.branch.BranchService import BranchService
 from src.city.City import City
 from src.inventory.InventoryItem import InventoryItem
+from src.menu.MenuCategory import MenuCategory
+from src.menu.MenuItem import MenuItem
 from src.order.Order import Order
 from src.reservations.Reservation import Reservation
 from src.tables.Table import Table
@@ -89,4 +91,25 @@ def dictify_simple_order(obj: Order):
         "customer_name": obj.get_customer_name(),
         "num_items": len(obj.get_all_items()),
 
+    }
+
+def dictify_menu_category(obj: MenuCategory):
+    return {
+        "id": obj.get_id(),
+        "name": obj.get_name()
+    }
+
+def dictify_menu_item(obj: MenuItem):
+    raw_category = obj.get_category()
+    category = dictify_menu_category(
+        raw_category) if raw_category is not None else None
+
+    return {
+        "id": obj.get_id(),
+        "name": obj.get_name(),
+        "description": obj.get_description(),
+        "price": obj.get_price(),
+        "image_url": obj.get_image_url(),
+        "is_available": obj.get_is_available(),
+        "category": category,
     }
