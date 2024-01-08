@@ -10,6 +10,7 @@ from Branch import BranchesPage
 from Inventory import InventoryPage
 from Table import TablesPage
 from Menu import MenuPage
+from Discounts import DiscountsPage
 # from Reservations import ReservationsPage
 from api import API, URL, State
 
@@ -34,8 +35,30 @@ class App(Page):
         if user_data["success"]:
             role_id = user_data["data"]["role"]["id"]
             match role_id:
-                case 1:
+                case 0:
+                    self.notebook.hide(1)
                     self.notebook.hide(2)
+                    self.notebook.hide(3)
+                    self.notebook.hide(4)
+                    self.notebook.hide(5)
+                case 1:
+                    self.notebook.hide(1)
+                    self.notebook.hide(2)
+                    self.notebook.hide(3)
+                    self.notebook.hide(4)
+                    self.notebook.hide(5)
+                case 2:
+                    self.notebook.hide(1)
+                    self.notebook.hide(2)
+                    self.notebook.hide(3)
+                    self.notebook.hide(5)
+                case 3:
+                    self.notebook.hide(1)
+                    self.notebook.hide(2)
+                    self.notebook.hide(3)
+                    self.notebook.hide(5)
+                case 4:
+                    self.notebook.hide(1)
 
     def create_notebook_widget(self):
         style = ttk.Style(self)
@@ -53,6 +76,7 @@ class App(Page):
         frame5 = InventoryPage(self.notebook)
         frame6 = TablesPage(self.notebook)
         frame7 = MenuPage(self.notebook)
+        frame8 = DiscountsPage(self.notebook)
         # frame8 = ReservationsPage(self.notebook)
 
         self.notebook.bind("<<NotebookTabChanged>>", self.on_tab_selected)
@@ -63,6 +87,7 @@ class App(Page):
         self.notebook.add(frame5, text='Inventory')
         self.notebook.add(frame6, text='Tables')
         self.notebook.add(frame7, text='Menu')
+        self.notebook.add(frame8, text='Discounts')
         # self.notebook.add(frame8, text='Reservations')
 
         btn = tk.Button(self, text="Logout",
