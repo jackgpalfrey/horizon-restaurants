@@ -1,3 +1,4 @@
+# Author: Jack Palfrey (22032928)
 """Module for managing multiple pages together."""
 import tkinter as tk
 from .Page import Page

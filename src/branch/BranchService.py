@@ -1,3 +1,4 @@
+# Author: Dina Hassanein (22066792)
 """Module for creating and accessing branches."""
 from psycopg2.errors import UniqueViolation
 

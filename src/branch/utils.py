@@ -1,3 +1,4 @@
+# Author: Dina Hassanein (22066792)
 """Module containing helpers and validation logic for branch."""
 import re
 

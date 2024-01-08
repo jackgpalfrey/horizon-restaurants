@@ -1,3 +1,4 @@
+# Author: Jack Palfrey (22032928)
 """Module for individual pages."""
 import tkinter as tk
 from typing import TYPE_CHECKING

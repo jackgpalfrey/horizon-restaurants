@@ -1,3 +1,4 @@
+# Author: Dina Hassanein (22066792)
 from gui_lib import Page
 import tkinter as tk
 from tkinter import *

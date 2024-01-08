@@ -1,3 +1,4 @@
+# Author: Dina Hassanein (22066792)
 """Module for managing a branches tables."""
 from src.utils.errors import AlreadyExistsError
 

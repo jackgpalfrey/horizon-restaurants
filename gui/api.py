@@ -1,3 +1,4 @@
+# Author: Dina Hassanein (22066792)
 import requests
 
 URL = "http://localhost:5000"

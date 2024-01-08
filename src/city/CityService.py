@@ -1,3 +1,4 @@
+# Author: Dina Hassanein (22066792)
 """Module for managing all cities."""
 from src.utils.errors import InputError
 

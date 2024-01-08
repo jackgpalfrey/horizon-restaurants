@@ -1,3 +1,4 @@
+# Author: Dina Hassanein (22066792)
 import tkinter as tk
 from tkinter import ttk
 from gui_lib import Page, PageManager

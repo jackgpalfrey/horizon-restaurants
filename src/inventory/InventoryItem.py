@@ -1,3 +1,4 @@
+# Author: Dina Hassanein (22066792)
 """Module for handling specific inventories."""
 from ..utils.Database import Database
 from ..user.ActiveUser import ActiveUser
