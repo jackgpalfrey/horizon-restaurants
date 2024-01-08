@@ -28,7 +28,7 @@ class Order:
         sql = "SELECT branch_id FROM public.order WHERE id=%s"
         result = Database.execute_and_fetchone(sql, self._order_id)
         assert result is not None
-        return result[0]
+        return Branch(result[0])
 
     def get_number(self) -> int:
         """Get order's number."""
@@ -146,7 +146,7 @@ class Order:
     def get_all_items(self) -> list[tuple[MenuItem, int]]:
         """Get all items along with their corresponding quantities."""
         sql = "SELECT item_id, quantity FROM public.orderitem \
-               WHERE order_id=%s"
+               WHERE order_id=%s ORDER BY item_id"
 
         result = Database.execute_and_fetchall(sql, self._order_id)
 
@@ -187,11 +187,12 @@ class Order:
             return self._create_new_item(item)
 
         new_quantity = result[0] + delta
+        print(new_quantity, flush=True)
 
         if new_quantity < 1:
             return self._delete_item(item)
 
-        self._change_item(item, result[0] + 1)
+        self._change_item(item, new_quantity)
 
     def set_discount(self, discount: Discount | None) -> None:
         """Set discount, use None to remove discount."""

@@ -94,11 +94,13 @@ def dictify_simple_order(obj: Order):
 
     }
 
+
 def dictify_menu_category(obj: MenuCategory):
     return {
         "id": obj.get_id(),
         "name": obj.get_name()
     }
+
 
 def dictify_menu_item(obj: MenuItem):
     raw_category = obj.get_category()
@@ -121,4 +123,13 @@ def dictify_discount(obj: Discount):
         "id": obj.get_id(),
         "description": obj.get_description(),
         "multiplier": obj.get_multiplier()
+    }
+
+
+def dictify_order(obj: Order):
+    return {
+        "id": obj.get_id(),
+        "customer_name": obj.get_customer_name(),
+        "status": obj.get_status().value,
+        "price": obj.get_price()
     }

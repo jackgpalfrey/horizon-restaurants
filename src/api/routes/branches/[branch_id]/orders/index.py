@@ -18,7 +18,7 @@ def post(branch_id: str = ""):
     if branch is None:
         return Error(Status.NOT_FOUND, "Branch not found.")
 
-    orders = OrderService.get_all_open_from_branch(branch)
+    orders = OrderService.get_all_placed_from_branch(branch)
 
     inventory_data = [dictify_simple_order(o) for o in orders]
 

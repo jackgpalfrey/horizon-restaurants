@@ -12,9 +12,9 @@
     <main>
         <table>
             <tr class="table-header">
-                <th>Name</th>
-                <th>Quantity</th>
-                <th>Minimum</th>
+                <th>Order No.</th>
+                <th>Customer</th>
+                <th>No. Items</th>
                 <th></th>
             </tr>
             <div class="table">
@@ -36,18 +36,17 @@
             if (body.success === false) return error.textContent = body.message
             console.log(body)
 
-            for (const {id, name, quantity, threshold} of body.data.inventory) {
+            for (const {id, order_number, customer_name, num_items} of body.data.inventory) {
                 console.log(name)
                 tr = document.createElement("tr")
                 tr.className = "table-item "
-                if (quantity < threshold) tr.className += "alert"
 
                 td_name = document.createElement("td")
-                td_name.textContent = name
+                td_name.textContent = order_number
                 td_quan = document.createElement("td")
-                td_quan.textContent = quantity
+                td_quan.textContent = customer_name
                 td_thre = document.createElement("td")
-                td_thre.textContent = threshold
+                td_thre.textContent = num_items
 
 
                 const td_btn = document.createElement("td")
