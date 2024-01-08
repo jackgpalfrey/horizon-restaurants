@@ -1,3 +1,4 @@
+# Author: Jack Palfrey (22032928)
 from src.utils.Database import Database
 
 

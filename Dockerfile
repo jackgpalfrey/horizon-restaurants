@@ -1,3 +1,4 @@
+# Author: Jack Palfrey (22032928)
 FROM python:3.10 AS prod
 WORKDIR /app
 COPY requirements.txt .

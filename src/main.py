@@ -1,3 +1,4 @@
+# Author: Jack Palfrey
 """Production initialisation module."""
 from .utils.Database import Database
 from .user.UserService import UserService

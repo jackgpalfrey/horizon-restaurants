@@ -1,3 +1,4 @@
+# Author: Mohamed Elafifi
 """Module for managing specifc discounts."""
 from decimal import Decimal
 from src.user.ActiveUser import ActiveUser

@@ -1,3 +1,4 @@
+# Author: Mohamed Elafifi
 """Module for managing discounts in a branch."""
 from src.discounts.utils import validate_description
 from src.utils.errors import InputError

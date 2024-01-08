@@ -1,3 +1,4 @@
+# Author: Jack Palfrey (22032928)
 """Module for managing a specific branches menu."""
 from src.menu.MenuItem import MenuItem
 from .utils import validate_menu_name

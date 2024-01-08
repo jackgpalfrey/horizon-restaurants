@@ -1,3 +1,4 @@
+# Author: Jack Palfrey (22032928)
 """Module for managing an individual Role."""
 from typing import TYPE_CHECKING
 

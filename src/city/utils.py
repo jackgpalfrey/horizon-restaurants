@@ -1,3 +1,4 @@
+# Author: Dina Hassanein (22066792)
 """Module with validation logic for cities."""
 import re
 

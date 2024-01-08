@@ -1,3 +1,4 @@
+# Author: Dina Hassanein (22066792)
 """Module for Branch Managment."""
 from typing import Any
 
@@ -165,7 +166,6 @@ class Branch:
         Database.execute_and_commit(
             "INSERT INTO public.branchstaff (user_id, branch_id)\
             VALUES (%s, %s);", manager_id, self._branch_id)
-
 
     def delete(self) -> None:
         """

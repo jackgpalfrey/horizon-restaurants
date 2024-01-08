@@ -1,3 +1,4 @@
+# Author: Jack Palfrey (22032928)
 """Module for managing Roles."""
 from __future__ import annotations
 import os

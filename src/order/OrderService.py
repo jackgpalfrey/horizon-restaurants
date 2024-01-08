@@ -1,3 +1,4 @@
+# Author: Jack Palfrey (22032928)
 """Module for managing orders."""
 from src.events.Event import Event
 from ..branch.Branch import Branch

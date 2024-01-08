@@ -1,3 +1,4 @@
+# Author: Dina Hassanein (22066792)
 """Module for managing individual cities."""
 from psycopg2.errors import UniqueViolation
 from src.user.ActiveUser import ActiveUser

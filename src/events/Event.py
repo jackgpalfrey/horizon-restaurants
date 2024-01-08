@@ -1,3 +1,4 @@
+# Author: Evan Duwat
 """Module for managing individual events."""
 from ..utils.Database import Database
 from src.user.ActiveUser import ActiveUser
@@ -60,7 +61,6 @@ class Event:
         assert end_time is not None
 
         return end_time[0]
-
 
     def set_type(self, event_type: int) -> None:
         """Set type of event."""

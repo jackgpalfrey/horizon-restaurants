@@ -1,3 +1,4 @@
+# Author: Dina Hassanein (22066792)
 """Module for managing all cities."""
 from psycopg2.errors import UniqueViolation
 from src.utils.errors import AlreadyExistsError, InputError
