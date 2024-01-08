@@ -133,7 +133,11 @@ class CreateUser(ttk.Frame):
         self.all_branches_res = API.post(f"{URL}/branches")
         self.all_branches = self.all_branches_res.json()
 
+        if len(self.all_branches["data"]["branches"]) < 1:
+            return
+
         dropdown = []
+
         global branch_data
         branch_data = {}
         for branch in self.all_branches["data"]["branches"]:
