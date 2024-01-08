@@ -7,3 +7,4 @@ API = requests.Session()
 class State:
     branch_id = None
     username = None
+    is_ui_rendered = False
