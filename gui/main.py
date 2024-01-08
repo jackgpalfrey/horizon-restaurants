@@ -2,10 +2,15 @@ import tkinter as tk
 from tkinter import ttk
 from gui_lib import Page, PageManager
 
-from Login import LoginPage, ChooseBranch
-from City import CitiesPage
 from MainPage import MainTab
+from Login import LoginPage, ChooseBranch
 from Staff import StaffPage
+from City import CitiesPage
+from Branch import BranchesPage
+from Inventory import InventoryPage
+from Table import TablesPage
+from Menu import MenuPage
+# from Reservations import ReservationsPage
 from api import API, URL, State
 
 
@@ -44,11 +49,21 @@ class App(Page):
         frame1 = MainTab(self.notebook)
         frame2 = StaffPage(self.notebook)
         frame3 = CitiesPage(self.notebook)
+        frame4 = BranchesPage(self.notebook)
+        frame5 = InventoryPage(self.notebook)
+        frame6 = TablesPage(self.notebook)
+        frame7 = MenuPage(self.notebook)
+        # frame8 = ReservationsPage(self.notebook)
 
         self.notebook.bind("<<NotebookTabChanged>>", self.on_tab_selected)
         self.notebook.add(frame1, text='Home')
         self.notebook.add(frame2, text='Staff')
         self.notebook.add(frame3, text='Cities')
+        self.notebook.add(frame4, text='Branches')
+        self.notebook.add(frame5, text='Inventory')
+        self.notebook.add(frame6, text='Tables')
+        self.notebook.add(frame7, text='Menu')
+        # self.notebook.add(frame8, text='Reservations')
 
         btn = tk.Button(self, text="Logout",
                         command=lambda: self.pages.goto("loggedout"))
