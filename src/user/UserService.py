@@ -1,3 +1,4 @@
+# Author: Jack Palfrey (22032928)
 """Module for handling all users."""
 from typing import TYPE_CHECKING
 

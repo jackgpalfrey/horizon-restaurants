@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% include 'commonhead.html' %}
+    <link rel="stylesheet" href="/static/css/inventory.css" />
+    <title>Inventory</title>
+</head>
+
+<body>
+    {% include 'navbar.html' %}
+    <main>
+        <table>
+            <tr class="table-header">
+                <th>Name</th>
+                <th>Quantity</th>
+                <th>Minimum</th>
+                <th></th>
+            </tr>
+            <div class="table">
+            </div>
+        </table>
+        <a href="create">Create a new item</a>
+    </main>
+
+    <script>
+        error = document.querySelector("#error")
+        table = document.querySelector("table")
+        async function load() {
+            const response = await fetch("", {
+                method: "POST",
+            });
+
+            const body = await response.json()
+            console.log(body)
+            if (body.success === false) return error.textContent = body.message
+
+            for (const {id, name, quantity, threshold} of body.data.inventory) {
+                console.log(name)
+                tr = document.createElement("tr")
+                tr.className = "table-item "
+                if (quantity < threshold) tr.className += "alert"
+
+                td_name = document.createElement("td")
+                td_name.textContent = name
+                td_quan = document.createElement("td")
+                td_quan.textContent = quantity
+                td_thre = document.createElement("td")
+                td_thre.textContent = threshold
+
+
+                const td_btn = document.createElement("td")
+
+                const btn_inc = document.createElement("button")
+                btn_inc.textContent = "+"
+                td_btn.appendChild(btn_inc)
+                btn_inc.addEventListener("click", async () => {
+                    const data = {delta: 1}
+                    const response = await fetch(`${id}/set/quantity`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(data),
+                    });
+
+                    const body = await response.json()
+                    if (!body.success) return alert("ERROR: " + body.message)
+                    window.location.reload()
+                })
+
+                const btn_dec = document.createElement("button")
+                btn_dec.textContent = "-"
+                td_btn.appendChild(btn_dec)
+                btn_dec.addEventListener("click", async () => {
+                    const data = {delta: -1}
+                    const response = await fetch(`${id}/set/quantity`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(data),
+                    });
+
+                    const body = await response.json()
+                    if (!body.success) return alert("ERROR: " + body.message)
+                    window.location.reload()
+                })
+
+                const btn_set = document.createElement("button")
+                btn_set.textContent = "Edit"
+                td_btn.appendChild(btn_set)
+                btn_set.addEventListener("click", () => {
+                    window.location.href = `${id}`
+                })
+
+                tr.appendChild(td_name)
+                tr.appendChild(td_quan)
+                tr.appendChild(td_thre)
+                tr.appendChild(td_btn)
+
+                table.appendChild(tr)
+            }
+        }
+        load()
+    </script>
+</body>
+
+</html>

@@ -98,10 +98,10 @@ def test_get_all_items():
     assert isinstance(items, list)
     assert len(items) == 4
 
-    assert items[0].get_name() == name
-    assert items[1].get_name() == "Potatoe"
-    assert items[2].get_name() == "Onion"
-    assert items[3].get_name() == "Pasta"
+    assert items[0].get_name() == "Onion"
+    assert items[1].get_name() == "Pasta"
+    assert items[2].get_name() == "Potatoe"
+    assert items[3].get_name() == "Tomatoe"
 
 
 def test_get_item_by_name():

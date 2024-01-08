@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% include 'commonhead.html' %}
+    <link rel="stylesheet" href="/static/css/inventory.css" />
+    <title>Tables - Create</title>
+</head>
+
+<body>
+    {% include 'navbar.html' %}
+    <main>
+        <div id="inventory-modal-wrapper" class="modal-wrapper">
+            <div id="inventory-modal" class="modal">
+                <h1>Create a new Menu Item</h1>
+                <form>
+                    <label>
+                        Table Number
+                        <input name="number" id="number" type="number" step="1" />
+                    </label>
+                    <label>
+                        Capacity
+                        <input name="capacity" id="capacity" type="number" step="1" />
+                    </label>
+                    <button>Create</button>
+                </form>
+            </div>
+        </div>
+    </main>
+    <script>
+        const wrapper = document.querySelector("#inventory-modal-wrapper")
+        const modal = document.querySelector("#inventory-modal")
+        const form = document.querySelector("form")
+        const number = document.querySelector("#number")
+        const capacity = document.querySelector("#capacity")
+
+        modal.addEventListener("click", (e) => {
+            e.stopPropagation()
+        })
+
+        async function save(e) {
+            e.preventDefault()
+            let data = {table_number: number.value, capacity: capacity.value}
+            let response = await fetch("", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+            });
+
+            let body = await response.json()
+            console.log(body)
+            if (!body.success) return alert("ERROR: " + body.message)
+
+            window.location.href = "./"
+        }
+
+        form.addEventListener("submit", save)
+        wrapper.addEventListener("click", () => {
+            window.location.href = "./"
+        })
+
+    </script>
+</body>
+
+</html>

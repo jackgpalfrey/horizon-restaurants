@@ -21,6 +21,9 @@ class Reservation:
         """Don't call outside of BranchReservations."""
         self._reservation_id = reservation_id
 
+    def get_id(self) -> str:
+        return self._reservation_id
+
     def get_table(self) -> Table:
         """Get reservations table."""
         result = Database.execute_and_fetchone(

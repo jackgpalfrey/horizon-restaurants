@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% include 'commonhead.html' %}
+    <link rel="stylesheet" href="/static/css/inventory.css" />
+    <title>Order - Create</title>
+</head>
+
+<body>
+    {% include 'navbar.html' %}
+    <main>
+        <div id="inventory-modal-wrapper" class="modal-wrapper">
+            <div id="inventory-modal" class="modal">
+                <table>
+                    <tr class="table-header">
+                        <th>Description</th>
+                        <th>Multiplier</th>
+                        <th></th>
+                    </tr>
+                    <div class="table">
+                    </div>
+                </table>
+            </div>
+        </div>
+    </main>
+    <script>
+        const wrapper = document.querySelector("#inventory-modal-wrapper")
+        const modal = document.querySelector("#inventory-modal")
+        const form = document.querySelector("form")
+
+        modal.addEventListener("click", (e) => {
+            e.stopPropagation()
+        })
+
+        async function save(e) {
+            e.preventDefault()
+            let data = {name: name.value, threshold: threshold.value}
+            let response = await fetch("", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+            });
+
+            let body = await response.json()
+            console.log(body)
+            if (!body.success) return alert("ERROR: " + body.message)
+
+            window.location.href = "../"
+        }
+
+        wrapper.addEventListener("click", () => {
+            window.location.href = "../"
+        })
+
+        table = document.querySelector("table")
+        async function load() {
+            const response = await fetch("../../../discounts", {
+                method: "POST",
+            });
+
+            const body = await response.json()
+            console.log(body)
+            if (body.success === false) return error.textContent = body.message
+
+            for (const {id, description, multiplier} of body.data.discounts) {
+                tr = document.createElement("tr")
+                tr.className = "table-item "
+
+                td_name = document.createElement("td")
+                td_name.textContent = description
+
+                td_quan = document.createElement("td")
+                td_quan.textContent = multiplier
+
+
+                const td_btn = document.createElement("td")
+                const btn_set = document.createElement("button")
+                btn_set.textContent = "Select"
+                td_btn.appendChild(btn_set)
+                btn_set.addEventListener("click", async (e) => {
+                    e.preventDefault()
+
+                    const data = {"discount_id": id}
+                    resy = await fetch(`add`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(data)
+                    });
+
+                    console.log(await resy.json())
+                    window.location.href = "../"
+
+                })
+
+                tr.appendChild(td_name)
+                tr.appendChild(td_quan)
+                tr.appendChild(td_btn)
+
+                table.appendChild(tr)
+            }
+        }
+        load()
+    </script>
+</body>
+
+</html>

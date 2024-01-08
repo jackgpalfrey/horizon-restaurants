@@ -1,9 +1,11 @@
+# Author: Jack Palfrey (22032928)
 FROM python:3.10 AS prod
 WORKDIR /app
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 COPY ./src ./src
-CMD ["python", "./src/main.py"]
+COPY api-entry.py api-entry.py
+CMD ["python", "./api-entry.py"]
 
 
 FROM prod AS test

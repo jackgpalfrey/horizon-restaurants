@@ -1,14 +1,17 @@
 # Author: Dina Hassanein (22066792)
 """Module for Branch Managment."""
 from typing import Any
-from src.menu.BranchMenu import BranchMenu
 
+from src.discounts.BranchDiscounts import BranchDiscounts
+from src.menu.BranchMenu import BranchMenu
+from src.user.ActiveUser import ActiveUser
 from src.utils.errors import AlreadyExistsError, InputError
 
 from ..city.City import City
-from ..tables.BranchTables import BranchTables
-from ..reservations.BranchReservations import BranchReservations
+from ..events.BranchEvents import BranchEvents
 from ..inventory.BranchInventory import BranchInventory
+from ..reservations.BranchReservations import BranchReservations
+from ..tables.BranchTables import BranchTables
 from ..user.User import User
 from ..utils.Database import Database
 from .utils import validate_branch_address, validate_branch_name
@@ -24,21 +27,29 @@ class Branch:
         """Do not call outside of BranchService."""
         self._branch_id = branch_id
 
-    def tables(self):
+    def events(self) -> BranchEvents:
+        """Access event managment methods."""
+        return BranchEvents(self._branch_id)
+
+    def tables(self) -> BranchTables:
         """Access table managment methods."""
         return BranchTables(self._branch_id)
 
-    def menu(self):
+    def menu(self) -> BranchMenu:
         """Access menu management methods."""
         return BranchMenu(self._branch_id)
 
-    def reservations(self):
+    def reservations(self) -> BranchReservations:
         """Access reservation managment methods."""
         return BranchReservations(self._branch_id)
 
-    def inventory(self):
+    def inventory(self) -> BranchInventory:
         """Access inventory managment methods."""
         return BranchInventory(self._branch_id)
+
+    def discounts(self) -> BranchDiscounts:
+        """Access discount managment methods."""
+        return BranchDiscounts(self._branch_id)
 
     def get_id(self) -> str:
         """Get ID of branch."""
@@ -155,3 +166,20 @@ class Branch:
         Database.execute_and_commit(
             "INSERT INTO public.branchstaff (user_id, branch_id)\
             VALUES (%s, %s);", manager_id, self._branch_id)
+
+    def delete(self) -> None:
+        """
+        Delete the branch from the database.
+
+        After calling you should immediately discard this object. Not doing so
+        will cause errors.
+
+        :raises PermissionError: If the current user does not have permission
+        """
+        # Could cause issues with references, might be best to switch to soft
+        # deletion and a cron job
+        sql = "DELETE FROM public.branch WHERE id=%s;"
+
+        ActiveUser.get().raise_without_permission("branch.delete")
+
+        Database.execute_and_commit(sql, self._branch_id)

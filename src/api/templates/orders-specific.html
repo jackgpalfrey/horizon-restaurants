@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% include 'commonhead.html' %}
+    <link rel="stylesheet" href="/static/css/inventory.css" />
+    <title>Order</title>
+</head>
+
+<body>
+    {% include 'navbar.html' %}
+    <main>
+        <table>
+            <tr class="table-header">
+                <th>Name</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th></th>
+            </tr>
+            <div class="table">
+            </div>
+        </table>
+        <a href="items/add" id="add" style="display: none;">Add new item</a>
+        <p id="price" style="color: white; margin-top: 1em;">ERROR</p>
+        <button id="discount" style="display: none;">Add Discount</button>
+        <button id="place">Place</button>
+    </main>
+
+    <script>
+        error = document.querySelector("#error")
+        table = document.querySelector("table")
+        price = document.querySelector("#price")
+        discount = document.querySelector("#discount")
+        place = document.querySelector("#place")
+        add = document.querySelector("#add")
+
+
+        let orderData;
+        async function load() {
+            let response = await fetch("", {
+                method: "POST",
+            });
+
+            let body = await response.json()
+            console.log(body)
+            if (body.success === false) return error.textContent = body.message
+            price.textContent = `Price: ${body.data.price}`
+            orderData = body.data
+
+            response = await fetch("items", {
+                method: "POST",
+            });
+
+            body = await response.json()
+            console.log(body)
+            if (body.success === false) return error.textContent = body.message
+
+            for (const {id, name, price, quantity} of body.data.items) {
+                tr = document.createElement("tr")
+                tr.className = "table-item "
+
+                td_name = document.createElement("td")
+                td_name.textContent = name
+                td_quan = document.createElement("td")
+                td_quan.textContent = price
+                td_thre = document.createElement("td")
+                td_thre.textContent = quantity
+
+
+                const td_btn = document.createElement("td")
+                if (orderData.status == 1) {
+                    const btn_set = document.createElement("button")
+                    btn_set.textContent = "Remove"
+                    td_btn.appendChild(btn_set)
+                    btn_set.addEventListener("click", async () => {
+                        const rem_id = id
+                        const data = {"item_id": rem_id}
+                        const response = await fetch("items/remove", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify(data)
+                        });
+                        window.location.href = "./"
+                    })
+                }
+
+                tr.appendChild(td_name)
+                tr.appendChild(td_quan)
+                tr.appendChild(td_thre)
+                tr.appendChild(td_btn)
+
+                table.appendChild(tr)
+            }
+
+            console.log(orderData)
+            switch (orderData.status) {
+                case 1:
+                    // NOT_PLACED
+                    add.style = "display: inline;"
+                    discount.style = "display: block;"
+                    place.addEventListener("click", async () => {
+                        customer_name = prompt("Enter customers name:")
+
+                        let data = {"customer_name": customer_name}
+                        let response = await fetch("set/customer", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify(data)
+                        });
+
+                        await fetch("place", {
+                            method: "POST",
+                        });
+                        window.location.href = "../"
+                    })
+                    break;
+
+                case 3:
+                    // PLACED
+                    place.textContent = "Complete"
+                    place.addEventListener("click", async () => {
+                        await fetch("complete", {
+                            method: "POST",
+                        });
+                        window.location.href = "../"
+                    })
+                    break;
+
+                case 2:
+                    // CANCELLED
+                    place.textContent = "CANCELLED"
+                    place.disabled = true;
+                    break;
+                case 4:
+                    // COMPLETED
+                    place.textContent = "COMPLETED"
+                    place.disabled = true;
+                    break;
+
+            }
+
+
+        }
+
+        discount.addEventListener("click", () => {
+            window.location.href = "discount"
+        })
+
+        load()
+
+
+
+    </script>
+</body>
+
+</html>

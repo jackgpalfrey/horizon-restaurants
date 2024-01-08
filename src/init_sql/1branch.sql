@@ -4,5 +4,5 @@ CREATE TABLE IF NOT EXISTS public.branch(
     address text NOT NULL,
     city_id uuid,
     PRIMARY KEY (id),
-    CONSTRAINT fk_city FOREIGN KEY (city_id) REFERENCES city(id) ON DELETE SET NULL
+    CONSTRAINT fk_city FOREIGN KEY (city_id) REFERENCES city(id) ON DELETE CASCADE
 )

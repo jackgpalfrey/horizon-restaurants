@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% include 'commonhead.html' %}
+    <link rel="stylesheet" href="static/css/login.css" />
+    <title>Login</title>
+</head>
+
+<body>
+    <main>
+        <p id="error">{{ error }}</p>
+        <form>
+            <label>Username
+                <input name="username" id="username" required />
+            </label>
+            <label>Password
+                <input name="password" type="password" id="password" required />
+            </label>
+            <button>Login</button>
+            <a href="/register">Don't have an account yet? <span>Register</span></a>
+        </form>
+    </main>
+    <script>
+        username = document.querySelector("#username")
+        password = document.querySelector("#password")
+        error = document.querySelector("#error")
+        document.querySelector("form").addEventListener("submit", login)
+        async function login(e) {
+            e.preventDefault()
+            const data = {username: username.value, password: password.value}
+            const response = await fetch("", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data), // body data type must match "Content-Type" header
+            });
+
+            const body = await response.json()
+            console.log(body)
+            if (body.success === false) return error.textContent = body.message
+
+            if (body.data.role.id === 99) {
+                return window.location.href = "branches"
+            }
+
+            const branch = body.data.branch
+            if (branch === null) {
+                error.textContent = "You are not associated with any branch. Ask you administrator for help."
+            } else {
+                const branch_id = branch.id
+                window.location.href = `/branches/${branch_id}`
+            }
+        }
+    </script>
+</body>
+
+</html>
