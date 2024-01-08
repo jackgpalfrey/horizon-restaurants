@@ -70,6 +70,7 @@ button {
     width: 40%;
     margin-top: 1em;
     border-radius: .3em;
+    border: orangered 1px solid;
 }
 
 button:hover {

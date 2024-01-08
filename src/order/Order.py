@@ -103,6 +103,18 @@ class Order:
 
         PaymentService.make_payment(price)
 
+        result = Database.execute_and_fetchone(
+            "SELECT MAX(number) FROM public.order WHERE status=%s",
+            OrderStatus.PLACED.value)
+
+        order_number = 0
+        if result is not None and result[0] is not None:
+            order_number = result[0] + 1
+
+        Database.execute(
+            "UPDATE public.order SET number=%s WHERE id=%s",
+            order_number, self._order_id)
+
         self.set_status(OrderStatus.PLACED)
         return price
 

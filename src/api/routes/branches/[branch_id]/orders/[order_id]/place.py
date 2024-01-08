@@ -10,12 +10,8 @@ guard = perm_guard("order.make")
 cleanup = auth_cleanup
 
 
-class PostSchema(Schema):
-    customer_name = fields.String(required=True)
 
-
-def post(body: dict, branch_id: str = "", order_id: str = ""):
-    customer_name = body["customer_name"]
+def post(branch_id: str = "", order_id: str = ""):
 
     if branch_id is None:
         Error(Status.BAD_REQUEST, "SHOULDNT BE POSSIBLE")
@@ -28,6 +24,6 @@ def post(body: dict, branch_id: str = "", order_id: str = ""):
     if order is None or order.get_branch().get_id() != branch.get_id():
         return Error(Status.NOT_FOUND, "Order not found.")
 
-    order.set_customer_name(customer_name)
+    order.place()
 
     return OK({})

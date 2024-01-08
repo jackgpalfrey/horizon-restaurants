@@ -3,17 +3,28 @@
 
 <head>
     {% include 'commonhead.html' %}
-    <link rel="stylesheet" href="/static/css/branches.css" />
+    <link rel="stylesheet" href="/static/css/inventory.css" />
     <title>Select A Branch</title>
 </head>
 
 <body>
+    {% include 'navbar.html' %}
     <main>
-        <p id="error"></p>
+        <table>
+            <tr class="table-header">
+                <th>Name</th>
+                <th>City</th>
+                <th></th>
+            </tr>
+            <div class="table">
+            </div>
+        </table>
+        <a>Use the GUI to create a new branch.</a>
     </main>
+
     <script>
         error = document.querySelector("#error")
-        main = document.querySelector("main")
+        table = document.querySelector("table")
         async function load() {
             const response = await fetch("", {
                 method: "POST",
@@ -22,20 +33,29 @@
             const body = await response.json()
             console.log(body)
             if (body.success === false) return error.textContent = body.message
-            if (body.data.branches.length < 1) {
-                return error.textContent = "No branches found. Use the native GUI to manage branches."
-            }
 
-            for (const {id, name} of body.data.branches) {
-                console.log(name)
-                btn = document.createElement("button")
-                btn.className = "branch"
-                btn.textContent = name
-                btn.addEventListener("click", () => {
-                    console.log("TEST")
-                    window.location.href = id
+            for (const {id, name, city} of body.data.branches) {
+                tr = document.createElement("tr")
+                tr.className = "table-item "
+
+                td_name = document.createElement("td")
+                td_name.textContent = name
+                td_quan = document.createElement("td")
+                td_quan.textContent = city.name
+
+                const td_btn = document.createElement("td")
+                const btn_set = document.createElement("button")
+                btn_set.textContent = "Select"
+                td_btn.appendChild(btn_set)
+                btn_set.addEventListener("click", () => {
+                    window.location.href = `${id}`
                 })
-                main.appendChild(btn)
+
+                tr.appendChild(td_name)
+                tr.appendChild(td_quan)
+                tr.appendChild(td_btn)
+
+                table.appendChild(tr)
             }
         }
         load()

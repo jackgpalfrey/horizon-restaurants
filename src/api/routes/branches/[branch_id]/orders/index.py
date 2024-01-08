@@ -22,7 +22,7 @@ def post(branch_id: str = ""):
 
     inventory_data = [dictify_simple_order(o) for o in orders]
 
-    return OK({"inventory": inventory_data})
+    return OK({"orders": inventory_data})
 
 
 def get(branch_id: str = ""):

@@ -36,7 +36,7 @@
             if (body.success === false) return error.textContent = body.message
             console.log(body)
 
-            for (const {id, order_number, customer_name, num_items} of body.data.inventory) {
+            for (const {id, order_number, customer_name, num_items} of body.data.orders) {
                 console.log(name)
                 tr = document.createElement("tr")
                 tr.className = "table-item "
@@ -51,44 +51,8 @@
 
                 const td_btn = document.createElement("td")
 
-                const btn_inc = document.createElement("button")
-                btn_inc.textContent = "+"
-                td_btn.appendChild(btn_inc)
-                btn_inc.addEventListener("click", async () => {
-                    const data = {delta: 1}
-                    const response = await fetch(`${id}/set/quantity`, {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify(data),
-                    });
-
-                    const body = await response.json()
-                    if (!body.success) return alert("ERROR: " + body.message)
-                    window.location.reload()
-                })
-
-                const btn_dec = document.createElement("button")
-                btn_dec.textContent = "-"
-                td_btn.appendChild(btn_dec)
-                btn_dec.addEventListener("click", async () => {
-                    const data = {delta: -1}
-                    const response = await fetch(`${id}/set/quantity`, {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify(data),
-                    });
-
-                    const body = await response.json()
-                    if (!body.success) return alert("ERROR: " + body.message)
-                    window.location.reload()
-                })
-
                 const btn_set = document.createElement("button")
-                btn_set.textContent = "Edit"
+                btn_set.textContent = "View"
                 td_btn.appendChild(btn_set)
                 btn_set.addEventListener("click", () => {
                     window.location.href = `${id}`

@@ -77,12 +77,17 @@ def dictify_inventory_item(obj: InventoryItem):
     }
 
 
-
 def dictify_simple_order(obj: Order):
+    num_items = 0
+    all_items = obj.get_all_items()
+    for item, quan in all_items:
+        num_items += quan
+
     return {
+        "id": obj.get_id(),
         "order_number": obj.get_number(),
         "customer_name": obj.get_customer_name(),
-        "num_items": len(obj.get_all_items()),
+        "num_items": num_items
 
     }
 

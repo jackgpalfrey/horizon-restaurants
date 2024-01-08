@@ -20,9 +20,9 @@
             <div class="table">
             </div>
         </table>
-        <a href="items/add">Add new item</a>
-        <p id="price" style="color: white; margin-top: 1em;">No change</p>
-        <button id="discount">Add Discount</button>
+        <a href="items/add" id="add" style="display: none;">Add new item</a>
+        <p id="price" style="color: white; margin-top: 1em;">ERROR</p>
+        <button id="discount" style="display: none;">Add Discount</button>
         <button id="place">Place</button>
     </main>
 
@@ -32,6 +32,10 @@
         price = document.querySelector("#price")
         discount = document.querySelector("#discount")
         place = document.querySelector("#place")
+        add = document.querySelector("#add")
+
+
+        let orderData;
         async function load() {
             let response = await fetch("", {
                 method: "POST",
@@ -41,6 +45,7 @@
             console.log(body)
             if (body.success === false) return error.textContent = body.message
             price.textContent = `Price: ${body.data.price}`
+            orderData = body.data
 
             response = await fetch("items", {
                 method: "POST",
@@ -63,21 +68,23 @@
 
 
                 const td_btn = document.createElement("td")
-                const btn_set = document.createElement("button")
-                btn_set.textContent = "Remove"
-                td_btn.appendChild(btn_set)
-                btn_set.addEventListener("click", async () => {
-                    const rem_id = id
-                    const data = {"item_id": rem_id}
-                    const response = await fetch("items/remove", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify(data)
-                    });
-                    window.location.href = "./"
-                })
+                if (orderData.status == 1) {
+                    const btn_set = document.createElement("button")
+                    btn_set.textContent = "Remove"
+                    td_btn.appendChild(btn_set)
+                    btn_set.addEventListener("click", async () => {
+                        const rem_id = id
+                        const data = {"item_id": rem_id}
+                        const response = await fetch("items/remove", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify(data)
+                        });
+                        window.location.href = "./"
+                    })
+                }
 
                 tr.appendChild(td_name)
                 tr.appendChild(td_quan)
@@ -86,31 +93,67 @@
 
                 table.appendChild(tr)
             }
+
+            console.log(orderData)
+            switch (orderData.status) {
+                case 1:
+                    // NOT_PLACED
+                    add.style = "display: inline;"
+                    discount.style = "display: block;"
+                    place.addEventListener("click", async () => {
+                        customer_name = prompt("Enter customers name:")
+
+                        let data = {"customer_name": customer_name}
+                        let response = await fetch("set/customer", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify(data)
+                        });
+
+                        await fetch("place", {
+                            method: "POST",
+                        });
+                        window.location.href = "../"
+                    })
+                    break;
+
+                case 3:
+                    // PLACED
+                    place.textContent = "Complete"
+                    place.addEventListener("click", async () => {
+                        await fetch("complete", {
+                            method: "POST",
+                        });
+                        window.location.href = "../"
+                    })
+                    break;
+
+                case 2:
+                    // CANCELLED
+                    place.textContent = "CANCELLED"
+                    place.disabled = true;
+                    break;
+                case 4:
+                    // COMPLETED
+                    place.textContent = "COMPLETED"
+                    place.disabled = true;
+                    break;
+
+            }
+
+
         }
 
         discount.addEventListener("click", () => {
             window.location.href = "discount"
         })
 
-        place.addEventListener("click", async () => {
-            customer_name = prompt("Enter customers name:")
-
-            let data = {"customer_name": customer_name}
-            let response = await fetch("set/customer_name", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(data)
-            });
-
-            await fetch("set/place", {
-                method: "POST",
-            });
-        })
-
-
         load()
+
+
+
     </script>
 </body>
 

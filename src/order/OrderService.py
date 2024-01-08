@@ -17,7 +17,7 @@ class OrderService:
         ActiveUser.get().raise_without_permission("order.create")
 
         branch_id = branch.get_id()
-        number = 0
+        number = -1
 
         sql = "INSERT INTO public.order (number, branch_id) \
         VALUES (%s,%s) RETURNING id;"

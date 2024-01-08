@@ -23,6 +23,7 @@ td button {
     padding: .5em;
     border-radius: .3em;
     color: white;
+    width: min-content
 }
 
 td button:hover {
