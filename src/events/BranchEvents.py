@@ -1,3 +1,4 @@
+# Author: Evan Duwat
 """Module for managing events."""
 from datetime import datetime
 

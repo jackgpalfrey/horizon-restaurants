@@ -1,5 +1,7 @@
+# Author: Dina Hassanein (22066792)
 """Module for managing all cities."""
-from src.utils.errors import InputError
+from psycopg2.errors import UniqueViolation
+from src.utils.errors import AlreadyExistsError, InputError
 
 from ..utils.Database import Database
 from .City import City
@@ -20,12 +22,15 @@ class CityService:
         """
         CityService._validate_create_city(city_name)
 
-        cursor = Database.execute(
-            "INSERT INTO public.city (name) VALUES(%s) RETURNING id",
-            city_name)
+        try:
+            cursor = Database.execute(
+                "INSERT INTO public.city (name) VALUES(%s) RETURNING id",
+                city_name)
 
-        Database.commit()
-        result = cursor.fetchone()
+            Database.commit()
+            result = cursor.fetchone()
+        except UniqueViolation:
+            raise AlreadyExistsError(f"City '{city_name}' already exists")
 
         assert result is not None  # TODO: See City.py todo
         return City(result[0])

@@ -1,3 +1,4 @@
+# Author: Jack Palfrey (22032928)
 """Module for managing Database connection."""
 import os
 import time
@@ -47,7 +48,7 @@ class Database:
         """
         Initialize database ( runs init_sql ).
 
-        Should be run once and only once
+        Should be run once and only once. After connect()
         """
         cls._run_sql_in_dir("src/init_sql")
 

@@ -5,5 +5,5 @@ CREATE TABLE IF NOT EXISTS public.inventory(
     threshold integer,
     branch_id uuid NOT NULL,
     PRIMARY KEY (id),
-    CONSTRAINT fk_branch FOREIGN KEY (branch_id) REFERENCES public.branch(id) ON DELETE SET NULL
+    CONSTRAINT fk_branch FOREIGN KEY (branch_id) REFERENCES public.branch(id) ON DELETE CASCADE
 )

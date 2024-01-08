@@ -1,3 +1,4 @@
+# Author: Dina Hassanein (22066792)
 """Module with helpers and validation logic for tables."""
 from src.utils.Database import Database
 

@@ -1,3 +1,4 @@
+# Author: Jack Palfrey (22032928)
 """Module with validation logic for menu items."""
 import re
 

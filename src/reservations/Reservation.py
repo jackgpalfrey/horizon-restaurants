@@ -1,3 +1,4 @@
+# Author: Dina Hassanein (22066792)
 """Module for handling specific reservations."""
 from datetime import datetime
 
@@ -19,6 +20,9 @@ class Reservation:
     def __init__(self, reservation_id: str):
         """Don't call outside of BranchReservations."""
         self._reservation_id = reservation_id
+
+    def get_id(self) -> str:
+        return self._reservation_id
 
     def get_table(self) -> Table:
         """Get reservations table."""

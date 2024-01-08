@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% include 'commonhead.html' %}
+    <link rel="stylesheet" href="/static/css/inventory.css" />
+    <title>Inventory - Update</title>
+</head>
+
+<body>
+    {% include 'navbar.html' %}
+    <main>
+        <div id="inventory-modal-wrapper" class="modal-wrapper">
+            <div id="inventory-modal" class="modal">
+                <h1>Edit Inventory Item</h1>
+                <form>
+                    <label>
+                        Quantity
+                        <input name="quanity" id="quantity" type="number" step="1" />
+                    </label>
+                    <label>
+                        Threshold
+                        <input name="threshold" id="threshold" type="number" step="1" />
+                    </label>
+                    <button type="submit">Save</button>
+                    <button id="delete">Delete</button>
+                </form>
+            </div>
+        </div>
+    </main>
+    <script>
+        const wrapper = document.querySelector("#inventory-modal-wrapper")
+        const h1 = document.querySelector("h1")
+        const quantity = document.querySelector("#quantity")
+        const threshold = document.querySelector("#threshold")
+        const form = document.querySelector("form")
+        const delete_btn = document.querySelector("#delete")
+
+        async function load() {
+            let response = await fetch("", {
+                method: "POST",
+            });
+
+            let body = await response.json()
+            if (!body.success) return alert("ERROR: " + body.message)
+
+            h1.textContent = `Edit '${body.data.name}' Details`
+            quantity.value = body.data.quantity
+            threshold.value = body.data.threshold
+
+        }
+
+        load()
+
+        async function save(e) {
+            e.preventDefault()
+            let data = {threshold: threshold.value}
+            let response = await fetch(`set/threshold`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+            });
+
+            let body = await response.json()
+            if (!body.success) return alert("ERROR: " + body.message)
+
+            data = {quantity: quantity.value}
+            response = await fetch(`set/quantity`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+            });
+
+            body = await response.json()
+            if (!body.success) return alert("ERROR: " + body.message)
+
+            window.location.href = "../"
+        }
+
+        form.addEventListener("submit", save)
+        delete_btn.addEventListener("click", async (e) => {
+            e.preventDefault()
+
+            await fetch(`delete`, {
+                method: "POST"
+            });
+
+            window.location.href = "../"
+        })
+
+    </script>
+</body>
+
+</html>

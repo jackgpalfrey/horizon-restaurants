@@ -1,0 +1,55 @@
+main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #131313ef;
+    padding: 4em;
+    width: 60%;
+    max-width: 40em;
+    min-width: 25em;
+}
+
+label {
+    display: flex;
+    flex-direction: column;
+    color: white;
+    margin-bottom: 2em;
+    width: 100%;
+}
+
+form input {
+    width: 100%;
+}
+
+form button {
+    background-color: orangered;
+    border: none;
+    padding: 0.5em 3em;
+    font-weight: bold;
+    color: white;
+    font-size: 1.5em;
+    width: 100%;
+}
+
+form a {
+    color: white;
+    margin-top: 1em;
+    text-decoration: none;
+}
+
+form a span {
+    text-decoration: underline;
+}
+
+form a:hover {
+    color: orangered;
+    text-decoration: underline;
+}

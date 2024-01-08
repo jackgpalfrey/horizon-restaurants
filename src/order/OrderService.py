@@ -1,3 +1,4 @@
+# Author: Jack Palfrey (22032928)
 """Module for managing orders."""
 from src.events.Event import Event
 from ..branch.Branch import Branch
@@ -16,7 +17,7 @@ class OrderService:
         ActiveUser.get().raise_without_permission("order.create")
 
         branch_id = branch.get_id()
-        number = 0
+        number = -1
 
         sql = "INSERT INTO public.order (number, branch_id) \
         VALUES (%s,%s) RETURNING id;"
@@ -27,7 +28,8 @@ class OrderService:
         assert result is not None
         return Order(result[0])
 
-    def get_by_id(self, order_id: int) -> Order | None:
+    @staticmethod
+    def get_by_id(order_id: str) -> Order | None:
         """Get an order by it's id."""
         sql = "SELECT id FROM public.order WHERE id=%s"
         result = Database.execute_and_fetchone(sql, order_id)
@@ -35,7 +37,8 @@ class OrderService:
         if result is not None:
             return Order(result[0])
 
-    def get_by_event(self, event: Event) -> Order | None:
+    @staticmethod
+    def get_by_event(event: Event) -> Order | None:
         """Get associated order."""
         sql = "SELECT order_id FROM public.events WHERE id=%s"
         result = Database.execute_and_fetchone(sql, event.get_id())
@@ -43,7 +46,8 @@ class OrderService:
         if result is not None and result[0] is not None:
             return Order(result[0])
 
-    def get_all_from_branch(self, branch: Branch) -> list[Order]:
+    @staticmethod
+    def get_all_from_branch(branch: Branch) -> list[Order]:
         """Get all orders at a specific branch."""
         branch_id = branch.get_id()
 
@@ -52,7 +56,8 @@ class OrderService:
 
         return [Order(record[0]) for record in result]
 
-    def get_all_open_from_branch(self, branch: Branch) -> list[Order]:
+    @staticmethod
+    def get_all_open_from_branch(branch: Branch) -> list[Order]:
         """Get all open orders at a specific branch."""
         branch_id = branch.get_id()
 
@@ -63,7 +68,19 @@ class OrderService:
 
         return [Order(record[0]) for record in result]
 
-    def get_by_order_number(self, branch: Branch,
+    @staticmethod
+    def get_all_placed_from_branch(branch: Branch) -> list[Order]:
+        """Get all open placed orders at a specific branch."""
+        branch_id = branch.get_id()
+
+        sql = "SELECT id FROM public.order WHERE branch_id=%s AND status=%s"
+        result = Database.execute_and_fetchall(sql, branch_id,
+                                               OrderStatus.PLACED.value)
+
+        return [Order(record[0]) for record in result]
+
+    @staticmethod
+    def get_by_order_number(branch: Branch,
                             order_number: int) -> Order | None:
         """Get the open order with an order number."""
         branch_id = branch.get_id()

@@ -1,3 +1,4 @@
+# Author: Jack Palfrey (22032928)
 """Module with helpers and validation logic for user stuff."""
 import bcrypt
 import re

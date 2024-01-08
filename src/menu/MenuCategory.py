@@ -1,3 +1,4 @@
+# Author: Jack Palfrey (22032928)
 """Module for managing menu categories."""
 from src.menu.utils import validate_menu_name
 from src.user.ActiveUser import ActiveUser

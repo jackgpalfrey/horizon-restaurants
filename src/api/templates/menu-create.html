@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% include 'commonhead.html' %}
+    <link rel="stylesheet" href="/static/css/inventory.css" />
+    <title>Menu - Create</title>
+</head>
+
+<body>
+    {% include 'navbar.html' %}
+    <main>
+        <div id="inventory-modal-wrapper" class="modal-wrapper">
+            <div id="inventory-modal" class="modal">
+                <h1>Create a new Menu Item</h1>
+                <form>
+                    <label>
+                        Name
+                        <input name="name" id="name" />
+                    </label>
+                    <label>
+                        Price
+                        <input name="price" id="price" type="number" step="0.01" />
+                    </label>
+                    <label>
+                        Description
+                        <textarea name="desc" id="desc"></textarea>
+                    </label>
+                    <button>Create</button>
+                </form>
+            </div>
+        </div>
+    </main>
+    <script>
+        const wrapper = document.querySelector("#inventory-modal-wrapper")
+        const modal = document.querySelector("#inventory-modal")
+        const form = document.querySelector("form")
+        const name = document.querySelector("#name")
+        const price = document.querySelector("#price")
+        const desc = document.querySelector("#desc")
+
+        modal.addEventListener("click", (e) => {
+            e.stopPropagation()
+        })
+
+        async function save(e) {
+            e.preventDefault()
+            let data = {name: name.value, price: price.value, desc: desc.value}
+            let response = await fetch("", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+            });
+
+            let body = await response.json()
+            console.log(body)
+            if (!body.success) return alert("ERROR: " + body.message)
+
+            window.location.href = "./"
+        }
+
+        form.addEventListener("submit", save)
+        wrapper.addEventListener("click", () => {
+            window.location.href = "./"
+        })
+
+    </script>
+</body>
+
+</html>

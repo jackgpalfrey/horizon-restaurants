@@ -1,3 +1,4 @@
+# Author: Jack Palfrey (22032928)
 """Module for managing individual menu items."""
 
 from src.menu.utils import validate_menu_description, validate_menu_name

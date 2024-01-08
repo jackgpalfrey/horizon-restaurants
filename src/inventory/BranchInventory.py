@@ -1,3 +1,4 @@
+# Author: Dina Hassanein (22066792)
 """Module for creating and accessing inventories."""
 from .InventoryItem import InventoryItem
 from ..utils.Database import Database
@@ -44,12 +45,17 @@ class BranchInventory:
 
         return InventoryItem(id)
 
-    def get_by_name(self, name: str) -> InventoryItem | None:
-        """
-        Get an inventory item by its name.
+    def get_by_id(self, id: str) -> InventoryItem | None:
+        """Get an inventory item by its ID."""
+        result = Database.execute_and_fetchone(
+            "SELECT id FROM public.inventory WHERE id = %s \
+            AND branch_id = %s;", id, self._branch_id)
 
-        Note: This is not limited to this branch.
-        """
+        if result is not None:
+            return InventoryItem(result[0])
+
+    def get_by_name(self, name: str) -> InventoryItem | None:
+        """Get an inventory item by its name."""
         result = Database.execute_and_fetchone(
             "SELECT id FROM public.inventory WHERE name = %s \
             AND branch_id = %s;", name, self._branch_id)
@@ -60,7 +66,8 @@ class BranchInventory:
     def get_all(self) -> list[InventoryItem]:
         """Get all inventory items at the branch."""
         result = Database.execute_and_fetchall(
-            "SELECT id FROM public.inventory WHERE branch_id = %s;",
+            "SELECT id FROM public.inventory WHERE branch_id = %s \
+            ORDER BY name",
             self._branch_id)
 
         return [InventoryItem(record[0]) for record in result]
