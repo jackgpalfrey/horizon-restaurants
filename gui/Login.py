@@ -10,7 +10,10 @@ branch_data = None
 class ChooseBranch(Page):
     def __init__(self, *args, **kwargs):
         Page.__init__(self, *args, **kwargs)
+        self.create_widgets()
+        self.drop = None
 
+    def create_widgets(self):
         label = tk.Label(self, text="Please choose a branch")
         label.grid()
 
@@ -22,28 +25,31 @@ class ChooseBranch(Page):
             self.pages.goto("login")
             return
 
-        dropdown = []
+        State.is_ui_rendered = False
 
-        global branch_data
-        branch_data = {}
-        for branch in self.all_branches["data"]["branches"]:
-            dropdown.append(branch["name"])
-            branch_data[branch["name"]] = branch["id"]
+        if self.drop is None:
+            self.dropdown = []
 
-        global clicked
-        clicked = StringVar()
-        display_text = dropdown[0]
-        clicked.set(display_text)
-        drop = OptionMenu(self, clicked, *dropdown)
-        drop.grid()
+            global branch_data
+            branch_data = {}
+            for branch in self.all_branches["data"]["branches"]:
+                self.dropdown.append(branch["name"])
+                branch_data[branch["name"]] = branch["id"]
 
-        def on_select():
-            State.branch_id = branch_data[clicked.get()]
-            self.pages.goto("login")
+            global clicked
+            clicked = StringVar()
+            display_text = self.dropdown[0]
+            clicked.set(display_text)
+            self.drop = OptionMenu(self, clicked, *self.dropdown)
+            self.drop.grid()
 
-        btn = tk.Button(self, text="Choose Branch",
-                        command=on_select)
-        btn.grid()
+            def on_select():
+                State.branch_id = branch_data[clicked.get()]
+                self.pages.goto("login")
+
+            btn = tk.Button(self, text="Choose Branch",
+                            command=on_select)
+            btn.grid()
 
 
 class LoginPage(Page):
@@ -82,6 +88,7 @@ class LoginPage(Page):
                 return
         login_data = {"username": self.username.get(
         ), "password": self.password.get()}
+        State.is_ui_rendered = False
         login = API.post(f"{URL}/login", json=login_data)
         match login.status_code:
             case 200:
