@@ -77,14 +77,6 @@ def dictify_inventory_item(obj: InventoryItem):
     }
 
 
-def dictify_reservation(obj: Reservation):
-    return {
-        "table_number": obj.get_table().get_table_number(),
-        "num_people": obj.get_num_people(),
-        "customer_name": obj.get_customer_name(),
-        "time": obj.get_time().__str__()
-    }
-
 
 def dictify_simple_order(obj: Order):
     return {
@@ -132,4 +124,14 @@ def dictify_order(obj: Order):
         "customer_name": obj.get_customer_name(),
         "status": obj.get_status().value,
         "price": obj.get_price()
+    }
+
+
+def dictify_reservation(obj: Reservation):
+    return {
+        "id": obj.get_id(),
+        "customer": obj.get_customer_name(),
+        "time": obj.get_time().__str__(),
+        "num_people": obj.get_num_people(),
+        "table_num": obj.get_table().get_table_number(),
     }
