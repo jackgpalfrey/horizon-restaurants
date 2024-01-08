@@ -11,5 +11,8 @@ class MainTab(ttk.Frame):
 
     def create_notebook_widget(self):
 
-        label = ttk.Label(self, textvariable="Hi sisters!")
+        label = ttk.Label(self, textvariable="Main Page")
         label.pack()
+
+        # no branches created. to be able to select a branch and login to it as staff member,
+        # admin acount must create branch first.
