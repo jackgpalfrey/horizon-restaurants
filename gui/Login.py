@@ -38,7 +38,6 @@ class ChooseBranch(Page):
         drop.grid()
 
         def on_select():
-            print(branch_data)
             State.branch_id = branch_data[clicked.get()]
             self.pages.goto("login")
 
