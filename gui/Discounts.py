@@ -71,11 +71,9 @@ class ViewDiscounts(ttk.Frame):
             f"{URL}/branches/{branch_id}/discounts")
         print(branch_discounts_res)
         branch_discounts = branch_discounts_res.json()
-        print(branch_discounts, "!!!!")
 
         global discount_data
         discount_data = {}
-        # category_data = {}
 
         for discount in branch_discounts["data"]["discounts"]:
             self.tree.insert('', 'end', values=(
@@ -130,7 +128,7 @@ class CreateDiscount(ttk.Frame):
     def add_record(self):
         for multiplier in discount_data:
             if multiplier == self.multipler.get():
-                self.fields['message']["text"] = "This discount already exists."
+                self.fields['message']["text"] = "This Discount Already Exists."
                 return
         branch_id = State.branch_id
         if branch_id is None:
@@ -187,4 +185,4 @@ class UpdateDiscount(ttk.Frame):
                 break
         match delete_item.status_code:
             case 200:
-                self.fields['message']["text"] = "Menu Item Deleted Successfully"
+                self.fields['message']["text"] = "Discount Deleted Successfully"
