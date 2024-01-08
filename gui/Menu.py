@@ -135,14 +135,14 @@ class CreateItem(ttk.Frame):
         create_button.pack(anchor=tk.E, padx=5, pady=5)
 
     def add_record(self):
-        for name in menu_data:
-            if name == self.item_name.get():
-                self.fields['message']["text"] = "An item with this name already exists."
-                return
         branch_id = State.branch_id
         if branch_id is None:
             self.fields['message']["text"] = "Current user isn't logged into or assigned a branch, Choose a branch on login first to create branch items"
             return
+        for name in menu_data:
+            if name == self.item_name.get():
+                self.fields['message']["text"] = "An item with this name already exists."
+                return
         self.fields['message']["text"] = ""
         item_data = {"name": self.item_name.get(
         ), "price": self.price.get(), "desc": self.description.get()}
