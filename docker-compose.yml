@@ -16,9 +16,7 @@ services:
             - db
         ports:
             - 5000:5000
-        volumes:
-            - ./src:/app/src:ro
-
+    
     db:
         container_name: 'horizon-db'
         image: postgres:16-alpine
