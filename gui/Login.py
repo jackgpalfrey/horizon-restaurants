@@ -16,7 +16,7 @@ class ChooseBranch(Page):
 
     def create_widgets(self):
         label = tk.Label(self, text="Please choose a branch")
-        label.grid()
+        label.grid(row=0, column=0, pady=10)
 
         self.all_branches_res = API.post(f"{URL}/branches")
         self.all_branches = self.all_branches_res.json()
@@ -42,7 +42,7 @@ class ChooseBranch(Page):
             display_text = self.dropdown[0]
             clicked.set(display_text)
             self.drop = OptionMenu(self, clicked, *self.dropdown)
-            self.drop.grid()
+            self.drop.grid(row=1, column=0, pady=10)
 
             def on_select():
                 State.branch_id = branch_data[clicked.get()]

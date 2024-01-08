@@ -19,7 +19,7 @@ from api import API, URL, State
 class App(Page):
     def __init__(self, *args, **kwargs):
         Page.__init__(self, *args, **kwargs)
-        root.geometry("1005x400")
+        root.geometry("1005x600")
         root.title('Horizon Restaurants')
         root.resizable(1, 1)
         root.columnconfigure(0, weight=1)
