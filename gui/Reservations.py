@@ -65,7 +65,6 @@ class ViewReservations(ttk.Frame):
         branch_reservations_res = API.post(
             f"{URL}/branches/{branch_id}/reservations")
         branch_reservation = branch_reservations_res.json()
-        print(branch_reservation, "!!!!")
 
         global res_data
         res_data = {}
@@ -74,10 +73,6 @@ class ViewReservations(ttk.Frame):
             self.tree.insert('', 'end', values=(
                 res_info["customer"], res_info["num_people"], res_info["time"], res_info["table_num"]))
             res_data[res_info["customer"]] = res_info["id"]
-            # customer_name = res_info["name"]
-            # item_id = res_info["id"]
-            # table_id = res_info["table"]["id"]
-            # res_data[customer_name] = (item_id, table_id)
 
         self.tree.pack(fill='x', expand=True)
 
@@ -141,7 +136,6 @@ class CreateReservation(ttk.Frame):
         branch_id = State.branch_id
         create = API.post(
             f"{URL}/branches/{branch_id}/reservations/create", json=res_info)
-        print(create.json(), "Just in case")
         match create.status_code:
             case 200:
                 self.fields['message']["text"] = "Reservation Created Successfully"

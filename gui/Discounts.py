@@ -69,7 +69,6 @@ class ViewDiscounts(ttk.Frame):
         branch_id = State.branch_id
         branch_discounts_res = API.post(
             f"{URL}/branches/{branch_id}/discounts")
-        print(branch_discounts_res)
         branch_discounts = branch_discounts_res.json()
 
         global discount_data
@@ -140,7 +139,6 @@ class CreateDiscount(ttk.Frame):
         branch_id = State.branch_id
         create = API.post(
             f"{URL}/branches/{branch_id}/discounts/create", json=discount_info)
-        print(create.json())
         match create.status_code:
             case 200:
                 self.fields['message']["text"] = "Discount Created Successfully"

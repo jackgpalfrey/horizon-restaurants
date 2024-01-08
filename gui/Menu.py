@@ -72,11 +72,9 @@ class ViewItems(ttk.Frame):
         branch_menu_res = API.post(
             f"{URL}/branches/{branch_id}/menu")
         branch_menu = branch_menu_res.json()
-        print(branch_menu, "!!!!")
 
         global menu_data
         menu_data = {}
-        # category_data = {}
 
         for item in branch_menu["data"]["menu"]:
             self.tree.insert('', 'end', values=(
@@ -107,7 +105,6 @@ class CreateItem(ttk.Frame):
 
     def create_widgets(self):
         self.item_name = tk.StringVar()
-        # self.category = tk.StringVar()
         self.price = tk.DoubleVar()
         self.description = tk.StringVar()
 
@@ -115,8 +112,6 @@ class CreateItem(ttk.Frame):
 
         self.fields['item_name_label'] = ttk.Label(self, text='Item Name:')
         self.fields['item_name'] = ttk.Entry(self, textvariable=self.item_name)
-        # self.fields['category_label'] = ttk.Label(self, text='Category:')
-        # self.fields['category'] = ttk.Entry(self, textvariable=self.category)
         self.fields['price_label'] = ttk.Label(self, text='Price:')
         self.fields['price'] = ttk.Entry(self, textvariable=self.price)
         self.fields['description_label'] = ttk.Label(self, text='Description:')
@@ -149,17 +144,9 @@ class CreateItem(ttk.Frame):
         branch_id = State.branch_id
         create = API.post(
             f"{URL}/branches/{branch_id}/menu/create", json=item_data)
-        print(create.json())
         match create.status_code:
             case 200:
                 self.fields['message']["text"] = "Inventory Item Created Successfully"
-
-                # item_id = menu_data[self.item_name.get()]
-                # create_category = API.post(
-                #     f"{URL}/branches/{branch_id}/menu/categories/create", json={"name": self.category.get()})
-                # set_category = API.post(
-                #     f"{URL}/branches/{branch_id}/menu/{item_id}/set/category", json={"name": self.category.get()})
-                # print(create_category.json())
             case 400 | 409 | 401:
                 self.fields['message']["text"] = create.json()["message"]
 
@@ -246,11 +233,9 @@ class UpdateItem(ttk.Frame):
             if category != "":
                 create_category = API.post(
                     f"{URL}/branches/{branch_id}/menu/categories/create", json={"name": self.category.get()})
-                print(create_category.json())
                 category_id = create_category.json()["data"]["id"]
                 set_category = API.post(
                     f"{URL}/branches/{branch_id}/menu/{item_id}/set/category", json={"category_id": category_id})
-                print(set_category.json())
                 match set_category.status_code:
                     case 200:
                         self.fields['message']["text"] = "Information updated successfully"

@@ -74,8 +74,6 @@ class ViewTables(ttk.Frame):
         global table_data
         table_data = []
 
-        print(branch_tables["data"]["tables"])
-
         for table in branch_tables["data"]["tables"]:
             self.tree.insert('', 'end', values=(
                 table["number"], table["capacity"]))
@@ -144,7 +142,6 @@ class CreateTable(ttk.Frame):
                     table_info = {"table_number": number, "capacity": capacity}
                     create = API.post(
                         f"{URL}/branches/{branch_id}/tables/create", json=table_info)
-                    print(create.json())
                     match create.status_code:
                         case 200:
                             self.fields['message']["text"] = "Branch Table Created Successfully"

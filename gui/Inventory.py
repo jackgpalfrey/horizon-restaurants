@@ -143,7 +143,6 @@ class CreateItem(ttk.Frame):
         branch_id = State.branch_id
         create = API.post(
             f"{URL}/branches/{branch_id}/inventory/create", json=item_data)
-        print(create.json())
         match create.status_code:
             case 200:
                 self.fields['message']["text"] = "Inventory Item Created Successfully"
